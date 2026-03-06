@@ -1,0 +1,760 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>ExamTym - Advanced Test Portal</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; background-color: #f0f0f0; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+        /* Palette Status Colors */
+        .status-answered { background-color: #22c55e; color: white; border-color: #22c55e; } /* Green */
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } /* Red */
+        .status-marked { background-color: #9333ea; color: white; border-color: #9333ea; border-radius: 50%; } /* Purple */
+        .status-marked_answered { background-color: #9333ea; color: white; border-color: #9333ea; position: relative; } /* Purple */
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -2px; font-size: 8px; color: #22c55e; background: white; border-radius: 50%; padding: 0 2px; }
+        .status-not_visited { background-color: white; color: black; border-color: #d1d5db; } /* White/Gray */
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.1); box-shadow: 0 0 5px rgba(37, 99, 235, 0.5); }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+
+    <div id="root" class="h-full flex flex-col"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+// =================================================================
+        // 📚 TEST DATA (NTA UGC NET PAPER 1 - ICT MOCK TEST)
+        // =================================================================
+        const TEST_DATA = {
+            title: "NTA UGC NET PAPER 1: MOCK TEST (UNIT VIII - ICT)",
+            organization: "EXAMTYM",
+            durationMinutes: 35,
+            totalMarks: 60,
+            marksForCorrect: 2,
+            marksForWrong: 0,
+            questions: [
+                {
+                    id: 1,
+                    question: "What is the full form of 'NMEICT', a mission responsible for various digital initiatives in Indian Higher Education?",
+                    options: [
+                        { id: "1", text: "National Mission on E-learning and Information Communication Technology" },
+                        { id: "2", text: "National Mission on Education through Information and Communication Technology" },
+                        { id: "3", text: "National Mission on E-governance and Information Communication Technology" },
+                        { id: "4", text: "National Mechanism on Education through Internet Communication Technology" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "NMEICT stands for the National Mission on Education through Information and Communication Technology. It is a Centrally Sponsored Scheme to leverage the potential of ICT in teaching and learning processes. The mission aims to provide connectivity and content to institutions."
+                },
+                {
+                    id: 2,
+                    question: "Which of the following represents the correct order of memory storage capacities from smallest to largest?",
+                    options: [
+                        { id: "1", text: "Kilobyte < Megabyte < Gigabyte < Terabyte" },
+                        { id: "2", text: "Kilobyte < Gigabyte < Megabyte < Terabyte" },
+                        { id: "3", text: "Megabyte < Kilobyte < Terabyte < Gigabyte" },
+                        { id: "4", text: "Terabyte < Gigabyte < Megabyte < Kilobyte" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "The hierarchy of storage units is essential knowledge.\nKilobyte (KB): 1024 Bytes\nMegabyte (MB): 1024 KB\nGigabyte (GB): 1024 MB\nTerabyte (TB): 1024 GB\nTherefore, the correct ascending order is KB < MB < GB < TB."
+                },
+                {
+                    id: 3,
+                    question: "In the context of E-mail, what is the function of the ‘BCC’ field?",
+                    options: [
+                        { id: "1", text: "It allows the recipient to see who else received the email." },
+                        { id: "2", text: "It stands for 'Back Carbon Copy' and returns the email to the sender." },
+                        { id: "3", text: "It hides the recipient's email address from other recipients." },
+                        { id: "4", text: "It is used only for sending attachments with high priority." }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "BCC stands for Blind Carbon Copy. When an email address is placed in the BCC field, that recipient receives the email, but their identity is hidden from all other recipients (both in the 'To' and 'CC' fields). This is distinct from CC (Carbon Copy), where all recipients can see the addresses of everyone else included in the thread."
+                },
+                {
+                    id: 4,
+                    question: "A program that converts a high-level language program into machine language line-by-line is called a:",
+                    options: [
+                        { id: "1", text: "Compiler" },
+                        { id: "2", text: "Interpreter" },
+                        { id: "3", text: "Assembler" },
+                        { id: "4", text: "Comparator" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "An Interpreter translates code one line at a time and executes it immediately. If an error is found, it stops execution. A Compiler translates the entire program into machine code at once, creating an executable file. An Assembler translates Assembly language (low-level) to machine code."
+                },
+                {
+                    id: 5,
+                    question: "Which of the following is an example of 'System Software'?",
+                    options: [
+                        { id: "1", text: "MS-Word" },
+                        { id: "2", text: "Google Chrome" },
+                        { id: "3", text: "Linux" },
+                        { id: "4", text: "VLC Media Player" }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "Linux is an Operating System (OS), which is the core type of System Software that manages computer hardware and software resources. MS-Word, Google Chrome, and VLC Media Player are all examples of Application Software, which are designed for specific tasks for the end-user."
+                },
+                {
+                    id: 6,
+                    question: "The protocol used specifically for transferring files from one computer to another over the internet is:",
+                    options: [
+                        { id: "1", text: "HTTP" },
+                        { id: "2", text: "FTP" },
+                        { id: "3", text: "SMTP" },
+                        { id: "4", text: "HTML" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "FTP (File Transfer Protocol) is the standard network protocol used for the transfer of computer files between a client and server on a computer network. HTTP is for viewing web pages, SMTP is for sending emails, and HTML is a markup language, not a protocol."
+                },
+                {
+                    id: 7,
+                    question: "What is the full form of USB?",
+                    options: [
+                        { id: "1", text: "Universal Serial Bus" },
+                        { id: "2", text: "Uniform Serial Bus" },
+                        { id: "3", text: "Universal Smart Bus" },
+                        { id: "4", text: "Unique Serial Bus" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "USB stands for Universal Serial Bus. It is an industry standard that establishes specifications for cables and connectors and protocols for connection, communication, and power supply between computers, peripherals, and other computers."
+                },
+                {
+                    id: 8,
+                    question: "Which digital initiative allows students to access academic awards (Degrees, Marksheets) online?",
+                    options: [
+                        { id: "1", text: "SWAYAM" },
+                        { id: "2", text: "NAD" },
+                        { id: "3", text: "NDL" },
+                        { id: "4", text: "e-ShodhSindhu" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "NAD (National Academic Depository) is a digital depository of academic awards. It ensures the security, authenticity, and verifiability of academic awards like degrees and marksheets. SWAYAM is for MOOCs, NDL is the National Digital Library, and e-ShodhSindhu is for e-resources."
+                },
+                {
+                    id: 9,
+                    question: "Which of the following is considered 'Volatile Memory'?",
+                    options: [
+                        { id: "1", text: "Hard Disk Drive (HDD)" },
+                        { id: "2", text: "Read Only Memory (ROM)" },
+                        { id: "3", text: "Random Access Memory (RAM)" },
+                        { id: "4", text: "USB Drive" }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "RAM (Random Access Memory) is volatile, meaning it requires power to maintain the stored information; if power is lost, the data is lost. ROM, HDD, and USB drives are non-volatile, meaning they retain data even when the computer is turned off."
+                },
+                {
+                    id: 10,
+                    question: "Match List I with List II:\n\nList I (File Extension)\n(A) .xls\n(B) .jpg\n(C) .mp4\n(D) .zip\n\nList II (File Type)\n(I) Image File\n(II) Video File\n(III) Spreadsheet File\n(IV) Compressed File",
+                    options: [
+                        { id: "1", text: "(A)-(III), (B)-(I), (C)-(II), (D)-(IV)" },
+                        { id: "2", text: "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)" },
+                        { id: "3", text: "(A)-(III), (B)-(II), (C)-(I), (D)-(IV)" },
+                        { id: "4", text: "(A)-(IV), (B)-(I), (C)-(II), (D)-(III)" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: ".xls is associated with Microsoft Excel (Spreadsheet). .jpg (JPEG) is a standard format for Image files. .mp4 is used to store Video. .zip is an archive file format for Compressed files."
+                },
+                {
+                    id: 11,
+                    question: "Given below are two statements:\nStatement I: Synchronous communication occurs when the sender and receiver are active at the same time (e.g., Video Conferencing).\nStatement II: Asynchronous communication does not require the sender and receiver to be active simultaneously (e.g., E-mail).",
+                    options: [
+                        { id: "1", text: "Both Statement I and Statement II are true" },
+                        { id: "2", text: "Both Statement I and Statement II are false" },
+                        { id: "3", text: "Statement I is true but Statement II is false" },
+                        { id: "4", text: "Statement I is false but Statement II is true" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "Both definitions are correct. Synchronous means real-time interaction (like phone calls, video meets). Asynchronous means there is a time lag between sending and receiving (like email, forums, recorded videos)."
+                },
+                {
+                    id: 12,
+                    question: "Which of the following statements regarding the 'SWAYAM Prabha' initiative is correct?",
+                    options: [
+                        { id: "1", text: "It is a collection of 20 DTH channels devoted to telecasting high-quality educational programs." },
+                        { id: "2", text: "It uses the INSAT-4B satellite for broadcasting." },
+                        { id: "3", text: "It provides 34 DTH channels devoted to telecasting high-quality educational programs on a 24x7 basis using the GSAT-15 satellite." },
+                        { id: "4", text: "It is a paid subscription service for higher education content." }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "SWAYAM Prabha is a group of 34 DTH channels devoted to telecasting high-quality educational programs on a 24X7 basis using the GSAT-15 satellite. Every day, there is new content for at least 4 hours which is repeated 5 more times in a day."
+                },
+                {
+                    id: 13,
+                    question: "Identify the correct chronological order of the evolution of computers:",
+                    options: [
+                        { id: "1", text: "Transistors → Vacuum Tubes → Integrated Circuits → Microprocessors" },
+                        { id: "2", text: "Vacuum Tubes → Transistors → Integrated Circuits → Microprocessors" },
+                        { id: "3", text: "Vacuum Tubes → Integrated Circuits → Transistors → Microprocessors" },
+                        { id: "4", text: "Transistors → Vacuum Tubes → Microprocessors → Integrated Circuits" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "1st Gen: Vacuum Tubes. 2nd Gen: Transistors (smaller/faster). 3rd Gen: Integrated Circuits (ICs). 4th Gen: Microprocessors (VLSI)."
+                },
+                {
+                    id: 14,
+                    question: "Given below are two statements regarding Computer Networks:\nStatement I: The Internet is a private network used within an organization.\nStatement II: An Intranet is a global network connecting millions of computers.",
+                    options: [
+                        { id: "1", text: "Both Statement I and Statement II are true" },
+                        { id: "2", text: "Both Statement I and Statement II are false" },
+                        { id: "3", text: "Statement I is true but Statement II is false" },
+                        { id: "4", text: "Statement I is false but Statement II is true" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "Both statements are reversed. The Internet is a global public network. An Intranet is a private network contained within an enterprise or organization."
+                },
+                {
+                    id: 15,
+                    question: "Match the following Networking Terms:\n\nList I (Term)\n(A) LAN\n(B) MAN\n(C) WAN\n(D) Ethernet\n\nList II (Definition)\n(I) Network covering a large geographical area (e.g., Country)\n(II) Network covering a small area (e.g., Office/Building)\n(III) Unique address of a device on a network (MAC Address)\n(IV) Network covering a city-wide area",
+                    options: [
+                        { id: "1", text: "(A)-(II), (B)-(IV), (C)-(I), (D)-(III)" },
+                        { id: "2", text: "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)" },
+                        { id: "3", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                        { id: "4", text: "(A)-(IV), (B)-(II), (C)-(I), (D)-(III)" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "LAN (Local Area Network): Small area like an office. MAN (Metropolitan Area Network): City-wide. WAN (Wide Area Network): Large geographical area. Ethernet is associated with physical networking (often paired with MAC addresses in such contexts)."
+                },
+                {
+                    id: 16,
+                    question: "Identify the Odd one out regarding 'Web Browsers':",
+                    options: [
+                        { id: "1", text: "Mozilla Firefox" },
+                        { id: "2", text: "Microsoft Edge" },
+                        { id: "3", text: "Google Search" },
+                        { id: "4", text: "Apple Safari" }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "Google Search is a Search Engine, not a Web Browser. Firefox, Edge, and Safari are software applications used to access the web (Browsers)."
+                },
+                {
+                    id: 17,
+                    question: "Which of the following is an Open Source Software?",
+                    options: [
+                        { id: "1", text: "MS Windows" },
+                        { id: "2", text: "Adobe Photoshop" },
+                        { id: "3", text: "Python" },
+                        { id: "4", text: "iOS" }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "Python is an open-source programming language. MS Windows, Adobe Photoshop, and iOS are Proprietary (Closed Source) software."
+                },
+                {
+                    id: 18,
+                    question: "Regarding ICT in Governance, what does the 'G2C' model stand for?",
+                    options: [
+                        { id: "1", text: "Government to Corporation" },
+                        { id: "2", text: "Government to Citizen" },
+                        { id: "3", text: "Grid to Computer" },
+                        { id: "4", text: "Government to Center" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "G2C (Government to Citizen) refers to the interaction between the government and the general public, such as paying taxes online or applying for documents."
+                },
+                {
+                    id: 19,
+                    question: "Given below are two statements regarding malware:\nStatement I: A 'Virus' requires a host program to attach itself to and needs user action (like opening a file) to spread.\nStatement II: A 'Worm' is a standalone malware that replicates itself in order to spread to other computers without requiring a host program.",
+                    options: [
+                        { id: "1", text: "Both Statement I and Statement II are true" },
+                        { id: "2", text: "Both Statement I and Statement II are false" },
+                        { id: "3", text: "Statement I is true but Statement II is false" },
+                        { id: "4", text: "Statement I is false but Statement II is true" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "Both statements are true. Viruses need a host and user activation. Worms are self-replicating and travel through networks automatically."
+                },
+                {
+                    id: 20,
+                    question: "Convert the Binary number (1101)₂ to Decimal.",
+                    options: [
+                        { id: "1", text: "11" },
+                        { id: "2", text: "13" },
+                        { id: "3", text: "15" },
+                        { id: "4", text: "10" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "1*2³ + 1*2² + 0*2¹ + 1*2⁰ = 8 + 4 + 0 + 1 = 13."
+                },
+                {
+                    id: 21,
+                    question: "Which digital initiative provides access to plagiarism detection software to universities?",
+                    options: [
+                        { id: "1", text: "Shodhganga" },
+                        { id: "2", text: "Shodhgangotri" },
+                        { id: "3", text: "ShodhShuddhi (PDS)" },
+                        { id: "4", text: "Vidwan" }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "ShodhShuddhi (formerly PDS) provides access to plagiarism detection tools like Urkund/Ouriginal to universities."
+                },
+                {
+                    id: 22,
+                    question: "Match the Cloud Computing Service Models:\n\nList I (Model)\n(A) SaaS\n(B) PaaS\n(C) IaaS\n\nList II (Description)\n(I) Provides virtualized computing resources over the internet (e.g., AWS EC2)\n(II) Delivers software applications over the internet (e.g., Google Workspace)\n(III) Provides a platform allowing customers to develop, run, and manage applications",
+                    options: [
+                        { id: "1", text: "(A)-(II), (B)-(III), (C)-(I)" },
+                        { id: "2", text: "(A)-(I), (B)-(II), (C)-(III)" },
+                        { id: "3", text: "(A)-(III), (B)-(I), (C)-(II)" },
+                        { id: "4", text: "(A)-(II), (B)-(I), (C)-(III)" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "SaaS (Software as a Service): End-user applications. PaaS (Platform as a Service): Tools for developers. IaaS (Infrastructure as a Service): Raw computing resources."
+                },
+                {
+                    id: 23,
+                    question: "What is the main objective of the 'e-Yantra' initiative?",
+                    options: [
+                        { id: "1", text: "To spread education in Embedded systems and Robotics." },
+                        { id: "2", text: "To provide virtual laboratories for science experiments." },
+                        { id: "3", text: "To create a database of Indian scientists." },
+                        { id: "4", text: "To provide free open source software for education." }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "e-Yantra is an initiative by IIT Bombay to incorporate Robotics into engineering education."
+                },
+                {
+                    id: 24,
+                    question: "In the context of ICT, 'Spam' refers to:",
+                    options: [
+                        { id: "1", text: "A malicious virus that deletes data." },
+                        { id: "2", text: "Unsolicited, bulk commercial emails." },
+                        { id: "3", text: "A protocol for secure communication." },
+                        { id: "4", text: "A type of firewall security." }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "Spam refers to unsolicited messages sent in bulk, typically via email, often for advertising."
+                },
+                {
+                    id: 25,
+                    question: "Assertion (A): The hexadecimal number system is widely used in computer architecture and programming.\nReason (R): Hexadecimal provides a human-friendly representation of binary-coded values, where one hex digit represents four binary digits (bits).",
+                    options: [
+                        { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                        { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                        { id: "3", text: "(A) is correct but (R) is not correct." },
+                        { id: "4", text: "(A) is not correct but (R) is correct." }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "Hexadecimal (Base 16) maps perfectly to binary (2⁴ = 16). One Hex digit (e.g., F) replaces four bits (1111), making memory addresses easier for programmers to read. Thus, R explains A."
+                },
+                {
+                    id: 26,
+                    question: "A user wants to store a high-resolution video file of size 4 Gigabytes (GB). They have a USB drive with a free space of 4000 Megabytes (MB). Will the file fit on the drive?",
+                    options: [
+                        { id: "1", text: "Yes, because 4 GB is equal to 4000 MB." },
+                        { id: "2", text: "Yes, because 4 GB is less than 4000 MB." },
+                        { id: "3", text: "No, because 4 GB is equal to 4096 MB." },
+                        { id: "4", text: "No, because GB and MB are not compatible units." }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "1 GB = 1024 MB. Therefore, 4 GB = 4 * 1024 = 4096 MB. Since 4096 MB > 4000 MB, the file will not fit."
+                },
+                {
+                    id: 27,
+                    question: "Assertion (A): The Digital Divide refers to the gap between demographics and regions that have access to modern information and communications technology, and those that do not.\nReason (R): The Digital Divide is solely caused by the lack of physical infrastructure like fiber optic cables and mobile towers.",
+                    options: [
+                        { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                        { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                        { id: "3", text: "(A) is correct but (R) is not correct." },
+                        { id: "4", text: "(A) is not correct but (R) is correct." }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "Assertion (A) is correct. Reason (R) is incorrect because the digital divide is not *solely* caused by infrastructure; factors like digital literacy, affordability, and language barriers also contribute significantly."
+                },
+                {
+                    id: 28,
+                    question: "Consider the following IP Address: 192.168.1.1. Which version of the Internet Protocol does this represent, and how many bits does it use?",
+                    options: [
+                        { id: "1", text: "IPv6, 128 bits" },
+                        { id: "2", text: "IPv4, 32 bits" },
+                        { id: "3", text: "IPv4, 64 bits" },
+                        { id: "4", text: "IPv6, 32 bits" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "The format x.x.x.x (four sets of numbers) is standard for IPv4, which uses 32-bit addresses."
+                },
+                {
+                    id: 29,
+                    question: "Which of the following best describes 'Phishing'?",
+                    options: [
+                        { id: "1", text: "Flooding a network with traffic to cause a shutdown." },
+                        { id: "2", text: "Using a fake identity or website to trick users into revealing sensitive information like passwords or credit card numbers." },
+                        { id: "3", text: "Intercepting communication between two parties to steal data (Man-in-the-Middle)." },
+                        { id: "4", text: "Encrypting a user's files and demanding payment to release them (Ransomware)." }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "Phishing is a social engineering attack where attackers masquerade as a trusted entity to steal credentials."
+                },
+                {
+                    id: 30,
+                    question: "Assertion (A): In the context of ICT, Open Educational Resources (OER) are teaching, learning, and research materials in any medium – digital or otherwise – that reside in the public domain or have been released under an open license.\nReason (R): OERs allow for no-cost access, use, adaptation, and redistribution by others with no or limited restrictions.",
+                    options: [
+                        { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                        { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                        { id: "3", text: "(A) is correct but (R) is not correct." },
+                        { id: "4", text: "(A) is not correct but (R) is correct." }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "OERs are defined by their open license (A), which directly enables the permissions (Retain, Reuse, Revise, Remix, Redistribute) described in (R). Thus, R explains the definition in A."
+                }
+            ]
+        };
+
+        // --- ICONS ---
+        const Icons = {
+            Menu: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            Info: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            User: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+        };
+
+        // --- MAIN COMPONENT ---
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); // { qId: optionId }
+            const [status, setStatus] = useState({});   // { qId: 'visited' | 'answered' | 'marked' | 'marked_answered' }
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false); // Mobile drawer
+
+            // Initialize status
+            useEffect(() => {
+                const initStatus = {};
+                TEST_DATA.questions.forEach((q, i) => {
+                    initStatus[q.id] = i === 0 ? 'not_answered' : 'not_visited';
+                });
+                setStatus(initStatus);
+            }, []);
+
+            // Timer
+            useEffect(() => {
+                if (isSubmitted) return;
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) {
+                            handleSubmit();
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted]);
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            // Logic for Status Updates
+            const updateStatus = (qid, newStatus) => {
+                setStatus(prev => ({
+                    ...prev,
+                    [qid]: newStatus
+                }));
+            };
+
+            const handleOptionSelect = (optId) => {
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                setAnswers(prev => ({ ...prev, [currentQ.id]: optId }));
+                // Immediate update to "Not Answered" -> "Answered" is handled on navigation or explicit save, 
+                // but usually clicking an option visually selects it.
+            };
+
+            const handleSaveAndNext = () => {
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (answers[currentQ.id]) {
+                    updateStatus(currentQ.id, 'answered');
+                } else {
+                    updateStatus(currentQ.id, 'not_answered');
+                }
+                
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') {
+                         updateStatus(nextQ.id, 'not_answered');
+                    }
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleMarkForReview = () => {
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (answers[currentQ.id]) {
+                    updateStatus(currentQ.id, 'marked_answered');
+                } else {
+                    updateStatus(currentQ.id, 'marked');
+                }
+                
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') {
+                         updateStatus(nextQ.id, 'not_answered');
+                    }
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleClearResponse = () => {
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                setAnswers(prev => {
+                    const newAns = { ...prev };
+                    delete newAns[currentQ.id];
+                    return newAns;
+                });
+                updateStatus(currentQ.id, 'not_answered');
+            };
+
+            const handlePaletteClick = (index) => {
+                // Update current question status before leaving if it was visited
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                // If we are leaving a question we simply visited but didn't answer/mark, it becomes "Not Answered" (Red)
+                if (status[currentQ.id] === 'not_visited' || (status[currentQ.id] === 'not_answered' && !answers[currentQ.id])) {
+                     updateStatus(currentQ.id, 'not_answered');
+                }
+
+                // Update target question to visited/not answered if it was white
+                const targetQ = TEST_DATA.questions[index];
+                if (status[targetQ.id] === 'not_visited') {
+                    updateStatus(targetQ.id, 'not_answered');
+                }
+                
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); // Close drawer on mobile
+            };
+
+            const handleSubmit = () => {
+                if (confirm("Are you sure you want to submit the test?")) {
+                    setIsSubmitted(true);
+                }
+            };
+
+            // Stats for Palette Header
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => {
+                    if (c[s] !== undefined) c[s]++;
+                });
+                return c;
+            }, [status]);
+
+            // --- RENDER ---
+            
+            // 1. RESULT SCREEN
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) {
+                        score += TEST_DATA.marksForCorrect;
+                        correct++;
+                    } else if (answers[q.id]) {
+                        score -= TEST_DATA.marksForWrong;
+                        wrong++;
+                    }
+                });
+
+                return (
+                    <div className="h-full overflow-y-auto bg-gray-50 p-4 md:p-8">
+                        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div className="bg-blue-600 text-white p-8 text-center">
+                                <h1 className="text-3xl font-bold mb-2">Test Result</h1>
+                                <p className="opacity-90 font-medium">{TEST_DATA.title}</p>
+                            </div>
+                            <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 border-b border-gray-100">
+                                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                                    <div className="text-xs text-gray-500 uppercase font-bold">Total Score</div>
+                                    <div className="text-2xl font-bold text-blue-600">{score} <span className="text-sm text-gray-400">/ {TEST_DATA.totalMarks}</span></div>
+                                </div>
+                                <div className="text-center p-4 bg-green-50 rounded-lg">
+                                    <div className="text-xs text-green-700 uppercase font-bold">Correct</div>
+                                    <div className="text-2xl font-bold text-green-600">{correct}</div>
+                                </div>
+                                <div className="text-center p-4 bg-red-50 rounded-lg">
+                                    <div className="text-xs text-red-700 uppercase font-bold">Wrong</div>
+                                    <div className="text-2xl font-bold text-red-600">{wrong}</div>
+                                </div>
+                                <div className="text-center p-4 bg-gray-100 rounded-lg">
+                                    <div className="text-xs text-gray-600 uppercase font-bold">Attempted</div>
+                                    <div className="text-2xl font-bold text-gray-700">{correct + wrong}</div>
+                                </div>
+                            </div>
+                            <div className="p-6 bg-gray-50">
+                                <h2 className="text-xl font-bold text-gray-800 mb-4">Detailed Solutions</h2>
+                                <div className="space-y-4">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-gray-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50' : (isSkipped ? 'bg-white' : 'bg-red-50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-4 ${borderColor} ${bgClass} p-4 rounded shadow-sm bg-white`}>
+                                                <div className="flex gap-2 mb-2">
+                                                    <span className="font-bold text-gray-500">Q{i+1}.</span>
+                                                    <div className="flex-1 font-medium text-gray-800 whitespace-pre-line">{q.question}</div>
+                                                </div>
+                                                <div className="ml-6 space-y-1 text-sm mb-3">
+                                                    {q.options.map(opt => (
+                                                        <div key={opt.id} className={`flex items-center gap-2 ${opt.id === q.correctAnswer ? 'text-green-700 font-bold' : (opt.id === userAns ? 'text-red-600 line-through' : 'text-gray-500')}`}>
+                                                            {opt.id === q.correctAnswer ? "✓" : (opt.id === userAns ? "✗" : "○")} {opt.text}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="ml-6 p-3 bg-blue-50 text-blue-900 text-sm rounded border border-blue-100">
+                                                    <strong className="block mb-1 flex items-center gap-2"><Icons.Info/> Explanation:</strong>
+                                                    {q.explanation}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            // 2. TEST INTERFACE
+            return (
+                <div className="flex flex-col h-full">
+                    {/* Header */}
+                    <header className="bg-blue-600 text-white h-14 flex items-center justify-between px-4 shadow z-20">
+                        <div className="font-bold text-lg tracking-wide">{TEST_DATA.organization}</div>
+                        <div className="font-medium text-sm hidden md:block">{TEST_DATA.title}</div>
+                        <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-2 bg-white/20 px-3 py-1 rounded">
+                                <span className="text-xs uppercase opacity-80">Time Left:</span>
+                                <span className="font-mono font-bold text-lg">{formatTime(timeLeft)}</span>
+                            </div>
+                            <button className="md:hidden" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    {/* Main Body */}
+                    <div className="flex-1 flex overflow-hidden relative">
+                        
+                        {/* Question Area (Left) */}
+                        <div className="flex-1 flex flex-col bg-white w-full">
+                            {/* Question Content */}
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                                <div className="max-w-4xl mx-auto">
+                                    <div className="flex gap-4 mb-6">
+                                        <span className="font-bold text-lg text-gray-500 pt-1">Q{currentQIndex + 1}.</span>
+                                        <div className="text-lg font-medium text-gray-800 leading-relaxed whitespace-pre-line">
+                                            {currentQuestion.question}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3 ml-0 md:ml-10">
+                                        {currentQuestion.options.map(opt => (
+                                            <div 
+                                                key={opt.id}
+                                                onClick={() => handleOptionSelect(opt.id)}
+                                                className={`p-3 md:p-4 border-2 rounded-lg cursor-pointer flex items-start gap-3 transition-all hover:bg-gray-50 ${answers[currentQuestion.id] === opt.id ? 'border-blue-600 bg-blue-50' : 'border-gray-200'}`}
+                                            >
+                                                <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${answers[currentQuestion.id] === opt.id ? 'border-blue-600' : 'border-gray-400'}`}>
+                                                    {answers[currentQuestion.id] === opt.id && <div className="w-2.5 h-2.5 bg-blue-600 rounded-full"></div>}
+                                                </div>
+                                                <span className="text-gray-700">{opt.text}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer Buttons */}
+                            <div className="h-16 bg-white border-t flex items-center justify-between px-4 md:px-8 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
+                                <div className="flex gap-2">
+                                    <button onClick={handleMarkForReview} className="px-3 py-2 md:px-4 md:py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium text-xs md:text-sm transition">
+                                        <span className="hidden md:inline">Mark for Review & Next</span>
+                                        <span className="md:hidden">Review</span>
+                                    </button>
+                                    <button onClick={handleClearResponse} className="px-3 py-2 md:px-4 md:py-2 border border-gray-300 text-gray-600 rounded hover:bg-gray-100 font-medium text-xs md:text-sm transition">
+                                        <span className="hidden md:inline">Clear Response</span>
+                                        <span className="md:hidden">Clear</span>
+                                    </button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-sm md:text-base shadow-md transition transform active:scale-95">
+                                    Save & Next
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Palette Sidebar (Right) */}
+                        <div className={`absolute inset-y-0 right-0 w-80 bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            
+                            {/* User Info */}
+                            <div className="bg-blue-50 p-4 border-b flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600"><Icons.User /></div>
+                                <div>
+                                    <div className="font-bold text-sm text-gray-800">Candidate Name</div>
+                                    <div className="text-xs text-gray-500">ExamTym Student</div>
+                                </div>
+                                <button className="ml-auto md:hidden" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+
+                            {/* Legend */}
+                            <div className="p-3 grid grid-cols-2 gap-2 text-xs bg-white border-b">
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-answered flex items-center justify-center"></div> Answered</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-not_answered flex items-center justify-center"></div> Not Answered</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-not_visited border flex items-center justify-center"></div> Not Visited</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-marked flex items-center justify-center"></div> Marked for Review</div>
+                                <div className="flex items-center gap-2 col-span-2"><div className="w-4 h-4 rounded status-marked_answered flex items-center justify-center"></div> Ans & Marked for Review (Evaluated)</div>
+                            </div>
+
+                            {/* Counts */}
+                            <div className="bg-gray-100 p-2 grid grid-cols-4 gap-1 text-center text-xs border-b">
+                                <div className="bg-green-100 text-green-800 rounded p-1"><strong>{counts.answered}</strong><br/>Ans</div>
+                                <div className="bg-red-100 text-red-800 rounded p-1"><strong>{counts.not_answered}</strong><br/>Not Ans</div>
+                                <div className="bg-purple-100 text-purple-800 rounded p-1"><strong>{counts.marked + counts.marked_answered}</strong><br/>Marked</div>
+                                <div className="bg-white text-gray-600 border rounded p-1"><strong>{counts.not_visited}</strong><br/>Visit</div>
+                            </div>
+
+                            {/* Grid */}
+                            <div className="flex-1 overflow-y-auto p-4 content-start">
+                                <div className="font-bold text-gray-700 mb-2 text-sm">Choose a Question:</div>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button 
+                                            key={q.id}
+                                            onClick={() => handlePaletteClick(idx)}
+                                            className={`h-9 w-full flex items-center justify-center font-semibold text-sm border rounded hover:opacity-80 transition ${currentQIndex === idx ? 'current-question' : ''} status-${status[q.id]}`}
+                                        >
+                                            {idx + 1}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Submit Button */}
+                            <div className="p-4 border-t bg-gray-50">
+                                <button onClick={handleSubmit} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded shadow transition transform active:scale-95">
+                                    Submit Test
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    {/* Mobile Overlay */}
+                    {isPaletteOpen && <div className="fixed inset-0 bg-black/50 z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

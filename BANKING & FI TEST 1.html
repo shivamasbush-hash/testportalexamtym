@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UGC NET June 2026 - Data Interpretation Mock 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; background-color: #f0f0f0; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+        /* Palette Status Colors */
+        .status-answered { background-color: #22c55e; color: white; border-color: #22c55e; } /* Green */
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } /* Red */
+        .status-marked { background-color: #9333ea; color: white; border-color: #9333ea; border-radius: 50%; } /* Purple */
+        .status-marked_answered { background-color: #9333ea; color: white; border-color: #9333ea; position: relative; } /* Purple */
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -2px; font-size: 8px; color: #22c55e; background: white; border-radius: 50%; padding: 0 2px; }
+        .status-not_visited { background-color: white; color: black; border-color: #d1d5db; } /* White/Gray */
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.1); box-shadow: 0 0 5px rgba(37, 99, 235, 0.5); }
+        
+        /* Pause Overlay */
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        
+        /* Table Simulation in Text */
+        .data-table-text { font-family: 'Courier New', Courier, monospace; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; display: block; overflow-x: auto; white-space: pre; }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+
+    <div id="root" class="h-full flex flex-col"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+      const TEST_DATA = {
+    title: "UGC NET June 2026 - Commerce (08) - Unit 7: Banking & Financial Institutions",
+    organization: "ExamTym",
+    durationMinutes: 30,
+    totalMarks: 60,
+    marksForCorrect: 2,
+    marksForWrong: 0,
+    questions: [
+        {
+            id: 1,
+            question: "Match List I with List II regarding Development Financial Institutions (DFIs) and their Establishment Years:\n\nList I (Institution):\n(A) IFCI\n(B) IDBI\n(C) EXIM Bank\n(D) SIDBI\n\nList II (Year of Establishment):\n(I) 1990\n(II) 1982\n(III) 1948\n(IV) 1964",
+            options: [
+                { id: "1", text: "(A)-(III), (B)-(IV), (C)-(II), (D)-(I)" },
+                { id: "2", text: "(A)-(IV), (B)-(III), (C)-(I), (D)-(II)" },
+                { id: "3", text: "(A)-(III), (B)-(II), (C)-(IV), (D)-(I)" },
+                { id: "4", text: "(A)-(I), (B)-(IV), (C)-(II), (D)-(III)" }
+            ],
+            correctAnswer: "1",
+            explanation: "IFCI was the first DFI established in 1948 (III). IDBI was set up in 1964 (IV). EXIM Bank was established in 1982 (II). SIDBI was established in 1990 (I)."
+        },
+        {
+            id: 2,
+            question: "Given below are two statements regarding the Reserve Bank of India (RBI):\nStatement I: The Monetary Policy Committee (MPC) is constituted by the Central Government under Section 45ZB of the RBI Act, 1934.\nStatement II: The MPC consists of six members: three from the RBI and three appointed by the Central Government, with the RBI Governor having a veto power in case of a tie.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "3",
+            explanation: "Statement I is correct (Section 45ZB). Statement II is false because the Governor has a casting vote (tie-breaker), not a 'veto power'. A veto implies stopping a decision single-handedly, while a casting vote is only used when votes are equal."
+        },
+        {
+            id: 3,
+            question: "Assertion (A): Non-Banking Financial Companies (NBFCs) are often referred to as 'Shadow Banks'.\nReason (R): NBFCs perform banking-like functions such as lending and making investments but cannot accept demand deposits (Current/Savings accounts) and do not form part of the payment and settlement system.",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "1",
+            explanation: "The term 'Shadow Bank' specifically refers to entities that provide credit intermediation outside the regular banking system (Reason). Because they lend like banks but lack the regulatory safety nets and payment system access, the name fits."
+        },
+        {
+            id: 4,
+            question: "Which of the following Basel III norms requires banks to hold a buffer of high-quality liquid assets to survive a significant stress scenario lasting 30 days?",
+            options: [
+                { id: "1", text: "Capital Conservation Buffer (CCB)" },
+                { id: "2", text: "Counter-Cyclical Capital Buffer (CCCB)" },
+                { id: "3", text: "Liquidity Coverage Ratio (LCR)" },
+                { id: "4", text: "Net Stable Funding Ratio (NSFR)" }
+            ],
+            correctAnswer: "3",
+            explanation: "LCR focuses on short-term (30-day) liquidity resilience. It ensures banks have enough liquid cash/assets to handle a run on the bank."
+        },
+        {
+            id: 5,
+            question: "Match List I with List II regarding Money Market Instruments:\n\nList I (Instrument):\n(A) Treasury Bills (T-Bills)\n(B) Commercial Paper (CP)\n(C) Certificate of Deposit (CD)\n(D) Call Money\n\nList II (Issuer):\n(I) Scheduled Commercial Banks (to other banks)\n(II) Central Government\n(III) Scheduled Commercial Banks (to investors)\n(IV) High net-worth Corporates",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(IV), (C)-(III), (D)-(I)" },
+                { id: "2", text: "(A)-(II), (B)-(III), (C)-(IV), (D)-(I)" },
+                { id: "3", text: "(A)-(IV), (B)-(II), (C)-(I), (D)-(III)" },
+                { id: "4", text: "(A)-(III), (B)-(IV), (C)-(II), (D)-(I)" }
+            ],
+            correctAnswer: "1",
+            explanation: "T-Bills = Govt (II). CP = Corporates (IV). CD = Banks to investors (III). Call Money = Inter-bank (I)."
+        },
+        {
+            id: 6,
+            question: "Given below are two statements regarding Priority Sector Lending (PSL):\nStatement I: Domestic Commercial Banks and Foreign Banks with 20 branches or more must lend 40% of their Adjusted Net Bank Credit (ANBC) to the Priority Sector.\nStatement II: Regional Rural Banks (RRBs) and Small Finance Banks (SFBs) have a lower PSL target of 25% to ensure their financial viability.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "3",
+            explanation: "Statement I is correct (Standard 40% target). Statement II is false because RRBs and SFBs actually have a higher PSL target of 75% of ANBC, given their mandate to serve the underserved."
+        },
+        {
+            id: 7,
+            question: "Which Committee recommended the phased reduction of Statutory Liquidity Ratio (SLR) and Cash Reserve Ratio (CRR) to increase the lendable resources of banks?",
+            options: [
+                { id: "1", text: "Narasimham Committee I (1991)" },
+                { id: "2", text: "Verma Committee (1999)" },
+                { id: "3", text: "PJ Nayak Committee (2014)" },
+                { id: "4", text: "Damodaran Committee (2011)" }
+            ],
+            correctAnswer: "1",
+            explanation: "The Narasimham Committee I (1991) on Financial System Reforms was pivotal in moving India from 'Financial Repression' (high SLR/CRR pre-empting funds) to liberalization."
+        },
+        {
+            id: 8,
+            question: "Assertion (A): In a 'Repo Rate' transaction, the RBI injects liquidity into the banking system.\nReason (R): Repo is a transaction where banks sell government securities to the RBI with an agreement to repurchase them at a future date.",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "1",
+            explanation: "When Banks sell securities to RBI, RBI pays cash to Banks. This 'injection' of cash is why it increases liquidity. (R) correctly defines the mechanism (Sale + Repurchase Agreement)."
+        },
+        {
+            id: 9,
+            question: "Match List I with List II regarding Banking Terminology:\n\nList I (Term):\n(A) NPA\n(B) CASA Ratio\n(C) Banking Correspondent\n(D) Net Interest Margin (NIM)\n\nList II (Meaning):\n(I) Banking services provided via retail outlets/agents where branches don't exist.\n(II) An asset that ceases to generate income for the bank (90+ days overdue).\n(III) Interest difference between lending rate and deposit rate.\n(IV) Ratio of Current and Savings Account deposits to total deposits.",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(IV), (C)-(I), (D)-(III)" },
+                { id: "2", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "3", text: "(A)-(IV), (B)-(II), (C)-(I), (D)-(III)" },
+                { id: "4", text: "(A)-(I), (B)-(IV), (C)-(II), (D)-(III)" }
+            ],
+            correctAnswer: "1",
+            explanation: "NPA = Bad Loan (II). CASA = Cheap funds (IV). BC = Agent model (I). NIM = Profitability metric (III)."
+        },
+        {
+            id: 10,
+            question: "Which of the following is NOT a pillar of the Basel II Accord?",
+            options: [
+                { id: "1", text: "Minimum Capital Requirements" },
+                { id: "2", text: "Supervisory Review Process" },
+                { id: "3", text: "Market Discipline" },
+                { id: "4", text: "Liquidity Risk Management" }
+            ],
+            correctAnswer: "4",
+            explanation: "Basel II has 3 pillars: 1. Minimum Capital, 2. Supervisory Review, 3. Market Discipline. Liquidity Risk Management became a core focus in Basel III."
+        },
+        {
+            id: 11,
+            question: "Match List I with List II regarding Insurance Principles:\n\nList I (Principle):\n(A) Subrogation\n(B) Uberrimae Fidei\n(C) Indemnity\n(D) Insurable Interest\n\nList II (Description):\n(I) Insured must disclose all material facts to the insurer.\n(II) Insurer steps into the shoes of the insured to claim rights against third parties after settling the claim.\n(III) Insured must have a financial stake in the subject matter.\n(IV) Putting the insured back in the same financial position as before the loss (no profit).",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "2", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" },
+                { id: "3", text: "(A)-(II), (B)-(IV), (C)-(I), (D)-(III)" },
+                { id: "4", text: "(A)-(IV), (B)-(I), (C)-(II), (D)-(III)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Subrogation = Transfer of rights (II). Uberrimae Fidei = Utmost Good Faith (I). Indemnity = No profit (IV). Insurable Interest = Financial stake (III)."
+        },
+        {
+            id: 12,
+            question: "Given below are two statements regarding Digital Payments:\nStatement I: NEFT operates on a Deferred Net Settlement (DNS) basis, where transactions are settled in batches.\nStatement II: RTGS operates on a Gross Settlement basis, where transactions are settled individually and instantly.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "1",
+            explanation: "NEFT = Batches (usually half-hourly). RTGS = Real Time (Instant/One-to-One). Both definitions are accurate."
+        },
+        {
+            id: 13,
+            question: "Assertion (A): The Reserve Bank of India acts as the 'Lender of Last Resort'.\nReason (R): It provides financial accommodation to commercial banks and state governments when they face a temporary liquidity crisis and cannot borrow from anywhere else.",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "1",
+            explanation: "The title 'Lender of Last Resort' exists because of the function described in (R). When the inter-bank market dries up, RBI steps in to prevent systemic collapse."
+        },
+        {
+            id: 14,
+            question: "Which section of the Banking Regulation Act, 1949 prohibits a banking company from engaging in trading activities (buying/selling goods)?",
+            options: [
+                { id: "1", text: "Section 6" },
+                { id: "2", text: "Section 8" },
+                { id: "3", text: "Section 10" },
+                { id: "4", text: "Section 22" }
+            ],
+            correctAnswer: "2",
+            explanation: "Section 8 explicitly prohibits 'Trading' (Buying/Selling/Bartering of goods) for banks, except in connection with the realization of security."
+        },
+        {
+            id: 15,
+            question: "Match List I (Mutual Fund Types) with List II (Feature):\n\nList I (Type):\n(A) Open-Ended Fund\n(B) Close-Ended Fund\n(C) Gilt Fund\n(D) ELSS\n\nList II (Feature):\n(I) Invests exclusively in government securities (Zero default risk).\n(II) Available for subscription only during a specified period; listed on stock exchanges.\n(III) Units can be bought/sold at NAV related prices at any time.\n(IV) Has a mandatory lock-in period of 3 years with tax benefits.",
+            options: [
+                { id: "1", text: "(A)-(III), (B)-(II), (C)-(I), (D)-(IV)" },
+                { id: "2", text: "(A)-(III), (B)-(I), (C)-(II), (D)-(IV)" },
+                { id: "3", text: "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)" },
+                { id: "4", text: "(A)-(IV), (B)-(II), (C)-(III), (D)-(I)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Open = Liquidity anytime (III). Close = Fixed maturity/Listed (II). Gilt = Govt Securities (I). ELSS = Tax saving/Lock-in (IV)."
+        },
+        {
+            id: 16,
+            question: "The 'MUDRA' Bank was set up as a subsidiary of:",
+            options: [
+                { id: "1", text: "RBI" },
+                { id: "2", text: "SBI" },
+                { id: "3", text: "SIDBI" },
+                { id: "4", text: "NABARD" }
+            ],
+            correctAnswer: "3",
+            explanation: "MUDRA (Micro Units Development & Refinance Agency) is a wholly-owned subsidiary of SIDBI."
+        },
+        {
+            id: 17,
+            question: "Given below are two statements regarding Inflation:\nStatement I: Cost-Push Inflation is caused by an increase in the cost of production (wages, raw materials) which decreases the aggregate supply.\nStatement II: Demand-Pull Inflation is often described as 'Too much money chasing too few goods.'",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "1",
+            explanation: "Both are standard definitions. Cost-Push is supply-side shock. Demand-Pull is demand-side excess."
+        },
+        {
+            id: 18,
+            question: "Match List I with List II regarding Regulatory Bodies:\n\nList I (Regulator):\n(A) PFRDA\n(B) IRDAI\n(C) SEBI\n(D) RBI\n\nList II (Jurisdiction):\n(I) Insurance Companies and Intermediaries.\n(II) Pension Funds and National Pension System (NPS).\n(III) Capital Markets and Mutual Funds.\n(IV) Money Market and Banking System.",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(I), (C)-(III), (D)-(IV)" },
+                { id: "2", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" },
+                { id: "3", text: "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)" },
+                { id: "4", text: "(A)-(IV), (B)-(I), (C)-(III), (D)-(II)" }
+            ],
+            correctAnswer: "1",
+            explanation: "PFRDA = Pensions (II). IRDAI = Insurance (I). SEBI = Stocks/Capital Market (III). RBI = Banks/Money Market (IV)."
+        },
+        {
+            id: 19,
+            question: "Assertion (A): Under the 'Lead Bank Scheme' (1969), individual banks were assigned specific districts for intensive development.\nReason (R): The objective was to eliminate competition among banks and create a monopoly in rural areas.",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "3",
+            explanation: "The Lead Bank Scheme was for coordination and ensuring banking reach to rural areas, not to create monopolies. (R) is false because 'Monopoly' is anti-developmental and was not the goal."
+        },
+        {
+            id: 20,
+            question: "Which of the following is NOT a qualitative (selective) method of Credit Control used by the RBI?",
+            options: [
+                { id: "1", text: "Margin Requirements" },
+                { id: "2", text: "Rationing of Credit" },
+                { id: "3", text: "Open Market Operations (OMO)" },
+                { id: "4", text: "Moral Suasion" }
+            ],
+            correctAnswer: "3",
+            explanation: "OMO (Buying/Selling securities) is a Quantitative (General) tool that affects total money supply. Options 1, 2, and 4 are Qualitative (Selective) tools."
+        },
+        {
+            id: 21,
+            question: "Match List I with List II regarding recent Banking Mergers (Amalgamations):\n\nList I (Anchor Bank):\n(A) Punjab National Bank\n(B) Canara Bank\n(C) Union Bank of India\n(D) Indian Bank\n\nList II (Merged Entity):\n(I) Syndicate Bank\n(II) Oriental Bank of Commerce & United Bank of India\n(III) Allahabad Bank\n(IV) Andhra Bank & Corporation Bank",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "2", text: "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)" },
+                { id: "3", text: "(A)-(II), (B)-(I), (C)-(III), (D)-(IV)" },
+                { id: "4", text: "(A)-(IV), (B)-(III), (C)-(II), (D)-(I)" }
+            ],
+            correctAnswer: "1",
+            explanation: "PNB merged with OBC/United (II). Canara merged with Syndicate (I). Union merged with Andhra/Corp (IV). Indian Bank merged with Allahabad (III)."
+        },
+        {
+            id: 22,
+            question: "Given below are two statements regarding Payment Banks:\nStatement I: Payment Banks can accept deposits up to ₹2 Lakh per customer (limit as of 2025).\nStatement II: Payment Banks can issue credit cards and grant loans to small farmers.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "3",
+            explanation: "Payment Banks cannot lend money (No loans) and cannot issue Credit Cards. They can only issue Debit/ATM cards. The deposit limit was raised to ₹2 Lakh in 2021."
+        },
+        {
+            id: 23,
+            question: "Assertion (A): A high 'Current Ratio' in a firm is always a sign of good liquidity health, which banks prefer when lending.\nReason (R): A very high Current Ratio may indicate idle funds or poor inventory management (stockpiling).",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "4",
+            explanation: "Assertion (A) is false because 'always' makes it incorrect. While generally good, a very high ratio is bad (inefficiency/idle funds). (R) is a correct statement explaining why high isn't always good."
+        },
+        {
+            id: 24,
+            question: "Match List I with List II regarding Risks in Banking:\n\nList I (Risk Type):\n(A) Credit Risk\n(B) Market Risk\n(C) Operational Risk\n(D) Liquidity Risk\n\nList II (Definition):\n(I) Risk of loss resulting from inadequate internal processes, people, and systems.\n(II) Risk of default by the borrower or counterparty.\n(III) Risk arising from adverse movements in market prices (interest rates, FX).\n(IV) Risk of inability to meet obligations when they fall due without incurring unacceptable costs.",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)" },
+                { id: "2", text: "(A)-(II), (B)-(I), (C)-(III), (D)-(IV)" },
+                { id: "3", text: "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)" },
+                { id: "4", text: "(A)-(III), (B)-(II), (C)-(I), (D)-(IV)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Credit = Default (II). Market = Price/Interest rate changes (III). Operational = Systems/People (I). Liquidity = Cash flow/Obligations (IV)."
+        },
+        {
+            id: 25,
+            question: "Which one of the following is NOT a function of the NABARD?",
+            options: [
+                { id: "1", text: "Refinancing State Cooperative Banks." },
+                { id: "2", text: "Inspecting Regional Rural Banks (RRBs)." },
+                { id: "3", text: "Issuing currency notes for rural areas." },
+                { id: "4", text: "Promoting research in agriculture and rural development." }
+            ],
+            correctAnswer: "3",
+            explanation: "Issuing currency is the exclusive monopoly of the RBI (Reserve Bank of India). NABARD is a development bank, not a central bank."
+        },
+        {
+            id: 26,
+            question: "Match List I with List II regarding Banking Committees:\n\nList I (Committee):\n(A) Goiporia Committee\n(B) Rangarajan Committee\n(C) Ghosh Committee\n(D) Tandon Committee\n\nList II (Focus Area):\n(I) Computerization in Banks\n(II) Customer Service in Banks\n(III) Lending under Consortium Arrangement\n(IV) Bank Frauds and Malpractices",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "2", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" },
+                { id: "3", text: "(A)-(II), (B)-(I), (C)-(III), (D)-(IV)" },
+                { id: "4", text: "(A)-(IV), (B)-(I), (C)-(II), (D)-(III)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Goiporia = Customer Service (II). Rangarajan = Computerization (I). Ghosh = Frauds (IV). Tandon = Lending/Consortium (III)."
+        },
+        {
+            id: 27,
+            question: "Given below are two statements regarding 'Bancassurance':\nStatement I: Bancassurance refers to the distribution of insurance products through the banking channel.\nStatement II: Under the current IRDAI regulations, a bank can tie up with a maximum of 3 Life, 3 General, and 3 Health insurance companies (Open Architecture).",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "1",
+            explanation: "Bancassurance is the Bank+Insurance partnership. The 'Open Architecture' model allows banks to tie up with multiple insurers (e.g., 3 Life + 3 General + 3 Health) to prevent monopolies and give customers choice."
+        },
+        {
+            id: 28,
+            question: "Assertion (A): The Marginal Standing Facility (MSF) rate is always higher than the Repo Rate.\nReason (R): MSF is a penal rate at which banks borrow overnight funds from RBI against government securities when they have exhausted their Repo limits.",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "1",
+            explanation: "MSF is the 'emergency' window. Because it is for emergencies (exhausted repo), it carries a penal interest rate. The penal nature (Reason) explains the higher rate (Assertion)."
+        },
+        {
+            id: 29,
+            question: "Which of the following defines 'Core Banking Solution' (CBS)?",
+            options: [
+                { id: "1", text: "A system where a customer is a customer of the 'Branch' only." },
+                { id: "2", text: "A centralized system where a customer is a customer of the 'Bank' rather than a specific branch." },
+                { id: "3", text: "A system for inter-bank foreign exchange settlements only." },
+                { id: "4", text: "A reporting software used by RBI to monitor banks." }
+            ],
+            correctAnswer: "2",
+            explanation: "CBS allows 'Anywhere Banking'. All branches connect to a central server, making the customer a client of the Bank rather than a specific Branch."
+        },
+        {
+            id: 30,
+            question: "Match List I with List II regarding Capital Market Instruments:\n\nList I (Instrument):\n(A) IPO\n(B) Rights Issue\n(C) ADR\n(D) IDR\n\nList II (Feature):\n(I) Offering shares to existing shareholders at a discounted price.\n(II) First time sale of stock by a private company to the public.\n(III) Negotiable certificate issued by a US bank representing shares in a foreign stock.\n(IV) Instrument denominated in Indian Rupees created by a domestic depository against underlying equity of a foreign company.",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(I), (C)-(III), (D)-(IV)" },
+                { id: "2", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" },
+                { id: "3", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "4", text: "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)" }
+            ],
+            correctAnswer: "1",
+            explanation: "IPO = Initial Public Offering (II). Rights = Existing shareholders (I). ADR = American Depository Receipt (III). IDR = Indian Depository Receipt (IV)."
+        }
+    ]
+};
+
+        // --- ICONS ---
+        const Icons = {
+            Menu: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            Info: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            User: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Pause: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+        };
+
+        // --- MAIN COMPONENT ---
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+
+            // Initialize status
+            useEffect(() => {
+                const initStatus = {};
+                TEST_DATA.questions.forEach((q, i) => {
+                    initStatus[q.id] = i === 0 ? 'not_answered' : 'not_visited';
+                });
+                setStatus(initStatus);
+            }, []);
+
+            // Timer with Pause Logic
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) {
+                            handleSubmit();
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const updateStatus = (qid, newStatus) => {
+                setStatus(prev => ({
+                    ...prev,
+                    [qid]: newStatus
+                }));
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                setAnswers(prev => ({ ...prev, [currentQ.id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (answers[currentQ.id]) {
+                    updateStatus(currentQ.id, 'answered');
+                } else {
+                    updateStatus(currentQ.id, 'not_answered');
+                }
+                
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') {
+                         updateStatus(nextQ.id, 'not_answered');
+                    }
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (answers[currentQ.id]) {
+                    updateStatus(currentQ.id, 'marked_answered');
+                } else {
+                    updateStatus(currentQ.id, 'marked');
+                }
+                
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') {
+                         updateStatus(nextQ.id, 'not_answered');
+                    }
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                setAnswers(prev => {
+                    const newAns = { ...prev };
+                    delete newAns[currentQ.id];
+                    return newAns;
+                });
+                updateStatus(currentQ.id, 'not_answered');
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (status[currentQ.id] === 'not_visited' || (status[currentQ.id] === 'not_answered' && !answers[currentQ.id])) {
+                     updateStatus(currentQ.id, 'not_answered');
+                }
+
+                const targetQ = TEST_DATA.questions[index];
+                if (status[targetQ.id] === 'not_visited') {
+                    updateStatus(targetQ.id, 'not_answered');
+                }
+                
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = () => {
+                if (confirm("Are you sure you want to submit the test?")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false); 
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => {
+                    if (c[s] !== undefined) c[s]++;
+                });
+                return c;
+            }, [status]);
+
+            // --- RENDER ---
+            
+            // RESULT SCREEN
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) {
+                        score += TEST_DATA.marksForCorrect;
+                        correct++;
+                    } else if (answers[q.id]) {
+                        score -= TEST_DATA.marksForWrong;
+                        wrong++;
+                    }
+                });
+
+                return (
+                    <div className="h-full overflow-y-auto bg-gray-50 p-4 md:p-8">
+                        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div className="bg-blue-600 text-white p-8 text-center">
+                                <h1 className="text-3xl font-bold mb-2">Test Result</h1>
+                                <p className="opacity-90 font-medium">{TEST_DATA.title}</p>
+                            </div>
+                            <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 border-b border-gray-100">
+                                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                                    <div className="text-xs text-gray-500 uppercase font-bold">Total Score</div>
+                                    <div className="text-2xl font-bold text-blue-600">{score} <span className="text-sm text-gray-400">/ {TEST_DATA.totalMarks}</span></div>
+                                </div>
+                                <div className="text-center p-4 bg-green-50 rounded-lg">
+                                    <div className="text-xs text-green-700 uppercase font-bold">Correct</div>
+                                    <div className="text-2xl font-bold text-green-600">{correct}</div>
+                                </div>
+                                <div className="text-center p-4 bg-red-50 rounded-lg">
+                                    <div className="text-xs text-red-700 uppercase font-bold">Wrong</div>
+                                    <div className="text-2xl font-bold text-red-600">{wrong}</div>
+                                </div>
+                                <div className="text-center p-4 bg-gray-100 rounded-lg">
+                                    <div className="text-xs text-gray-600 uppercase font-bold">Attempted</div>
+                                    <div className="text-2xl font-bold text-gray-700">{correct + wrong}</div>
+                                </div>
+                            </div>
+                            <div className="p-6 bg-gray-50">
+                                <h2 className="text-xl font-bold text-gray-800 mb-4">Detailed Solutions</h2>
+                                <div className="space-y-4">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-gray-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50' : (isSkipped ? 'bg-white' : 'bg-red-50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-4 ${borderColor} ${bgClass} p-4 rounded shadow-sm bg-white`}>
+                                                <div className="flex gap-2 mb-2">
+                                                    <span className="font-bold text-gray-500">Q{i+1}.</span>
+                                                    <div className="flex-1 font-medium text-gray-800 whitespace-pre-line">{q.question}</div>
+                                                </div>
+                                                <div className="ml-6 space-y-1 text-sm mb-3">
+                                                    {q.options.map(opt => (
+                                                        <div key={opt.id} className={`flex items-center gap-2 ${opt.id === q.correctAnswer ? 'text-green-700 font-bold' : (opt.id === userAns ? 'text-red-600 line-through' : 'text-gray-500')}`}>
+                                                            {opt.id === q.correctAnswer ? "✓" : (opt.id === userAns ? "✗" : "○")} {opt.text}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="ml-6 p-3 bg-blue-50 text-blue-900 text-sm rounded border border-blue-100">
+                                                    <strong className="block mb-1 flex items-center gap-2"><Icons.Info/> Explanation:</strong>
+                                                    <div className="whitespace-pre-line">{q.explanation}</div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            // 2. TEST INTERFACE
+            return (
+                <div className="flex flex-col h-full">
+                    {/* Header */}
+                    <header className="bg-blue-600 text-white h-16 flex items-center justify-between px-4 shadow z-20 relative">
+                        {/* Left: Title & Org */}
+                        <div className="flex flex-col">
+                            <h1 className="font-bold text-lg leading-none">{TEST_DATA.organization}</h1>
+                            <p className="text-xs opacity-90 font-medium mt-1 truncate max-w-[150px] md:max-w-md">{TEST_DATA.title}</p>
+                        </div>
+
+                        {/* Center: Marks Indicator (Absolute on desktop to be true center) */}
+                        <div className="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-6 bg-blue-700/50 px-6 py-1.5 rounded-full border border-blue-400/30">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-green-500 border-2 border-white flex items-center justify-center font-bold shadow-sm">+2</div>
+                                <span className="text-xs font-semibold uppercase tracking-wider opacity-80">Correct</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-red-500 border-2 border-white flex items-center justify-center font-bold shadow-sm">0</div>
+                                <span className="text-xs font-semibold uppercase tracking-wider opacity-80">Negative</span>
+                            </div>
+                        </div>
+
+                        {/* Right: Timer & Controls */}
+                        <div className="flex items-center gap-3">
+                            {/* Timer */}
+                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/20 transition-colors ${isPaused ? 'bg-yellow-500 text-black border-yellow-600' : 'bg-blue-700'}`}>
+                                <span className="text-xs uppercase font-bold opacity-70 hidden sm:inline">Time Left</span>
+                                <span className="font-mono font-bold text-xl">{formatTime(timeLeft)}</span>
+                            </div>
+
+                            {/* Pause Button */}
+                            {!isPaused && !isSubmitted && (
+                                <button 
+                                    onClick={() => setIsPaused(true)}
+                                    className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md transition border border-transparent hover:border-white/30"
+                                    title="Pause Test"
+                                >
+                                    <Icons.Pause />
+                                </button>
+                            )}
+
+                            {/* Mobile Menu Toggle */}
+                            <button className="md:hidden ml-1" onClick={() => setIsPaletteOpen(!isPaletteOpen)}>
+                                <Icons.Menu />
+                            </button>
+                        </div>
+                    </header>
+
+                    {/* Main Body */}
+                    <div className="flex-1 flex overflow-hidden relative">
+                        
+                        {/* Pause Overlay */}
+                        {isPaused && (
+                            <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center p-4">
+                                <div className="bg-white p-8 rounded-2xl shadow-2xl border border-gray-200 text-center max-w-sm w-full">
+                                    <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Icons.Pause />
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Test Paused</h2>
+                                    <p className="text-gray-500 mb-6">The timer has been stopped. Click Resume to continue your attempt.</p>
+                                    <button 
+                                        onClick={() => setIsPaused(false)}
+                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        <Icons.Play /> Resume Test
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Question Area (Left) - Blurred when paused */}
+                        <div className={`flex-1 flex flex-col bg-white w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            {/* Question Content */}
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                                <div className="max-w-4xl mx-auto">
+                                    <div className="flex gap-4 mb-6">
+                                        <span className="font-bold text-lg text-gray-500 pt-1">Q{currentQIndex + 1}.</span>
+                                        <div className="text-lg font-medium text-gray-800 leading-relaxed whitespace-pre-line">
+                                            {currentQuestion.question}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3 ml-0 md:ml-10">
+                                        {currentQuestion.options.map(opt => (
+                                            <div 
+                                                key={opt.id}
+                                                onClick={() => handleOptionSelect(opt.id)}
+                                                className={`p-3 md:p-4 border-2 rounded-lg cursor-pointer flex items-start gap-3 transition-all hover:bg-gray-50 ${answers[currentQuestion.id] === opt.id ? 'border-blue-600 bg-blue-50' : 'border-gray-200'}`}
+                                            >
+                                                <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${answers[currentQuestion.id] === opt.id ? 'border-blue-600' : 'border-gray-400'}`}>
+                                                    {answers[currentQuestion.id] === opt.id && <div className="w-2.5 h-2.5 bg-blue-600 rounded-full"></div>}
+                                                </div>
+                                                <span className="text-gray-700">{opt.text}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer Buttons */}
+                            <div className="h-16 bg-white border-t flex items-center justify-between px-4 md:px-8 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
+                                <div className="flex gap-2">
+                                    <button onClick={handleMarkForReview} className="px-3 py-2 md:px-4 md:py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium text-xs md:text-sm transition">
+                                        <span className="hidden md:inline">Mark for Review & Next</span>
+                                        <span className="md:hidden">Review</span>
+                                    </button>
+                                    <button onClick={handleClearResponse} className="px-3 py-2 md:px-4 md:py-2 border border-gray-300 text-gray-600 rounded hover:bg-gray-100 font-medium text-xs md:text-sm transition">
+                                        <span className="hidden md:inline">Clear Response</span>
+                                        <span className="md:hidden">Clear</span>
+                                    </button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-sm md:text-base shadow-md transition transform active:scale-95">
+                                    Save & Next
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Palette Sidebar (Right) */}
+                        <div className={`absolute inset-y-0 right-0 w-80 bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            
+                            {/* User Info */}
+                            <div className="bg-blue-50 p-4 border-b flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600"><Icons.User /></div>
+                                <div>
+                                    <div className="font-bold text-sm text-gray-800">Candidate Name</div>
+                                    <div className="text-xs text-gray-500">ExamTym Student</div>
+                                </div>
+                                <button className="ml-auto md:hidden" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+
+                            {/* Legend */}
+                            <div className="p-3 grid grid-cols-2 gap-2 text-xs bg-white border-b">
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-answered flex items-center justify-center"></div> Answered</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-not_answered flex items-center justify-center"></div> Not Answered</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-not_visited border flex items-center justify-center"></div> Not Visited</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-marked flex items-center justify-center"></div> Marked for Review</div>
+                                <div className="flex items-center gap-2 col-span-2"><div className="w-4 h-4 rounded status-marked_answered flex items-center justify-center"></div> Ans & Marked for Review (Evaluated)</div>
+                            </div>
+
+                            {/* Counts */}
+                            <div className="bg-gray-100 p-2 grid grid-cols-4 gap-1 text-center text-xs border-b">
+                                <div className="bg-green-100 text-green-800 rounded p-1"><strong>{counts.answered}</strong><br/>Ans</div>
+                                <div className="bg-red-100 text-red-800 rounded p-1"><strong>{counts.not_answered}</strong><br/>Not Ans</div>
+                                <div className="bg-purple-100 text-purple-800 rounded p-1"><strong>{counts.marked + counts.marked_answered}</strong><br/>Marked</div>
+                                <div className="bg-white text-gray-600 border rounded p-1"><strong>{counts.not_visited}</strong><br/>Visit</div>
+                            </div>
+
+                            {/* Grid */}
+                            <div className="flex-1 overflow-y-auto p-4 content-start">
+                                <div className="font-bold text-gray-700 mb-2 text-sm">Choose a Question:</div>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button 
+                                            key={q.id}
+                                            onClick={() => handlePaletteClick(idx)}
+                                            className={`h-9 w-full flex items-center justify-center font-semibold text-sm border rounded hover:opacity-80 transition ${currentQIndex === idx ? 'current-question' : ''} status-${status[q.id]}`}
+                                        >
+                                            {idx + 1}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Submit Button */}
+                            <div className="p-4 border-t bg-gray-50">
+                                <button onClick={handleSubmit} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded shadow transition transform active:scale-95">
+                                    Submit Test
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    {/* Mobile Overlay */}
+                    {isPaletteOpen && <div className="fixed inset-0 bg-black/50 z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

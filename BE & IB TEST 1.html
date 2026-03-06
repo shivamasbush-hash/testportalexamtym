@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UGC NET June 2026 - Data Interpretation Mock 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; background-color: #f0f0f0; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+        /* Palette Status Colors */
+        .status-answered { background-color: #22c55e; color: white; border-color: #22c55e; } /* Green */
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } /* Red */
+        .status-marked { background-color: #9333ea; color: white; border-color: #9333ea; border-radius: 50%; } /* Purple */
+        .status-marked_answered { background-color: #9333ea; color: white; border-color: #9333ea; position: relative; } /* Purple */
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -2px; font-size: 8px; color: #22c55e; background: white; border-radius: 50%; padding: 0 2px; }
+        .status-not_visited { background-color: white; color: black; border-color: #d1d5db; } /* White/Gray */
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.1); box-shadow: 0 0 5px rgba(37, 99, 235, 0.5); }
+        
+        /* Pause Overlay */
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        
+        /* Table Simulation in Text */
+        .data-table-text { font-family: 'Courier New', Courier, monospace; background: #f8fafc; padding: 10px; border-radius: 6px; border: 1px solid #e2e8f0; display: block; overflow-x: auto; white-space: pre; }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+
+    <div id="root" class="h-full flex flex-col"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {
+    title: "UGC NET June 2026 Mock Test - Unit 1: Business Environment & IB",
+    organization: "ExamTym",
+    durationMinutes: 30,
+    totalMarks: 60,
+    marksForCorrect: 2,
+    marksForWrong: 0,
+    questions: [
+        {
+            id: 1,
+            question: "Under Section 135 of the Companies Act, 2013, a company is required to constitute a Corporate Social Responsibility (CSR) Committee if it fulfills which of the following criteria during the immediately preceding financial year?",
+            options: [
+                { id: "1", text: "Net worth of ₹500 crore or more, OR Turnover of ₹1,000 crore or more, OR Net Profit of ₹5 crore or more." },
+                { id: "2", text: "Net worth of ₹1,000 crore or more, OR Turnover of ₹500 crore or more, OR Net Profit of ₹2 crore or more." },
+                { id: "3", text: "Net worth of ₹500 crore or more, AND Turnover of ₹1,000 crore or more, AND Net Profit of ₹5 crore or more." },
+                { id: "4", text: "Net worth of ₹250 crore or more, OR Turnover of ₹500 crore or more, OR Net Profit of ₹10 crore or more." }
+            ],
+            correctAnswer: "1",
+            explanation: "Section 135 mandates CSR applicability if any one of the three conditions is met: Net Worth ≥ ₹500 Cr, Turnover ≥ ₹1000 Cr, or Net Profit ≥ ₹5 Cr. Option 3 is incorrect because it uses 'AND' instead of 'OR'."
+        },
+        {
+            id: 2,
+            question: "Match List I with List II regarding International Trade Theories:\n\nList I (Theory):\n(A) Absolute Advantage\n(B) Comparative Advantage\n(C) Factor Endowment\n(D) Mercantilism\n\nList II (Core Proposition):\n(I) A country exports goods that use its abundant factors intensively.\n(II) Trade is a zero-sum game; accumulate gold/silver.\n(III) Trade benefits occur if a country produces a good at a lower opportunity cost.\n(IV) A country should produce only what it is most efficient at producing.",
+            options: [
+                { id: "1", text: "(A)-(IV), (B)-(III), (C)-(I), (D)-(II)" },
+                { id: "2", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" },
+                { id: "3", text: "(A)-(IV), (B)-(I), (C)-(III), (D)-(II)" },
+                { id: "4", text: "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Adam Smith (Absolute Advantage) focused on absolute efficiency (IV). Ricardo (Comparative Advantage) introduced opportunity cost (III). Heckscher-Ohlin (Factor Endowment) focused on labor/capital abundance (I). Mercantilism focuses on wealth accumulation (II)."
+        },
+        {
+            id: 3,
+            question: "Given below are two statements:\nStatement I: A Customs Union includes all features of a Free Trade Area (FTA) and adds a common external tariff against non-member nations.\nStatement II: A Common Market allows for the free movement of factors of production (labor and capital) but does not require a common external tariff.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "3",
+            explanation: "Statement II is false because a Common Market retains the features of the previous stage (Customs Union), meaning it DOES require a common external tariff in addition to factor mobility."
+        },
+        {
+            id: 4,
+            question: "Assertion (A): The Leontief Paradox observed that the United States, despite being capital-abundant, exported labor-intensive goods and imported capital-intensive goods.\nReason (R): The Heckscher-Ohlin theory assumes that factors of production are homogeneous and fails to account for differences in labor productivity (human capital).",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "1",
+            explanation: "Leontief's empirical finding contradicted the H-O theory. The explanation lies in the fact that U.S. labor was highly skilled (human capital), making it effectively 'capital' in nature, which the basic H-O model missed."
+        },
+        {
+            id: 5,
+            question: "Match List I with List II regarding WTO 'Boxes' of Domestic Support:\n\nList I (Box):\n(A) Green Box\n(B) Amber Box\n(C) Blue Box\n(D) S&D Box\n\nList II (Description):\n(I) Subsidies linked to production-limiting programs; allowed with constraints.\n(II) Subsidies that distort trade and production; subject to reduction commitments.\n(III) Non-trade distorting subsidies (e.g., R&D, pest control); permitted without limits.\n(IV) Special provisions allowing developing countries flexibility in subsidies.",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)" },
+                { id: "2", text: "(A)-(III), (B)-(II), (C)-(I), (D)-(IV)" },
+                { id: "3", text: "(A)-(III), (B)-(I), (C)-(II), (D)-(IV)" },
+                { id: "4", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" }
+            ],
+            correctAnswer: "2",
+            explanation: "Green = Permitted, no distortion (III). Amber = Distortion, must reduce (II). Blue = Production limiting, Conditional Amber (I). S&D = Special flexibility (IV)."
+        },
+        {
+            id: 6,
+            question: "Which of the following is NOT a fundamental principle of the World Trade Organization (WTO)?",
+            options: [
+                { id: "1", text: "Most Favored Nation (MFN)" },
+                { id: "2", text: "National Treatment" },
+                { id: "3", text: "Promoting Unfair Competition" },
+                { id: "4", text: "Transparency" }
+            ],
+            correctAnswer: "3",
+            explanation: "The WTO promotes FAIR competition. Promoting unfair competition is the opposite of its mission. MFN, National Treatment, and Transparency are core pillars."
+        },
+        {
+            id: 7,
+            question: "Given below are two statements regarding FEMA, 1999:\nStatement I: A 'Capital Account Transaction' is a transaction which alters the assets or liabilities, including contingent liabilities, outside India of a person resident in India.\nStatement II: Drawing foreign exchange for travel to Nepal and Bhutan is freely permitted under the Current Account Rules.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "3",
+            explanation: "Statement I is the correct definition. Statement II is false because transactions with Nepal and Bhutan are generally conducted in INR and have specific restrictions on drawing foreign exchange."
+        },
+        {
+            id: 8,
+            question: "Assertion (A): In a 'Polycentric' approach under the EPRG framework, a company manages its international operations with a focus on local responsiveness.\nReason (R): The headquarters exercises tight control over subsidiaries to ensure a unified global culture and standardized marketing mix.",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "3",
+            explanation: "Polycentric = Host country orientation (local responsiveness). Reason (R) describes an Ethnocentric or Geocentric approach (tight control), which contradicts the Polycentric approach described in (A)."
+        },
+        {
+            id: 9,
+            question: "Match List I with List II regarding World Bank Group Institutions:\n\nList I (Institution):\n(A) IBRD\n(B) IDA\n(C) IFC\n(D) MIGA\n\nList II (Primary Function):\n(I) Provides interest-free loans (credits) and grants to the poorest countries.\n(II) Promotes private sector investment in developing countries.\n(III) Provides political risk insurance (guarantees) to investors.\n(IV) Lends to credit-worthy middle-income and developing countries.",
+            options: [
+                { id: "1", text: "(A)-(IV), (B)-(I), (C)-(II), (D)-(III)" },
+                { id: "2", text: "(A)-(I), (B)-(IV), (C)-(III), (D)-(II)" },
+                { id: "3", text: "(A)-(IV), (B)-(II), (C)-(I), (D)-(III)" },
+                { id: "4", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" }
+            ],
+            correctAnswer: "1",
+            explanation: "IBRD = Middle-income lending (IV). IDA = Poorest countries (I). IFC = Private Sector (II). MIGA = Insurance/Guarantees (III)."
+        },
+        {
+            id: 10,
+            question: "Given below are two statements:\nStatement I: Fiscal Policy refers to the policy of the Central Bank regarding the use of interest rates and money supply to influence the economy.\nStatement II: Monetary Policy refers to the government's use of taxation and spending to influence the economy.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "2",
+            explanation: "The definitions are swapped. Fiscal Policy is Government (Tax/Spend). Monetary Policy is Central Bank (Money Supply/Interest Rates)."
+        },
+        {
+            id: 11,
+            question: "According to the Consumer Protection Act, 2019 (as amended in 2021), the District Commission has the jurisdiction to entertain complaints where the value of goods or services paid as consideration does not exceed:",
+            options: [
+                { id: "1", text: "₹20 Lakhs" },
+                { id: "2", text: "₹50 Lakhs" },
+                { id: "3", text: "₹1 Crore" },
+                { id: "4", text: "₹10 Crores" }
+            ],
+            correctAnswer: "2",
+            explanation: "Per the revised pecuniary jurisdiction rules notified in 2021, the District Commission handles cases up to ₹50 Lakhs. (Previously ₹1 Crore in the 2019 Act text before amendment)."
+        },
+        {
+            id: 12,
+            question: "Match List I with List II regarding Regional Economic Blocs:\n\nList I (Bloc):\n(A) EU\n(B) ASEAN\n(C) SAARC\n(D) WTO\n\nList II (Headquarters/Secretariat):\n(I) Jakarta, Indonesia\n(II) Kathmandu, Nepal\n(III) Brussels, Belgium\n(IV) Geneva, Switzerland",
+            options: [
+                { id: "1", text: "(A)-(III), (B)-(I), (C)-(II), (D)-(IV)" },
+                { id: "2", text: "(A)-(III), (B)-(II), (C)-(I), (D)-(IV)" },
+                { id: "3", text: "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)" },
+                { id: "4", text: "(A)-(IV), (B)-(I), (C)-(II), (D)-(III)" }
+            ],
+            correctAnswer: "1",
+            explanation: "EU = Brussels. ASEAN = Jakarta. SAARC = Kathmandu. WTO = Geneva."
+        },
+        {
+            id: 13,
+            question: "Given below are two statements regarding Balance of Payments (BoP):\nStatement I: Autonomous items in BoP are those transactions that are undertaken for their own sake (e.g., profit motive) regardless of the BoP situation.\nStatement II: Accommodating items are induced transactions undertaken by the government or central bank to restore equilibrium in the BoP.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "1",
+            explanation: "Autonomous items are 'above the line' (economic motive). Accommodating items are 'below the line' (balancing motive/gap filling). Both definitions are correct."
+        },
+        {
+            id: 14,
+            question: "Assertion (A): Under the Consumer Protection Act, 2019, 'Product Liability' implies the responsibility of a product manufacturer or seller to compensate for any harm caused to a consumer by a defective product.\nReason (R): The concept of Product Liability applies even if the consumer did not buy the product directly but is a user of the product.",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "2",
+            explanation: "(A) defines Product Liability. (R) correctly expands the scope to users, but (R) does not explain WHY the manufacturer is liable (which is due to the defect/strict liability principle), making it a correct statement but not the explanation."
+        },
+        {
+            id: 15,
+            question: "Match List I (Environmental Factors) with List II (Components):\n\nList I (Environment):\n(A) Micro Environment\n(B) Macro Environment\n(C) Socio-Cultural\n(D) Legal Environment\n\nList II (Elements):\n(I) Inflation, Interest Rates, Exchange Rates\n(II) Competitors, Suppliers, Customers\n(III) Legislation, Court Rulings, Regulatory Bodies\n(IV) Literacy rates, Customs, Traditions",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "2", text: "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)" },
+                { id: "3", text: "(A)-(II), (B)-(IV), (C)-(I), (D)-(III)" },
+                { id: "4", text: "(A)-(III), (B)-(I), (C)-(IV), (D)-(II)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Micro = Direct impact (Competitors/Suppliers - II). Macro = Economic variables (Inflation - I). Socio-cultural = Customs (IV). Legal = Laws (III)."
+        },
+        {
+            id: 16,
+            question: "The 'Uruguay Round' of trade negotiations resulted in the establishment of:",
+            options: [
+                { id: "1", text: "IMF" },
+                { id: "2", text: "World Bank" },
+                { id: "3", text: "WTO" },
+                { id: "4", text: "UNCTAD" }
+            ],
+            correctAnswer: "3",
+            explanation: "The Uruguay Round (1986-1994) of GATT negotiations led to the Marrakesh Agreement, establishing the WTO in 1995."
+        },
+        {
+            id: 17,
+            question: "Match List I with List II regarding Types of Tariffs:\n\nList I (Tariff Type):\n(A) Ad Valorem Duty\n(B) Specific Duty\n(C) Compound Duty\n(D) Sliding Scale Duty\n\nList II (Basis of Calculation):\n(I) A fixed amount of money per physical unit (e.g., $10 per ton).\n(II) A percentage of the value of the commodity.\n(III) Varies inversely with the price of the import.\n(IV) Combination of both specific and ad valorem duties.",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "2", text: "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)" },
+                { id: "3", text: "(A)-(II), (B)-(I), (C)-(III), (D)-(IV)" },
+                { id: "4", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Ad Valorem = % of value (II). Specific = per unit (I). Compound = Both (IV). Sliding = Changes with price (III)."
+        },
+        {
+            id: 18,
+            question: "Given below are two statements:\nStatement I: Under the TRIPS agreement, the standard term of protection for Patents is 20 years from the filing date.\nStatement II: Copyright protection under TRIPS extends to at least 50 years after the death of the author.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "1",
+            explanation: "TRIPS sets minimum standards: Patents = 20 years. Copyright = Life of author + 50 years. Both statements are correct."
+        },
+        {
+            id: 19,
+            question: "Assertion (A): Foreign Direct Investment (FDI) is preferred over Foreign Portfolio Investment (FPI) by host countries looking for long-term development.\nReason (R): FPI is often referred to as 'Hot Money' because it is speculative and can be withdrawn quickly in times of economic volatility.",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "1",
+            explanation: "Host countries prefer FDI for stability. The volatility of FPI (described in R) is the direct reason WHY FDI is preferred for long-term development (A)."
+        },
+        {
+            id: 20,
+            question: "Match List I with List II regarding Modes of Entry:\n\nList I (Mode):\n(A) Licensing\n(B) Direct Exporting\n(C) Joint Venture\n(D) Wholly Owned Subsidiary\n\nList II (Characteristic):\n(I) Company handles its own exports, high risk, high control.\n(II) A contractual arrangement to use IP (patent/trademark) for a fee (royalty).\n(III) Complete ownership of operations in a foreign country.\n(IV) Partnership with a local firm to share risk and resources.",
+            options: [
+                { id: "1", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "2", text: "(A)-(II), (B)-(IV), (C)-(I), (D)-(III)" },
+                { id: "3", text: "(A)-(IV), (B)-(I), (C)-(II), (D)-(III)" },
+                { id: "4", text: "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Licensing = Royalty/IP (II). Direct Exporting = High control/Own handling (I). JV = Sharing (IV). Wholly Owned = 100% equity (III)."
+        },
+        {
+            id: 21,
+            question: "Which institution publishes the 'World Investment Report'?",
+            options: [
+                { id: "1", text: "World Bank" },
+                { id: "2", text: "IMF" },
+                { id: "3", text: "UNCTAD" },
+                { id: "4", text: "WTO" }
+            ],
+            correctAnswer: "3",
+            explanation: "UNCTAD (United Nations Conference on Trade and Development) publishes the WIR annually, tracking FDI trends."
+        },
+        {
+            id: 22,
+            question: "Match List I with List II regarding Economic Systems:\n\nList I (System):\n(A) Capitalism\n(B) Socialism\n(C) Mixed Economy\n(D) Communism\n\nList II (Feature):\n(I) Central Planning and social welfare maximization.\n(II) Co-existence of public and private sectors.\n(III) Price mechanism determines allocation of resources.\n(IV) State ownership of all factors of production and abolition of private property.",
+            options: [
+                { id: "1", text: "(A)-(III), (B)-(I), (C)-(II), (D)-(IV)" },
+                { id: "2", text: "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)" },
+                { id: "3", text: "(A)-(III), (B)-(II), (C)-(I), (D)-(IV)" },
+                { id: "4", text: "(A)-(IV), (B)-(I), (C)-(II), (D)-(III)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Capitalism = Market/Price Mechanism (III). Socialism = Planning/Welfare (I). Mixed = Co-existence (II). Communism = Total State Ownership (IV)."
+        },
+        {
+            id: 23,
+            question: "Given below are two statements:\nStatement I: A Voluntary Export Restraint (VER) is a quota on trade imposed by the exporting country, typically at the request of the importing country's government.\nStatement II: VERs are considered a 'Grey Area' measure and are prohibited under current WTO rules.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "1",
+            explanation: "VERs are self-imposed quotas to avoid tariffs (I). The WTO Agreement on Safeguards prohibits these 'grey area' measures (II). Both are true."
+        },
+        {
+            id: 24,
+            question: "Assertion (A): Globalization leads to the convergence of consumer tastes and preferences across the world.\nReason (R): Globalization is driven exclusively by the reduction of trade barriers and has no relation to technological advancements in communication.",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "3",
+            explanation: "(A) is a standard argument of globalization. (R) is false because technology (transport, internet) is a MAJOR driver of globalization. The word 'exclusively' makes R false."
+        },
+        {
+            id: 25,
+            question: "Match List I (FEMA Concepts) with List II (Details):\n\nList I (Concept):\n(A) Person Resident in India\n(B) PROI (Person Resident Outside India)\n(C) NRE Account\n(D) NRO Account\n\nList II (Detail):\n(I) Resided in India for more than 182 days in preceding FY.\n(II) Anyone who is not a Person Resident in India.\n(III) Repatriable rupee account for NRIs.\n(IV) Non-repatriable (generally) rupee account for local income of NRIs.",
+            options: [
+                { id: "1", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" },
+                { id: "2", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "3", text: "(A)-(I), (B)-(II), (C)-(IV), (D)-(III)" },
+                { id: "4", text: "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Resident = >182 days (I). NRE = Repatriable (III). NRO = Non-repatriable (IV)."
+        },
+        {
+            id: 26,
+            question: "Match List I with List II regarding India's Foreign Trade Policy (FTP) 2023:\n\nList I (Pillar):\n(A) Incentive to Remission\n(B) Export through eCommerce\n(C) Emerging Areas\n(D) Ease of Doing Business\n\nList II (Focus):\n(I) Moving away from direct subsidies to tax remission schemes (RoDTEP).\n(II) Establishing E-Commerce Export Hubs (ECEH).\n(III) Focus on 'SCOMET' policy (Dual use items).\n(IV) Paperless trade and reduction in transaction costs.",
+            options: [
+                { id: "1", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" },
+                { id: "2", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "3", text: "(A)-(IV), (B)-(III), (C)-(II), (D)-(I)" },
+                { id: "4", text: "(A)-(I), (B)-(IV), (C)-(III), (D)-(II)" }
+            ],
+            correctAnswer: "1",
+            explanation: "FTP 2023 shifted from incentives to remission (I). It targets E-commerce hubs (II) and SCOMET/Emerging areas (III)."
+        },
+        {
+            id: 27,
+            question: "Given below are two statements:\nStatement I: A Joint Venture allows a firm to benefit from a local partner's knowledge of the host country's competitive conditions, culture, and political systems.\nStatement II: A major disadvantage of a Joint Venture is that the firm risks giving control of its technology to its partner.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "1",
+            explanation: "Both are classic textbook pros/cons of JVs. Pros: Local knowledge. Cons: Risk of IP theft/Technology leakage."
+        },
+        {
+            id: 28,
+            question: "Match List I with List II regarding Porter's Diamond Model of National Advantage:\n\nList I (Attribute):\n(A) Factor Conditions\n(B) Demand Conditions\n(C) Related and Supporting Industries\n(D) Firm Strategy, Structure, and Rivalry\n\nList II (Explanation):\n(I) Skilled labor, infrastructure, and natural resources.\n(II) Nature of home market demand for the industry's product.\n(III) Presence of supplier industries that are internationally competitive.\n(IV) Conditions governing how companies are created, organized, and managed.",
+            options: [
+                { id: "1", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" },
+                { id: "2", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                { id: "3", text: "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)" },
+                { id: "4", text: "(A)-(IV), (B)-(II), (C)-(III), (D)-(I)" }
+            ],
+            correctAnswer: "1",
+            explanation: "Factor = Inputs (I). Demand = Sophisticated local customers (II). Related = Clusters (III). Strategy = Competition intensity (IV)."
+        },
+        {
+            id: 29,
+            question: "Given below are two statements regarding Non-Tariff Barriers:\nStatement I: Sanitary and Phytosanitary (SPS) measures are applied to protect human, animal, or plant life from risks arising from additives, toxins, or diseases.\nStatement II: Technical Barriers to Trade (TBT) refer exclusively to financial quotas and currency controls imposed by the central bank.",
+            options: [
+                { id: "1", text: "Both Statement I and Statement II are true." },
+                { id: "2", text: "Both Statement I and Statement II are false." },
+                { id: "3", text: "Statement I is true but Statement II is false." },
+                { id: "4", text: "Statement I is false but Statement II is true." }
+            ],
+            correctAnswer: "3",
+            explanation: "Statement I is correct. Statement II is false because TBT refers to product standards, testing, and certification procedures, NOT financial quotas or currency controls."
+        },
+        {
+            id: 30,
+            question: "Assertion (A): The Industrial Policy Resolution of 1956 is often called the 'Economic Constitution of India'.\nReason (R): It laid down the roadmap for the Second Five Year Plan and classified industries into three schedules (A, B, and C) based on the role of the State.",
+            options: [
+                { id: "1", text: "Both (A) and (R) are correct and (R) is the correct explanation of (A)." },
+                { id: "2", text: "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)." },
+                { id: "3", text: "(A) is correct but (R) is not correct." },
+                { id: "4", text: "(A) is not correct but (R) is correct." }
+            ],
+            correctAnswer: "1",
+            explanation: "The 1956 policy cemented the 'Socialist pattern of society' and the dominance of the Public Sector. This structural framework (the schedules) served as the economic constitution, making R the correct explanation for A."
+        }
+    ]
+};
+
+        // --- ICONS ---
+        const Icons = {
+            Menu: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            Info: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            User: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Pause: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+        };
+
+        // --- MAIN COMPONENT ---
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+
+            // Initialize status
+            useEffect(() => {
+                const initStatus = {};
+                TEST_DATA.questions.forEach((q, i) => {
+                    initStatus[q.id] = i === 0 ? 'not_answered' : 'not_visited';
+                });
+                setStatus(initStatus);
+            }, []);
+
+            // Timer with Pause Logic
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) {
+                            handleSubmit();
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const updateStatus = (qid, newStatus) => {
+                setStatus(prev => ({
+                    ...prev,
+                    [qid]: newStatus
+                }));
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                setAnswers(prev => ({ ...prev, [currentQ.id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (answers[currentQ.id]) {
+                    updateStatus(currentQ.id, 'answered');
+                } else {
+                    updateStatus(currentQ.id, 'not_answered');
+                }
+                
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') {
+                         updateStatus(nextQ.id, 'not_answered');
+                    }
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (answers[currentQ.id]) {
+                    updateStatus(currentQ.id, 'marked_answered');
+                } else {
+                    updateStatus(currentQ.id, 'marked');
+                }
+                
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') {
+                         updateStatus(nextQ.id, 'not_answered');
+                    }
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                setAnswers(prev => {
+                    const newAns = { ...prev };
+                    delete newAns[currentQ.id];
+                    return newAns;
+                });
+                updateStatus(currentQ.id, 'not_answered');
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (status[currentQ.id] === 'not_visited' || (status[currentQ.id] === 'not_answered' && !answers[currentQ.id])) {
+                     updateStatus(currentQ.id, 'not_answered');
+                }
+
+                const targetQ = TEST_DATA.questions[index];
+                if (status[targetQ.id] === 'not_visited') {
+                    updateStatus(targetQ.id, 'not_answered');
+                }
+                
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = () => {
+                if (confirm("Are you sure you want to submit the test?")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false); 
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => {
+                    if (c[s] !== undefined) c[s]++;
+                });
+                return c;
+            }, [status]);
+
+            // --- RENDER ---
+            
+            // RESULT SCREEN
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) {
+                        score += TEST_DATA.marksForCorrect;
+                        correct++;
+                    } else if (answers[q.id]) {
+                        score -= TEST_DATA.marksForWrong;
+                        wrong++;
+                    }
+                });
+
+                return (
+                    <div className="h-full overflow-y-auto bg-gray-50 p-4 md:p-8">
+                        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div className="bg-blue-600 text-white p-8 text-center">
+                                <h1 className="text-3xl font-bold mb-2">Test Result</h1>
+                                <p className="opacity-90 font-medium">{TEST_DATA.title}</p>
+                            </div>
+                            <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 border-b border-gray-100">
+                                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                                    <div className="text-xs text-gray-500 uppercase font-bold">Total Score</div>
+                                    <div className="text-2xl font-bold text-blue-600">{score} <span className="text-sm text-gray-400">/ {TEST_DATA.totalMarks}</span></div>
+                                </div>
+                                <div className="text-center p-4 bg-green-50 rounded-lg">
+                                    <div className="text-xs text-green-700 uppercase font-bold">Correct</div>
+                                    <div className="text-2xl font-bold text-green-600">{correct}</div>
+                                </div>
+                                <div className="text-center p-4 bg-red-50 rounded-lg">
+                                    <div className="text-xs text-red-700 uppercase font-bold">Wrong</div>
+                                    <div className="text-2xl font-bold text-red-600">{wrong}</div>
+                                </div>
+                                <div className="text-center p-4 bg-gray-100 rounded-lg">
+                                    <div className="text-xs text-gray-600 uppercase font-bold">Attempted</div>
+                                    <div className="text-2xl font-bold text-gray-700">{correct + wrong}</div>
+                                </div>
+                            </div>
+                            <div className="p-6 bg-gray-50">
+                                <h2 className="text-xl font-bold text-gray-800 mb-4">Detailed Solutions</h2>
+                                <div className="space-y-4">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-gray-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50' : (isSkipped ? 'bg-white' : 'bg-red-50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-4 ${borderColor} ${bgClass} p-4 rounded shadow-sm bg-white`}>
+                                                <div className="flex gap-2 mb-2">
+                                                    <span className="font-bold text-gray-500">Q{i+1}.</span>
+                                                    <div className="flex-1 font-medium text-gray-800 whitespace-pre-line">{q.question}</div>
+                                                </div>
+                                                <div className="ml-6 space-y-1 text-sm mb-3">
+                                                    {q.options.map(opt => (
+                                                        <div key={opt.id} className={`flex items-center gap-2 ${opt.id === q.correctAnswer ? 'text-green-700 font-bold' : (opt.id === userAns ? 'text-red-600 line-through' : 'text-gray-500')}`}>
+                                                            {opt.id === q.correctAnswer ? "✓" : (opt.id === userAns ? "✗" : "○")} {opt.text}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="ml-6 p-3 bg-blue-50 text-blue-900 text-sm rounded border border-blue-100">
+                                                    <strong className="block mb-1 flex items-center gap-2"><Icons.Info/> Explanation:</strong>
+                                                    <div className="whitespace-pre-line">{q.explanation}</div>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            // 2. TEST INTERFACE
+            return (
+                <div className="flex flex-col h-full">
+                    {/* Header */}
+                    <header className="bg-blue-600 text-white h-16 flex items-center justify-between px-4 shadow z-20 relative">
+                        {/* Left: Title & Org */}
+                        <div className="flex flex-col">
+                            <h1 className="font-bold text-lg leading-none">{TEST_DATA.organization}</h1>
+                            <p className="text-xs opacity-90 font-medium mt-1 truncate max-w-[150px] md:max-w-md">{TEST_DATA.title}</p>
+                        </div>
+
+                        {/* Center: Marks Indicator (Absolute on desktop to be true center) */}
+                        <div className="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-6 bg-blue-700/50 px-6 py-1.5 rounded-full border border-blue-400/30">
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-green-500 border-2 border-white flex items-center justify-center font-bold shadow-sm">+2</div>
+                                <span className="text-xs font-semibold uppercase tracking-wider opacity-80">Correct</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-full bg-red-500 border-2 border-white flex items-center justify-center font-bold shadow-sm">0</div>
+                                <span className="text-xs font-semibold uppercase tracking-wider opacity-80">Negative</span>
+                            </div>
+                        </div>
+
+                        {/* Right: Timer & Controls */}
+                        <div className="flex items-center gap-3">
+                            {/* Timer */}
+                            <div className={`flex items-center gap-2 px-3 py-1.5 rounded-md border border-white/20 transition-colors ${isPaused ? 'bg-yellow-500 text-black border-yellow-600' : 'bg-blue-700'}`}>
+                                <span className="text-xs uppercase font-bold opacity-70 hidden sm:inline">Time Left</span>
+                                <span className="font-mono font-bold text-xl">{formatTime(timeLeft)}</span>
+                            </div>
+
+                            {/* Pause Button */}
+                            {!isPaused && !isSubmitted && (
+                                <button 
+                                    onClick={() => setIsPaused(true)}
+                                    className="bg-white/10 hover:bg-white/20 text-white p-2 rounded-md transition border border-transparent hover:border-white/30"
+                                    title="Pause Test"
+                                >
+                                    <Icons.Pause />
+                                </button>
+                            )}
+
+                            {/* Mobile Menu Toggle */}
+                            <button className="md:hidden ml-1" onClick={() => setIsPaletteOpen(!isPaletteOpen)}>
+                                <Icons.Menu />
+                            </button>
+                        </div>
+                    </header>
+
+                    {/* Main Body */}
+                    <div className="flex-1 flex overflow-hidden relative">
+                        
+                        {/* Pause Overlay */}
+                        {isPaused && (
+                            <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center p-4">
+                                <div className="bg-white p-8 rounded-2xl shadow-2xl border border-gray-200 text-center max-w-sm w-full">
+                                    <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Icons.Pause />
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Test Paused</h2>
+                                    <p className="text-gray-500 mb-6">The timer has been stopped. Click Resume to continue your attempt.</p>
+                                    <button 
+                                        onClick={() => setIsPaused(false)}
+                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        <Icons.Play /> Resume Test
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Question Area (Left) - Blurred when paused */}
+                        <div className={`flex-1 flex flex-col bg-white w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            {/* Question Content */}
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                                <div className="max-w-4xl mx-auto">
+                                    <div className="flex gap-4 mb-6">
+                                        <span className="font-bold text-lg text-gray-500 pt-1">Q{currentQIndex + 1}.</span>
+                                        <div className="text-lg font-medium text-gray-800 leading-relaxed whitespace-pre-line">
+                                            {currentQuestion.question}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3 ml-0 md:ml-10">
+                                        {currentQuestion.options.map(opt => (
+                                            <div 
+                                                key={opt.id}
+                                                onClick={() => handleOptionSelect(opt.id)}
+                                                className={`p-3 md:p-4 border-2 rounded-lg cursor-pointer flex items-start gap-3 transition-all hover:bg-gray-50 ${answers[currentQuestion.id] === opt.id ? 'border-blue-600 bg-blue-50' : 'border-gray-200'}`}
+                                            >
+                                                <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${answers[currentQuestion.id] === opt.id ? 'border-blue-600' : 'border-gray-400'}`}>
+                                                    {answers[currentQuestion.id] === opt.id && <div className="w-2.5 h-2.5 bg-blue-600 rounded-full"></div>}
+                                                </div>
+                                                <span className="text-gray-700">{opt.text}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer Buttons */}
+                            <div className="h-16 bg-white border-t flex items-center justify-between px-4 md:px-8 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
+                                <div className="flex gap-2">
+                                    <button onClick={handleMarkForReview} className="px-3 py-2 md:px-4 md:py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium text-xs md:text-sm transition">
+                                        <span className="hidden md:inline">Mark for Review & Next</span>
+                                        <span className="md:hidden">Review</span>
+                                    </button>
+                                    <button onClick={handleClearResponse} className="px-3 py-2 md:px-4 md:py-2 border border-gray-300 text-gray-600 rounded hover:bg-gray-100 font-medium text-xs md:text-sm transition">
+                                        <span className="hidden md:inline">Clear Response</span>
+                                        <span className="md:hidden">Clear</span>
+                                    </button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-sm md:text-base shadow-md transition transform active:scale-95">
+                                    Save & Next
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Palette Sidebar (Right) */}
+                        <div className={`absolute inset-y-0 right-0 w-80 bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            
+                            {/* User Info */}
+                            <div className="bg-blue-50 p-4 border-b flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600"><Icons.User /></div>
+                                <div>
+                                    <div className="font-bold text-sm text-gray-800">Candidate Name</div>
+                                    <div className="text-xs text-gray-500">ExamTym Student</div>
+                                </div>
+                                <button className="ml-auto md:hidden" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+
+                            {/* Legend */}
+                            <div className="p-3 grid grid-cols-2 gap-2 text-xs bg-white border-b">
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-answered flex items-center justify-center"></div> Answered</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-not_answered flex items-center justify-center"></div> Not Answered</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-not_visited border flex items-center justify-center"></div> Not Visited</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-marked flex items-center justify-center"></div> Marked for Review</div>
+                                <div className="flex items-center gap-2 col-span-2"><div className="w-4 h-4 rounded status-marked_answered flex items-center justify-center"></div> Ans & Marked for Review (Evaluated)</div>
+                            </div>
+
+                            {/* Counts */}
+                            <div className="bg-gray-100 p-2 grid grid-cols-4 gap-1 text-center text-xs border-b">
+                                <div className="bg-green-100 text-green-800 rounded p-1"><strong>{counts.answered}</strong><br/>Ans</div>
+                                <div className="bg-red-100 text-red-800 rounded p-1"><strong>{counts.not_answered}</strong><br/>Not Ans</div>
+                                <div className="bg-purple-100 text-purple-800 rounded p-1"><strong>{counts.marked + counts.marked_answered}</strong><br/>Marked</div>
+                                <div className="bg-white text-gray-600 border rounded p-1"><strong>{counts.not_visited}</strong><br/>Visit</div>
+                            </div>
+
+                            {/* Grid */}
+                            <div className="flex-1 overflow-y-auto p-4 content-start">
+                                <div className="font-bold text-gray-700 mb-2 text-sm">Choose a Question:</div>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button 
+                                            key={q.id}
+                                            onClick={() => handlePaletteClick(idx)}
+                                            className={`h-9 w-full flex items-center justify-center font-semibold text-sm border rounded hover:opacity-80 transition ${currentQIndex === idx ? 'current-question' : ''} status-${status[q.id]}`}
+                                        >
+                                            {idx + 1}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Submit Button */}
+                            <div className="p-4 border-t bg-gray-50">
+                                <button onClick={handleSubmit} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded shadow transition transform active:scale-95">
+                                    Submit Test
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    {/* Mobile Overlay */}
+                    {isPaletteOpen && <div className="fixed inset-0 bg-black/50 z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

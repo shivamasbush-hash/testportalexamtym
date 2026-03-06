@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UGC NET June 2026 - ICT Mock Test 2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; user-select: none; background-color: #f0f0f0; }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #c1c1c1; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a8a8; }
+
+        /* Palette Status Colors */
+        .status-answered { background-color: #22c55e; color: white; border-color: #22c55e; } /* Green */
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } /* Red */
+        .status-marked { background-color: #9333ea; color: white; border-color: #9333ea; border-radius: 50%; } /* Purple */
+        .status-marked_answered { background-color: #9333ea; color: white; border-color: #9333ea; position: relative; } /* Purple */
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -2px; font-size: 8px; color: #22c55e; background: white; border-radius: 50%; padding: 0 2px; }
+        .status-not_visited { background-color: white; color: black; border-color: #d1d5db; } /* White/Gray */
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.1); box-shadow: 0 0 5px rgba(37, 99, 235, 0.5); }
+        
+        /* Pause Overlay */
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+
+    <div id="root" class="h-full flex flex-col"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // =================================================================
+        // 📚 MOCK TEST DATA (UGC NET JUNE 2026 - ICT MOCK 2)
+        // =================================================================
+        const TEST_DATA = {
+            title: "UGC NET JUNE 2026: MOCK TEST 2 (ICT)",
+            organization: "NTA ICT MOCK TEST 2",
+            durationMinutes: 35,
+            totalMarks: 60,
+            marksForCorrect: 2,
+            marksForWrong: 0,
+            questions: [
+                {
+                    id: 1,
+                    question: "Which standard encoding format uses 7 bits to represent characters, allowing for 128 unique symbols?",
+                    options: [
+                        { id: "1", text: "Unicode" },
+                        { id: "2", text: "ASCII" },
+                        { id: "3", text: "EBCDIC" },
+                        { id: "4", text: "UTF-8" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "ASCII (American Standard Code for Information Interchange) uses 7 bits to represent 128 characters. Unicode and UTF-8 are more modern standards that use more bits to cover global languages."
+                },
+                {
+                    id: 2,
+                    question: "In the context of computer hardware, software that is permanently programmed into a Read-Only Memory (ROM) is known as:",
+                    options: [
+                        { id: "1", text: "Malware" },
+                        { id: "2", text: "Firmware" },
+                        { id: "3", text: "Vaporware" },
+                        { id: "4", text: "Shareware" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "Firmware is a specific class of computer software that provides the low-level control for a device's specific hardware. It is 'firm' because it is not easily changed like normal software."
+                },
+                {
+                    id: 3,
+                    question: "Which Government of India initiative is primarily a database of profiles of scientists / researchers and other faculty members working at leading academic institutions?",
+                    options: [
+                        { id: "1", text: "Vidwan" },
+                        { id: "2", text: "e-ShodhSindhu" },
+                        { id: "3", text: "Shodhganga" },
+                        { id: "4", text: "e-Yantra" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "'Vidwan' is the premier database of profiles of scientists/researchers and other faculty members working at leading academic institutions and other R&D organizations in India."
+                },
+                {
+                    id: 4,
+                    question: "Match List I with List II:\n\nList I (Protocol)\n(A) VOIP\n(B) SMTP\n(C) FTP\n(D) POP3\n\nList II (Function)\n(I) Sending emails\n(II) Downloading emails\n(III) Voice calls over internet\n(IV) Uploading/Downloading files",
+                    options: [
+                        { id: "1", text: "(A)-(III), (B)-(I), (C)-(IV), (D)-(II)" },
+                        { id: "2", text: "(A)-(III), (B)-(II), (C)-(IV), (D)-(I)" },
+                        { id: "3", text: "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)" },
+                        { id: "4", text: "(A)-(I), (B)-(III), (C)-(II), (D)-(IV)" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "VOIP (Voice Over IP) is for voice calls. SMTP (Simple Mail Transfer Protocol) is for SENDING mail. FTP (File Transfer Protocol) is for files. POP3 (Post Office Protocol) is for RECEIVING/downloading mail."
+                },
+                {
+                    id: 5,
+                    question: "Given below are two statements:\nStatement I: 'Plotter' is an input device used for producing high-quality graphics and diagrams.\nStatement II: 'Scanner' is an output device used to convert hard copies into digital data.",
+                    options: [
+                        { id: "1", text: "Both Statement I and Statement II are true" },
+                        { id: "2", text: "Both Statement I and Statement II are false" },
+                        { id: "3", text: "Statement I is true but Statement II is false" },
+                        { id: "4", text: "Statement I is false but Statement II is true" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "Both are false. A Plotter is an OUTPUT device (it draws/prints). A Scanner is an INPUT device (it reads physical documents into digital format)."
+                },
+                {
+                    id: 6,
+                    question: "Assertion (A): Solid State Drives (SSDs) are generally faster and more durable than Hard Disk Drives (HDDs).\nReason (R): SSDs use flash memory and have no moving mechanical parts, unlike HDDs which use spinning magnetic platters.",
+                    options: [
+                        { id: "1", text: "Both (A) and (R) are true and (R) is the correct explanation of (A)" },
+                        { id: "2", text: "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)" },
+                        { id: "3", text: "(A) is true but (R) is false" },
+                        { id: "4", text: "(A) is false but (R) is true" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "The absence of moving parts (Reason) directly results in faster data access speeds and lower risk of mechanical failure (Assertion). Thus, R correctly explains A."
+                },
+                {
+                    id: 7,
+                    question: "Calculate the time required to download a 100 Megabyte (MB) file with an internet speed of 8 Megabits per second (Mbps).",
+                    options: [
+                        { id: "1", text: "12.5 seconds" },
+                        { id: "2", text: "100 seconds" },
+                        { id: "3", text: "800 seconds" },
+                        { id: "4", text: "50 seconds" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "1 Byte = 8 bits. File size = 100 MB = 100 * 8 = 800 Megabits (Mb). Time = Total Data / Speed = 800 Mb / 8 Mbps = 100 seconds."
+                },
+                {
+                    id: 8,
+                    question: "Which of the following is NOT a Web Browser?",
+                    options: [
+                        { id: "1", text: "Opera" },
+                        { id: "2", text: "Safari" },
+                        { id: "3", text: "Bing" },
+                        { id: "4", text: "Brave" }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "Bing is a Search Engine developed by Microsoft. Opera, Safari, and Brave are Web Browsers used to access the internet."
+                },
+                {
+                    id: 9,
+                    question: "What is the full form of 'NPTEL', a project funded by MHRD?",
+                    options: [
+                        { id: "1", text: "National Programme on Technology Enhanced Learning" },
+                        { id: "2", text: "National Protocol on Technical Education and Learning" },
+                        { id: "3", text: "National Project on Technical E-Learning" },
+                        { id: "4", text: "Network for Professional Technology and E-Learning" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "NPTEL stands for National Programme on Technology Enhanced Learning. It is a joint initiative of the IITs and IISc to provide e-learning through online web and video courses."
+                },
+                {
+                    id: 10,
+                    question: "Arrange the following wireless technologies in increasing order of their typical range of communication:\n(A) Wi-Fi\n(B) Bluetooth\n(C) NFC (Near Field Communication)",
+                    options: [
+                        { id: "1", text: "(C) < (B) < (A)" },
+                        { id: "2", text: "(B) < (C) < (A)" },
+                        { id: "3", text: "(A) < (B) < (C)" },
+                        { id: "4", text: "(C) < (A) < (B)" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "NFC operates within a few centimeters (touch). Bluetooth operates within ~10 meters. Wi-Fi can operate up to ~100 meters. Thus, the order is NFC < Bluetooth < Wi-Fi."
+                },
+                {
+                    id: 11,
+                    question: "Which type of malware specifically encrypts a victim's files and demands payment for the decryption key?",
+                    options: [
+                        { id: "1", text: "Spyware" },
+                        { id: "2", text: "Adware" },
+                        { id: "3", text: "Ransomware" },
+                        { id: "4", text: "Trojan Horse" }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "Ransomware is a type of malicious software designed to block access to a computer system or files until a sum of money (ransom) is paid."
+                },
+                {
+                    id: 12,
+                    question: "Given below are two statements regarding IP Addresses:\nStatement I: An IPv4 address is 32 bits long and is represented in decimal format (e.g., 192.168.1.1).\nStatement II: An IPv6 address is 128 bits long and is represented in hexadecimal format.",
+                    options: [
+                        { id: "1", text: "Both Statement I and Statement II are true" },
+                        { id: "2", text: "Both Statement I and Statement II are false" },
+                        { id: "3", text: "Statement I is true but Statement II is false" },
+                        { id: "4", text: "Statement I is false but Statement II is true" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "Both statements are factually correct. IPv4 uses 32 bits (4 bytes), while IPv6 uses 128 bits (16 bytes) to accommodate the growing number of devices on the internet."
+                },
+                {
+                    id: 13,
+                    question: "Convert the Decimal number 25 to Binary.",
+                    options: [
+                        { id: "1", text: "11000" },
+                        { id: "2", text: "11001" },
+                        { id: "3", text: "10101" },
+                        { id: "4", text: "11101" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "25 / 2 = 12 rem 1; 12 / 2 = 6 rem 0; 6 / 2 = 3 rem 0; 3 / 2 = 1 rem 1; 1 / 2 = 0 rem 1. Reading remainders bottom-up: 11001."
+                },
+                {
+                    id: 14,
+                    question: "Which initiative by the Ministry of Electronics and IT (MeitY) provides a secure cloud-based platform for storage, sharing, and verification of documents and certificates?",
+                    options: [
+                        { id: "1", text: "DigiLocker" },
+                        { id: "2", text: "e-Granthalaya" },
+                        { id: "3", text: "e-Acharya" },
+                        { id: "4", text: "FOSSEE" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "DigiLocker constitutes a key initiative under Digital India. It provides citizens a shareable private space on a public cloud to store their documents/certificates."
+                },
+                {
+                    id: 15,
+                    question: "Assertion (A): 'Cache Memory' is faster than Main Memory (RAM).\nReason (R): Cache Memory is located closer to the CPU Processor and stores frequently accessed data.",
+                    options: [
+                        { id: "1", text: "Both (A) and (R) are true and (R) is the correct explanation of (A)" },
+                        { id: "2", text: "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)" },
+                        { id: "3", text: "(A) is true but (R) is false" },
+                        { id: "4", text: "(A) is false but (R) is true" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "Cache is high-speed static RAM (SRAM) placed between the CPU and main RAM to reduce the time to access data from the main memory. Its proximity and speed (Reason) explain why it is faster (Assertion)."
+                },
+                {
+                    id: 16,
+                    question: "Which of the following describes 'Edge Computing'?",
+                    options: [
+                        { id: "1", text: "Processing data in a massive centralized data center." },
+                        { id: "2", text: "Processing data near the source of data generation (e.g., IoT devices) rather than the cloud." },
+                        { id: "3", text: "Using the edges of a monitor to display notifications." },
+                        { id: "4", text: "A technique to smooth the edges of fonts in printing." }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "Edge computing brings computation and data storage closer to the sources of data (like sensors/IoT), improving response times and saving bandwidth."
+                },
+                {
+                    id: 17,
+                    question: "Match List I (File Extension) with List II (Description):\n(A) .csv\n(B) .rtf\n(C) .png\n(D) .exe\n\n(I) Image with transparency support\n(II) Comma Separated Values (Data)\n(III) Rich Text Format\n(IV) Executable application",
+                    options: [
+                        { id: "1", text: "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)" },
+                        { id: "2", text: "(A)-(III), (B)-(II), (C)-(IV), (D)-(I)" },
+                        { id: "3", text: "(A)-(II), (B)-(I), (C)-(III), (D)-(IV)" },
+                        { id: "4", text: "(A)-(IV), (B)-(I), (C)-(II), (D)-(III)" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: ".csv is for data tables (II). .rtf is for documents (III). .png is an image format supporting transparency (I). .exe is a program/application (IV)."
+                },
+                {
+                    id: 18,
+                    question: "In the context of Audio/Video Conferencing, what is 'Latency'?",
+                    options: [
+                        { id: "1", text: "The clarity of the video picture." },
+                        { id: "2", text: "The delay between when a signal is sent and when it is received." },
+                        { id: "3", text: "The total bandwidth available for the call." },
+                        { id: "4", text: "The number of participants allowed in a meeting." }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "Latency refers to the time delay experienced in a system. In conferencing, high latency causes 'lag' or talking over each other."
+                },
+                {
+                    id: 19,
+                    question: "Which technology is primarily used in 'Bitcoin' and is now being explored for issuing tamper-proof educational certificates?",
+                    options: [
+                        { id: "1", text: "Big Data" },
+                        { id: "2", text: "Blockchain" },
+                        { id: "3", text: "Virtual Reality" },
+                        { id: "4", text: "5G" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "Blockchain is a decentralized ledger technology. Its immutable nature makes it ideal for issuing tamper-proof digital certificates and degrees."
+                },
+                {
+                    id: 20,
+                    question: "Identify the correct descending order of memory speed (Fastest to Slowest):",
+                    options: [
+                        { id: "1", text: "Registers > Cache > RAM > Secondary Storage" },
+                        { id: "2", text: "RAM > Cache > Registers > Secondary Storage" },
+                        { id: "3", text: "Cache > RAM > Secondary Storage > Registers" },
+                        { id: "4", text: "Secondary Storage > RAM > Cache > Registers" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "Registers (inside CPU) are the fastest. Cache is next. RAM is slower than Cache. Secondary Storage (HDD/SSD) is the slowest."
+                },
+                {
+                    id: 21,
+                    question: "What is 'e-Granthalaya'?",
+                    options: [
+                        { id: "1", text: "A library of e-books for children." },
+                        { id: "2", text: "An Integrated Library Management Software developed by NIC." },
+                        { id: "3", text: "A portal for agricultural data." },
+                        { id: "4", text: "A video conferencing tool for librarians." }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "e-Granthalaya is a Digital Agenda for Library Automation and Networking, an Integrated Library Management Software developed by the National Informatics Centre (NIC)."
+                },
+                {
+                    id: 22,
+                    question: "Given below are two statements:\nStatement I: 'Spoofing' involves an attacker masquerading as a trusted entity or device to gain access to sensitive data.\nStatement II: 'Sniffing' involves monitoring and capturing data packets passing through a network.",
+                    options: [
+                        { id: "1", text: "Both Statement I and Statement II are true" },
+                        { id: "2", text: "Both Statement I and Statement II are false" },
+                        { id: "3", text: "Statement I is true but Statement II is false" },
+                        { id: "4", text: "Statement I is false but Statement II is true" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "Both are correct. Spoofing is identity theft (e.g., caller ID spoofing). Sniffing is eavesdropping on network traffic."
+                },
+                {
+                    id: 23,
+                    question: "A URL (Uniform Resource Locator) typically consists of:",
+                    options: [
+                        { id: "1", text: "Protocol, Domain Name, Path" },
+                        { id: "2", text: "IP Address, MAC Address, Path" },
+                        { id: "3", text: "Browser Name, ISP Name, Domain" },
+                        { id: "4", text: "Server Name, Client Name, Protocol" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "A standard URL structure is: Protocol (http://) + Domain Name (www.example.com) + Path (/page1)."
+                },
+                {
+                    id: 24,
+                    question: "Assertion (A): 'Deepfakes' pose a challenge to the integrity of information in the digital age.\nReason (R): Deepfakes use Artificial Intelligence to create realistic looking but fake audio or video content.",
+                    options: [
+                        { id: "1", text: "Both (A) and (R) are true and (R) is the correct explanation of (A)" },
+                        { id: "2", text: "Both (A) and (R) are true but (R) is NOT the correct explanation of (A)" },
+                        { id: "3", text: "(A) is true but (R) is false" },
+                        { id: "4", text: "(A) is false but (R) is true" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "The realistic nature of AI-generated media (Reason) makes it difficult to distinguish truth from fiction, thus posing an integrity challenge (Assertion)."
+                },
+                {
+                    id: 25,
+                    question: "Which of the following is an example of 'Proprietary Software'?",
+                    options: [
+                        { id: "1", text: "Linux Ubuntu" },
+                        { id: "2", text: "Mozilla Firefox" },
+                        { id: "3", text: "Microsoft Windows" },
+                        { id: "4", text: "LibreOffice" }
+                    ],
+                    correctAnswer: "3",
+                    explanation: "Proprietary software is owned by an individual or company (Microsoft) and requires a license to use. Linux, Firefox, and LibreOffice are Open Source."
+                },
+                {
+                    id: 26,
+                    question: "In binary addition, what is the result of 1 + 1?",
+                    options: [
+                        { id: "1", text: "2" },
+                        { id: "2", text: "10" },
+                        { id: "3", text: "1" },
+                        { id: "4", text: "11" }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "In binary (Base 2), 1 + 1 equals 2, but '2' is not a digit. It carries over to the next place, resulting in '10' (which is 2 in decimal)."
+                },
+                {
+                    id: 27,
+                    question: "The 'Internet of Things' (IoT) refers to:",
+                    options: [
+                        { id: "1", text: "A specialized internet for government things." },
+                        { id: "2", text: "The network of physical objects embedded with sensors and software to exchange data." },
+                        { id: "3", text: "The theory that the internet is a living thing." },
+                        { id: "4", text: "A new web browser." }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "IoT describes the network of physical objects (things) that are embedded with sensors, software, and other technologies to connect and exchange data over the internet."
+                },
+                {
+                    id: 28,
+                    question: "Which storage medium typically offers the highest capacity for archival storage?",
+                    options: [
+                        { id: "1", text: "CD-ROM" },
+                        { id: "2", text: "DVD" },
+                        { id: "3", text: "Blu-ray Disc" },
+                        { id: "4", text: "Magnetic Tape" }
+                    ],
+                    correctAnswer: "4",
+                    explanation: "While Blu-ray holds more than CD/DVD (up to 50GB-100GB), LTO Magnetic Tapes are used for enterprise archival and can hold many Terabytes (TB) of data."
+                },
+                {
+                    id: 29,
+                    question: "Match the ICT terms:\n(A) HTML\n(B) CSS\n(C) HTTP\n(D) URL\n\n(I) Styling web pages\n(II) Structure of web pages\n(III) Address of a web resource\n(IV) Protocol for transferring web pages",
+                    options: [
+                        { id: "1", text: "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)" },
+                        { id: "2", text: "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)" },
+                        { id: "3", text: "(A)-(II), (B)-(IV), (C)-(I), (D)-(III)" },
+                        { id: "4", text: "(A)-(III), (B)-(I), (C)-(IV), (D)-(II)" }
+                    ],
+                    correctAnswer: "1",
+                    explanation: "HTML defines structure (II). CSS handles styling (I). HTTP is the protocol (IV). URL is the address (III)."
+                },
+                {
+                    id: 30,
+                    question: "What is the primary function of a 'Firewall' in a computer network?",
+                    options: [
+                        { id: "1", text: "To speed up the internet connection." },
+                        { id: "2", text: "To monitor and control incoming and outgoing network traffic based on security rules." },
+                        { id: "3", text: "To prevent the computer from overheating." },
+                        { id: "4", text: "To serve as a backup for data." }
+                    ],
+                    correctAnswer: "2",
+                    explanation: "A Firewall is a network security device that monitors incoming and outgoing network traffic and permits or blocks data packets based on a set of security rules."
+                }
+            ]
+        };
+
+        // --- ICONS ---
+        const Icons = {
+            Menu: () => <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            Info: () => <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            User: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Pause: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>,
+        };
+
+        // --- MAIN COMPONENT ---
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); // New Pause State
+
+            // Initialize status
+            useEffect(() => {
+                const initStatus = {};
+                TEST_DATA.questions.forEach((q, i) => {
+                    initStatus[q.id] = i === 0 ? 'not_answered' : 'not_visited';
+                });
+                setStatus(initStatus);
+            }, []);
+
+            // Timer with Pause Logic
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; // Stop timer if paused
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) {
+                            handleSubmit();
+                            return 0;
+                        }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); // Re-run when pause state changes
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const updateStatus = (qid, newStatus) => {
+                setStatus(prev => ({
+                    ...prev,
+                    [qid]: newStatus
+                }));
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                setAnswers(prev => ({ ...prev, [currentQ.id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (answers[currentQ.id]) {
+                    updateStatus(currentQ.id, 'answered');
+                } else {
+                    updateStatus(currentQ.id, 'not_answered');
+                }
+                
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') {
+                         updateStatus(nextQ.id, 'not_answered');
+                    }
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (answers[currentQ.id]) {
+                    updateStatus(currentQ.id, 'marked_answered');
+                } else {
+                    updateStatus(currentQ.id, 'marked');
+                }
+                
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') {
+                         updateStatus(nextQ.id, 'not_answered');
+                    }
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                setAnswers(prev => {
+                    const newAns = { ...prev };
+                    delete newAns[currentQ.id];
+                    return newAns;
+                });
+                updateStatus(currentQ.id, 'not_answered');
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const currentQ = TEST_DATA.questions[currentQIndex];
+                if (status[currentQ.id] === 'not_visited' || (status[currentQ.id] === 'not_answered' && !answers[currentQ.id])) {
+                     updateStatus(currentQ.id, 'not_answered');
+                }
+
+                const targetQ = TEST_DATA.questions[index];
+                if (status[targetQ.id] === 'not_visited') {
+                    updateStatus(targetQ.id, 'not_answered');
+                }
+                
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = () => {
+                if (confirm("Are you sure you want to submit the test?")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false); // Ensure pause is off for results
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => {
+                    if (c[s] !== undefined) c[s]++;
+                });
+                return c;
+            }, [status]);
+
+            // --- RENDER ---
+            
+            // RESULT SCREEN (Same as before)
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) {
+                        score += TEST_DATA.marksForCorrect;
+                        correct++;
+                    } else if (answers[q.id]) {
+                        score -= TEST_DATA.marksForWrong;
+                        wrong++;
+                    }
+                });
+
+                return (
+                    <div className="h-full overflow-y-auto bg-gray-50 p-4 md:p-8">
+                        <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden">
+                            <div className="bg-blue-600 text-white p-8 text-center">
+                                <h1 className="text-3xl font-bold mb-2">Test Result</h1>
+                                <p className="opacity-90 font-medium">{TEST_DATA.title}</p>
+                            </div>
+                            <div className="p-6 grid grid-cols-2 md:grid-cols-4 gap-4 border-b border-gray-100">
+                                <div className="text-center p-4 bg-blue-50 rounded-lg">
+                                    <div className="text-xs text-gray-500 uppercase font-bold">Total Score</div>
+                                    <div className="text-2xl font-bold text-blue-600">{score} <span className="text-sm text-gray-400">/ {TEST_DATA.totalMarks}</span></div>
+                                </div>
+                                <div className="text-center p-4 bg-green-50 rounded-lg">
+                                    <div className="text-xs text-green-700 uppercase font-bold">Correct</div>
+                                    <div className="text-2xl font-bold text-green-600">{correct}</div>
+                                </div>
+                                <div className="text-center p-4 bg-red-50 rounded-lg">
+                                    <div className="text-xs text-red-700 uppercase font-bold">Wrong</div>
+                                    <div className="text-2xl font-bold text-red-600">{wrong}</div>
+                                </div>
+                                <div className="text-center p-4 bg-gray-100 rounded-lg">
+                                    <div className="text-xs text-gray-600 uppercase font-bold">Attempted</div>
+                                    <div className="text-2xl font-bold text-gray-700">{correct + wrong}</div>
+                                </div>
+                            </div>
+                            <div className="p-6 bg-gray-50">
+                                <h2 className="text-xl font-bold text-gray-800 mb-4">Detailed Solutions</h2>
+                                <div className="space-y-4">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-gray-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50' : (isSkipped ? 'bg-white' : 'bg-red-50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-4 ${borderColor} ${bgClass} p-4 rounded shadow-sm bg-white`}>
+                                                <div className="flex gap-2 mb-2">
+                                                    <span className="font-bold text-gray-500">Q{i+1}.</span>
+                                                    <div className="flex-1 font-medium text-gray-800 whitespace-pre-line">{q.question}</div>
+                                                </div>
+                                                <div className="ml-6 space-y-1 text-sm mb-3">
+                                                    {q.options.map(opt => (
+                                                        <div key={opt.id} className={`flex items-center gap-2 ${opt.id === q.correctAnswer ? 'text-green-700 font-bold' : (opt.id === userAns ? 'text-red-600 line-through' : 'text-gray-500')}`}>
+                                                            {opt.id === q.correctAnswer ? "✓" : (opt.id === userAns ? "✗" : "○")} {opt.text}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                                <div className="ml-6 p-3 bg-blue-50 text-blue-900 text-sm rounded border border-blue-100">
+                                                    <strong className="block mb-1 flex items-center gap-2"><Icons.Info/> Explanation:</strong>
+                                                    {q.explanation}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            // 2. TEST INTERFACE
+            return (
+                <div className="flex flex-col h-full">
+                    {/* Header */}
+                    <header className="bg-blue-600 text-white h-14 flex items-center justify-between px-4 shadow z-20">
+                        <div className="font-bold text-lg tracking-wide">{TEST_DATA.organization}</div>
+                        
+                        {/* Pause Button (Visible on desktop/mobile) */}
+                        <div className="flex items-center gap-2">
+                            {!isPaused && (
+                                <button 
+                                    onClick={() => setIsPaused(true)}
+                                    className="bg-blue-700 hover:bg-blue-800 text-white px-3 py-1 rounded-md text-sm font-semibold flex items-center gap-2 border border-blue-500 transition"
+                                >
+                                    <Icons.Pause /> <span className="hidden sm:inline">Pause</span>
+                                </button>
+                            )}
+                        </div>
+
+                        <div className="flex items-center gap-4">
+                            <div className={`flex items-center gap-2 px-3 py-1 rounded transition-colors ${isPaused ? 'bg-yellow-500 text-black' : 'bg-white/20'}`}>
+                                <span className="text-xs uppercase opacity-80">Time Left:</span>
+                                <span className="font-mono font-bold text-lg">{formatTime(timeLeft)}</span>
+                            </div>
+                            <button className="md:hidden" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    {/* Main Body */}
+                    <div className="flex-1 flex overflow-hidden relative">
+                        
+                        {/* Pause Overlay */}
+                        {isPaused && (
+                            <div className="absolute inset-0 z-50 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center p-4">
+                                <div className="bg-white p-8 rounded-2xl shadow-2xl border border-gray-200 text-center max-w-sm w-full">
+                                    <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                                        <Icons.Pause />
+                                    </div>
+                                    <h2 className="text-2xl font-bold text-gray-800 mb-2">Test Paused</h2>
+                                    <p className="text-gray-500 mb-6">The timer has been stopped. Click Resume to continue your attempt.</p>
+                                    <button 
+                                        onClick={() => setIsPaused(false)}
+                                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl shadow-lg transition transform active:scale-95 flex items-center justify-center gap-2"
+                                    >
+                                        <Icons.Play /> Resume Test
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Question Area (Left) - Blurred when paused */}
+                        <div className={`flex-1 flex flex-col bg-white w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            {/* Question Content */}
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8">
+                                <div className="max-w-4xl mx-auto">
+                                    <div className="flex gap-4 mb-6">
+                                        <span className="font-bold text-lg text-gray-500 pt-1">Q{currentQIndex + 1}.</span>
+                                        <div className="text-lg font-medium text-gray-800 leading-relaxed whitespace-pre-line">
+                                            {currentQuestion.question}
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-3 ml-0 md:ml-10">
+                                        {currentQuestion.options.map(opt => (
+                                            <div 
+                                                key={opt.id}
+                                                onClick={() => handleOptionSelect(opt.id)}
+                                                className={`p-3 md:p-4 border-2 rounded-lg cursor-pointer flex items-start gap-3 transition-all hover:bg-gray-50 ${answers[currentQuestion.id] === opt.id ? 'border-blue-600 bg-blue-50' : 'border-gray-200'}`}
+                                            >
+                                                <div className={`mt-0.5 w-5 h-5 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${answers[currentQuestion.id] === opt.id ? 'border-blue-600' : 'border-gray-400'}`}>
+                                                    {answers[currentQuestion.id] === opt.id && <div className="w-2.5 h-2.5 bg-blue-600 rounded-full"></div>}
+                                                </div>
+                                                <span className="text-gray-700">{opt.text}</span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Footer Buttons */}
+                            <div className="h-16 bg-white border-t flex items-center justify-between px-4 md:px-8 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] z-10">
+                                <div className="flex gap-2">
+                                    <button onClick={handleMarkForReview} className="px-3 py-2 md:px-4 md:py-2 bg-purple-600 hover:bg-purple-700 text-white rounded font-medium text-xs md:text-sm transition">
+                                        <span className="hidden md:inline">Mark for Review & Next</span>
+                                        <span className="md:hidden">Review</span>
+                                    </button>
+                                    <button onClick={handleClearResponse} className="px-3 py-2 md:px-4 md:py-2 border border-gray-300 text-gray-600 rounded hover:bg-gray-100 font-medium text-xs md:text-sm transition">
+                                        <span className="hidden md:inline">Clear Response</span>
+                                        <span className="md:hidden">Clear</span>
+                                    </button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded font-bold text-sm md:text-base shadow-md transition transform active:scale-95">
+                                    Save & Next
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Palette Sidebar (Right) */}
+                        <div className={`absolute inset-y-0 right-0 w-80 bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            
+                            {/* User Info */}
+                            <div className="bg-blue-50 p-4 border-b flex items-center gap-3">
+                                <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center text-gray-600"><Icons.User /></div>
+                                <div>
+                                    <div className="font-bold text-sm text-gray-800">Candidate Name</div>
+                                    <div className="text-xs text-gray-500">ExamTym Student</div>
+                                </div>
+                                <button className="ml-auto md:hidden" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+
+                            {/* Legend */}
+                            <div className="p-3 grid grid-cols-2 gap-2 text-xs bg-white border-b">
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-answered flex items-center justify-center"></div> Answered</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-not_answered flex items-center justify-center"></div> Not Answered</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-not_visited border flex items-center justify-center"></div> Not Visited</div>
+                                <div className="flex items-center gap-2"><div className="w-4 h-4 rounded status-marked flex items-center justify-center"></div> Marked for Review</div>
+                                <div className="flex items-center gap-2 col-span-2"><div className="w-4 h-4 rounded status-marked_answered flex items-center justify-center"></div> Ans & Marked for Review (Evaluated)</div>
+                            </div>
+
+                            {/* Counts */}
+                            <div className="bg-gray-100 p-2 grid grid-cols-4 gap-1 text-center text-xs border-b">
+                                <div className="bg-green-100 text-green-800 rounded p-1"><strong>{counts.answered}</strong><br/>Ans</div>
+                                <div className="bg-red-100 text-red-800 rounded p-1"><strong>{counts.not_answered}</strong><br/>Not Ans</div>
+                                <div className="bg-purple-100 text-purple-800 rounded p-1"><strong>{counts.marked + counts.marked_answered}</strong><br/>Marked</div>
+                                <div className="bg-white text-gray-600 border rounded p-1"><strong>{counts.not_visited}</strong><br/>Visit</div>
+                            </div>
+
+                            {/* Grid */}
+                            <div className="flex-1 overflow-y-auto p-4 content-start">
+                                <div className="font-bold text-gray-700 mb-2 text-sm">Choose a Question:</div>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button 
+                                            key={q.id}
+                                            onClick={() => handlePaletteClick(idx)}
+                                            className={`h-9 w-full flex items-center justify-center font-semibold text-sm border rounded hover:opacity-80 transition ${currentQIndex === idx ? 'current-question' : ''} status-${status[q.id]}`}
+                                        >
+                                            {idx + 1}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+
+                            {/* Submit Button */}
+                            <div className="p-4 border-t bg-gray-50">
+                                <button onClick={handleSubmit} className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded shadow transition transform active:scale-95">
+                                    Submit Test
+                                </button>
+                            </div>
+                        </div>
+
+                    </div>
+                    
+                    {/* Mobile Overlay */}
+                    {isPaletteOpen && <div className="fixed inset-0 bg-black/50 z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
