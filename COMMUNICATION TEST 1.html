@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>COMMUNICATION TEST 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        /* Status Colors */
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        /* Markdown Styling */
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        /* Glassmorphism */
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        /* Donut Chart */
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        /* --- ADVANCED PRINT ENGINE (Fixes 1-Page PDF Issue) --- */
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            
+            /* 1. Reset Global Layout */
+            html, body {
+                height: auto !important;
+                min-height: 100% !important;
+                overflow: visible !important;
+                background-color: white !important;
+                color: black !important;
+                position: static !important;
+                width: 100% !important;
+                display: block !important;
+            }
+
+            /* 2. Unlock Scroll Containers */
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col {
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+                position: static !important;
+            }
+
+            /* 3. Hide App Interface Elements */
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 {
+                display: none !important;
+            }
+
+            /* 4. Fix Content Width & Page Breaks */
+            .max-w-5xl, .max-w-4xl {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            /* 5. Chart & Question Protection */
+            .print-break-avoid {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                display: block !important; /* Fix for flex containers cutting off */
+            }
+
+            /* 6. Color Accuracy */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            
+            /* 7. Specific Fix for Charts */
+            .grid-cols-3 {
+                display: flex !important;
+                justify-content: space-between !important;
+                gap: 20px !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "COMMUNICATION TEST 1", "organization": "ExamTym", "durationMinutes": 35, "totalMarks": 60.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": true, "questions": [{"question": "Which of the following refers to the communication that takes place between two or more persons who are subordinates to the same person or are at the same hierarchical level in an organization?", "options": [{"id": "1", "text": "Downward Communication"}, {"id": "2", "text": "Upward Communication"}, {"id": "3", "text": "Lateral Communication"}, {"id": "4", "text": "Diagonal Communication"}], "correctAnswer": "3", "explanation": "Detailed Explanation: Lateral or horizontal communication involves the exchange of information among individuals at the same organizational level, such as peers or colleagues in different departments. Its primary purpose is to coordinate tasks, solve problems, and resolve conflicts without needing to go up and down the management chain. Downward flows from superior to subordinate, upward from subordinate to superior, and diagonal crosses both levels and departments. Thus, option 3 perfectly defines peer-to-peer interaction.", "id": 1}, {"question": "In the domain of non-verbal communication, the systematic study of body language, including gestures, postures, and facial expressions, is academically termed as:", "options": [{"id": "1", "text": "Proxemics"}, {"id": "2", "text": "Kinesics"}, {"id": "3", "text": "Chronemics"}, {"id": "4", "text": "Haptics"}], "correctAnswer": "2", "explanation": "Detailed Explanation: Kinesics, a term coined by anthropologist Ray Birdwhistell, specifically refers to the interpretation of body motion communication such as facial expressions and gestures. Proxemics (Option 1) is the study of personal space and physical distance. Chronemics (Option 3) focuses on the use of time in non-verbal communication. Haptics (Option 4) involves communication through touch. Therefore, Kinesics is the precise and correct scientific term for body language analysis.", "id": 2}, {"question": "The SMCR model is widely recognized for highlighting how the attributes of the source and receiver affect message fidelity. Who among the following theorists proposed the SMCR model of communication?", "options": [{"id": "1", "text": "Claude Shannon and Warren Weaver"}, {"id": "2", "text": "Wilbur Schramm"}, {"id": "3", "text": "David Berlo"}, {"id": "4", "text": "Harold Lasswell"}], "correctAnswer": "3", "explanation": "Detailed Explanation: David Berlo postulated the SMCR (Source-Message-Channel-Receiver) model in 1960. It uniquely emphasizes psychological variables like communication skills, attitudes, knowledge, and socio-cultural systems of both the source and receiver. Shannon and Weaver (Option 1) developed the mathematical/linear model involving noise. Schramm (Option 2) introduced the interactive model emphasizing a shared field of experience. Lasswell (Option 4) proposed the linear \"Who says what...\" model.", "id": 3}, {"question": "In the context of mass media and digital communication tools, which of the following is an example of an asynchronous communication medium?", "options": [{"id": "1", "text": "Live television broadcast"}, {"id": "2", "text": "Real-time telephone conversation"}, {"id": "3", "text": "Web-based video conferencing"}, {"id": "4", "text": "Electronic mail (E-mail)"}], "correctAnswer": "4", "explanation": "Detailed Explanation: Asynchronous communication happens when data is transmitted intermittently rather than in a steady stream, meaning the sender and receiver do not need to be present concurrently. E-mail is the classic example, as a message is sent and stored until the receiver chooses to open and read it. Live TV, telephone calls, and video conferencing are synchronous, requiring real-time, simultaneous presence and immediate feedback capabilities from all participating parties.", "id": 4}, {"question": "The term 'Entropy' was adapted into communication theory from thermodynamics. In the context of information theory, what does 'Entropy' relate to?", "options": [{"id": "1", "text": "The predictability and structural integrity of a message."}, {"id": "2", "text": "The strict orderliness and sequencing of the channel."}, {"id": "3", "text": "The measure of randomness, uncertainty, or noise in a system."}, {"id": "4", "text": "The cyclical feedback mechanism verifying message receipt."}], "correctAnswer": "3", "explanation": "Detailed Explanation: In Claude Shannon's Information Theory, entropy refers to the degree of uncertainty, randomness, or \"noise\" present in a communication situation. High entropy means a high degree of unpredictability or disorganization in the signal, making it harder for the receiver to decode the intended meaning accurately. Conversely, redundancy is used to combat entropy by increasing the predictability of the message.", "id": 5}, {"question": "Communication about communication, where an individual uses non-verbal cues (like a wink or a sarcastic tone) to help the receiver interpret the actual verbal message, is formally known as:", "options": [{"id": "1", "text": "Intra-personal communication"}, {"id": "2", "text": "Meta-communication"}, {"id": "3", "text": "Extra-personal communication"}, {"id": "4", "text": "Transcendent communication"}], "correctAnswer": "2", "explanation": "Detailed Explanation: Meta-communication literally means \"communication about communication.\" It encompasses all the non-verbal cues (tone of voice, body language, facial expressions) that carry meaning regarding how a verbal message should be interpreted (e.g., indicating whether a statement is a joke or a serious threat). Intra-personal (Option 1) is self-talk. Extra-personal (Option 3) involves communication with non-human entities (like machines or animals).", "id": 6}, {"question": "In the context of educational psychology and pedagogy, the primary objective of effective classroom communication is to:", "options": [{"id": "1", "text": "Unilaterally establish the teacher's indisputable authority."}, {"id": "2", "text": "Provide pure entertainment to maintain high attendance."}, {"id": "3", "text": "Shape student behavior, impart knowledge, and facilitate learning."}, {"id": "4", "text": "Enforce strict silence and passive listening among learners."}], "correctAnswer": "3", "explanation": "Detailed Explanation: Classroom communication is an applied, purposeful process. Its fundamental goal is not merely to control a room (Options 1 and 4) or entertain (Option 2), but to create a conducive environment for cognitive and behavioral development. It aims to actively engage students, clarify concepts, facilitate knowledge construction, and ultimately modify or shape the learners' behavior positively toward the curriculum's educational objectives.", "id": 7}, {"question": "In the study of mass media history and ethics, the term 'Yellow Journalism' is heavily scrutinized. What does it primarily refer to?", "options": [{"id": "1", "text": "Journalism strictly dedicated to ecological and environmental issues."}, {"id": "2", "text": "The use of sensationalism, exaggeration, and lurid news to attract readers."}, {"id": "3", "text": "State-controlled media dispensing government-sponsored propaganda."}, {"id": "4", "text": "Deep-dive investigative journalism exposing corporate financial scams."}], "correctAnswer": "2", "explanation": "Detailed Explanation: Yellow Journalism originated in the late 19th-century circulation wars between Joseph Pulitzer and William Randolph Hearst. It characterizes a style of newspaper reporting that relies on eye-catching headlines, sensationalism, exaggeration, and scandal-mongering over factual, well-researched news, purely to boost sales and circulation. It represents a breach of journalistic ethics, contrasting sharply with objective or investigative journalism.", "id": 8}, {"question": "During the fundamental process of communication, the specific act of the receiver interpreting the message and deriving subjective meaning from the transmitted symbols is termed:", "options": [{"id": "1", "text": "Encoding"}, {"id": "2", "text": "Channelizing"}, {"id": "3", "text": "Decoding"}, {"id": "4", "text": "Contextualizing"}], "correctAnswer": "3", "explanation": "Detailed Explanation: Decoding is the cognitive process undertaken by the receiver to translate the symbols, words, or gestures sent by the communicator into understandable thoughts and meanings. Encoding (Option 1) is the reverse process done by the sender (translating thoughts into symbols). Channelizing (Option 2) refers to the medium used. Contextualizing (Option 4) refers to setting the background.\nSection B: Moderate / Matching & Analytical Statements (40% = 12 Questions)\nFocus: Match the following, Chronological order, Statement-based (I & II).", "id": 9}, {"question": "Match List I (Categories of Non-Verbal Communication) with List II (Primary Study Focus).\nList I: A. Proxemics, B. Chronemics, C. Oculesics, D. Haptics\nList II: I. Communication via Touch, II. Eye behavior/contact, III. Space and physical distance, IV. Use and perception of Time", "options": [{"id": "1", "text": "A-III, B-IV, C-II, D-I"}, {"id": "2", "text": "A-IV, B-III, C-I, D-II"}, {"id": "3", "text": "A-III, B-II, C-IV, D-I"}, {"id": "4", "text": "A-I, B-IV, C-II, D-III"}], "correctAnswer": "1", "explanation": "Detailed Explanation: These are core non-verbal communication disciplines. Proxemics (A) studies personal space and distance (III). Chronemics (B) focuses on how time affects communication (IV). Oculesics (C) is the study of eye movement, eye behavior, and gaze (II). Haptics (D) explores how touch communicates emotional and relational cues (I). Option 1 correctly aligns all four technical terms with their respective domains.", "id": 10}, {"question": "Consider the following statements regarding organizational communication:\nStatement I: Grapevine communication represents a highly structured, officially sanctioned formal channel of communication within an organization.\nStatement II: The grapevine often transmits information much faster than formal channels, though it is highly susceptible to distortion and rumors.", "options": [{"id": "1", "text": "Both Statement I and Statement II are true."}, {"id": "2", "text": "Both Statement I and Statement II are false."}, {"id": "3", "text": "Statement I is true but Statement II is false."}, {"id": "4", "text": "Statement I is false but Statement II is true."}], "correctAnswer": "4", "explanation": "Detailed Explanation: Statement I is blatantly false; grapevine communication is the prime example of an informal, unofficial communication network that operates largely outside hierarchical structures. Statement II is fundamentally true; because it bypasses formal bureaucratic protocols, the grapevine spreads news rapidly across all levels, but its reliance on word-of-mouth makes it a primary source of gossip, rumor, and information distortion.", "id": 11}, {"question": "Arrange the primary components of the Shannon-Weaver linear model of communication in their correct sequential order:\nA. Channel\nB. Receiver\nC. Information Source\nD. Transmitter (Encoder)\nE. Destination", "options": [{"id": "1", "text": "C, A, D, B, E"}, {"id": "2", "text": "C, D, A, B, E"}, {"id": "3", "text": "D, C, A, B, E"}, {"id": "4", "text": "C, D, B, A, E"}], "correctAnswer": "2", "explanation": "Detailed Explanation: The Shannon-Weaver model, formulated in 1949, follows a strict linear mathematical sequence. It begins with the Information Source (C) which generates a message. This goes to a Transmitter (D) which encodes the message into a signal. The signal travels through a Channel (A), where it may encounter noise. The Receiver (B) picks up the signal and decodes it, ultimately delivering it to the Destination (E).", "id": 12}, {"question": "Match List I (Types of Communication Barriers) with List II (Practical Examples).\nList I: A. Physical Barrier, B. Psychological Barrier, C. Semantic Barrier, D. Organizational Barrier\nList II: I. Severe prejudice or emotional distress, II. Complex technical jargon, III. Rigid company policies and hierarchy, IV. Loud machinery noise on a factory floor", "options": [{"id": "1", "text": "A-IV, B-I, C-II, D-III"}, {"id": "2", "text": "A-IV, B-II, C-I, D-III"}, {"id": "3", "text": "A-III, B-I, C-II, D-IV"}, {"id": "4", "text": "A-I, B-IV, C-III, D-II"}], "correctAnswer": "1", "explanation": "Detailed Explanation: A Physical Barrier relates to environmental interference, such as loud machinery noise (A-IV). A Psychological Barrier is internal to the communicators, involving emotions, biases, or prejudice (B-I). A Semantic Barrier occurs due to language differences or misunderstood vocabulary, like heavy jargon (C-II). An Organizational Barrier stems from structural issues, such as rigid rules restricting free flow of information (D-III).", "id": 13}, {"question": "Consider the following statements regarding feedback in different communication contexts:\nStatement I: In traditional Mass Communication, feedback from the audience is typically immediate, direct, and voluminous.\nStatement II: In face-to-face Interpersonal Communication, feedback is generally delayed, constrained, and heavily mediated.", "options": [{"id": "1", "text": "Both Statement I and Statement II are true."}, {"id": "2", "text": "Both Statement I and Statement II are false."}, {"id": "3", "text": "Statement I is true but Statement II is false."}, {"id": "4", "text": "Statement I is false but Statement II is true."}], "correctAnswer": "2", "explanation": "Detailed Explanation: Both statements deliberately invert reality. In traditional Mass Communication (like TV or print), feedback is notoriously delayed, indirect, and representative rather than voluminous (Statement I is false). Conversely, in face-to-face Interpersonal Communication, feedback is immediate, rich, and direct, occurring simultaneously through non-verbal and verbal cues (Statement II is false).", "id": 14}, {"question": "Arrange the following historical milestones in the evolution of human communication technologies in correct chronological order:\nA. Invention of the movable-type Printing Press\nB. Development of the electrical Telegraph\nC. Invention of Radio broadcasting\nD. Advent of Television\nE. Creation of the World Wide Web", "options": [{"id": "1", "text": "A, B, C, D, E"}, {"id": "2", "text": "A, C, B, D, E"}, {"id": "3", "text": "B, A, C, E, D"}, {"id": "4", "text": "A, B, D, C, E"}], "correctAnswer": "1", "explanation": "Detailed Explanation: The chronological sequence traces human technological progress. A: Printing press (Gutenberg, ~1440). B: Electrical Telegraph (Morse/others, 1830s-40s). C: Radio (Marconi/others, late 1890s-1920s). D: Television (Farnsworth/Baird, late 1920s-1930s). E: World Wide Web (Tim Berners-Lee, 1989). Option 1 strictly follows this accurate historical timeline.", "id": 15}, {"question": "Match List I (Johari Window Quadrants) with List II (Self/Other Awareness States).\nList I: A. Open Area (Arena), B. Blind Area, C. Hidden Area (Fa\u00e7ade), D. Unknown Area\nList II: I. Known to self, unknown to others; II. Unknown to self, known to others; III. Known to self, known to others; IV. Unknown to self, unknown to others", "options": [{"id": "1", "text": "A-III, B-II, C-I, D-IV"}, {"id": "2", "text": "A-I, B-II, C-III, D-IV"}, {"id": "3", "text": "A-III, B-I, C-II, D-IV"}, {"id": "4", "text": "A-II, B-III, C-I, D-IV"}], "correctAnswer": "1", "explanation": "Detailed Explanation: Developed by Joseph Luft and Harry Ingham, the Johari Window measures self-awareness. Open Area (A) contains traits known to self and others (III). Blind Area (B) contains traits others see, but the individual is unaware of (II). Hidden Area (C) contains secrets known to self but concealed from others (I). Unknown Area (D) contains traits entirely undiscovered by self and others (IV).", "id": 16}, {"question": "Analyze the following statements concerning teacher-student interaction:\nStatement I: 'Teacher immediacy' refers to verbal and non-verbal communication behaviors that actively reduce the physical and psychological distance between teachers and students.\nStatement II: A high degree of teacher immediacy typically results in student anxiety, lower motivation, and poorer overall academic outcomes.", "options": [{"id": "1", "text": "Both Statement I and Statement II are true."}, {"id": "2", "text": "Both Statement I and Statement II are false."}, {"id": "3", "text": "Statement I is true but Statement II is false."}, {"id": "4", "text": "Statement I is false but Statement II is true."}], "correctAnswer": "3", "explanation": "Detailed Explanation: Statement I correctly defines \"teacher immediacy\" (a concept introduced by Mehrabian), which includes actions like smiling, eye contact, and using inclusive language to bridge psychological gaps. Statement II is completely false; decades of pedagogical research confirm that high teacher immediacy correlates positively with increased student motivation, better affective learning, and enhanced academic performance.", "id": 17}, {"question": "Arrange Bruce Tuckman's widely accepted stages of group communication and team development in their correct chronological sequence:\nA. Norming\nB. Storming\nC. Performing\nD. Forming\nE. Adjourning", "options": [{"id": "1", "text": "D, B, A, C, E"}, {"id": "2", "text": "D, A, B, C, E"}, {"id": "3", "text": "B, D, A, C, E"}, {"id": "4", "text": "D, B, C, A, E"}], "correctAnswer": "1", "explanation": "Detailed Explanation: Tuckman's 1965 model outlines group development. Groups start by \"Forming\" (D) where members meet and are polite. They then enter \"Storming\" (B) where conflicts and personality clashes arise. Resolution leads to \"Norming\" (A), establishing rules and cohesion. The group then peaks at \"Performing\" (C) to achieve goals. Finally, the group disbands during \"Adjourning\" (E).", "id": 18}, {"question": "Match List I (Mass Media Theories) with List II (Core Premises).\nList I: A. Agenda-Setting Theory, B. Cultivation Theory, C. Uses and Gratifications Theory, D. Two-Step Flow Theory\nList II: I. Heavy TV viewing shapes long-term perceptions of reality. II. Audiences are active and seek specific media to fulfill psychological needs. III. Media doesn't dictate what to think, but heavily influences what to think about. IV. Opinion leaders intercept media messages and pass interpreted content to the masses.", "options": [{"id": "1", "text": "A-III, B-I, C-II, D-IV"}, {"id": "2", "text": "A-I, B-III, C-II, D-IV"}, {"id": "3", "text": "A-III, B-II, C-I, D-IV"}, {"id": "4", "text": "A-II, B-I, C-IV, D-III"}], "correctAnswer": "1", "explanation": "Detailed Explanation: McCombs and Shaw's Agenda-Setting (A) proposes media highlights certain issues over others (III). Gerbner's Cultivation Theory (B) argues chronic media exposure shapes worldviews (I). Uses and Gratifications (C) turns the focus on what people do with media rather than what media does to people (II). Katz and Lazarsfeld's Two-Step Flow (D) introduces opinion leaders as vital intermediaries (IV).", "id": 19}, {"question": "Consider the following statements regarding Intercultural Communication:\nStatement I: Ethnocentrism acts as a major facilitator and bridge in achieving effective intercultural communication.\nStatement II: Empathy and cultural relativism help overcome intercultural barriers by allowing individuals to appreciate perspectives devoid of their own cultural biases.", "options": [{"id": "1", "text": "Both Statement I and Statement II are true."}, {"id": "2", "text": "Both Statement I and Statement II are false."}, {"id": "3", "text": "Statement I is true but Statement II is false."}, {"id": "4", "text": "Statement I is false but Statement II is true."}], "correctAnswer": "4", "explanation": "Detailed Explanation: Statement I is false because Ethnocentrism\u2014the belief in the inherent superiority of one's own culture\u2014acts as a severe barrier, not a facilitator, causing prejudice and misinterpretation. Statement II is true; empathy and cultural relativism (understanding a culture on its own terms) are highly effective tools for mitigating ethnocentric bias and fostering deep, respectful cross-cultural communication.", "id": 20}, {"question": "Match List I (Types of Listening) with List II (Primary Objective).\nList I: A. Active/Comprehensive Listening, B. Critical Listening, C. Empathic Listening, D. Appreciative Listening\nList II: I. Listening purely for pleasure or enjoyment. II. Evaluating and analyzing the logic or validity of the message. III. Fully concentrating to understand, respond, and retain information. IV. Focusing on understanding the speaker's emotional state and feelings.", "options": [{"id": "1", "text": "A-III, B-II, C-IV, D-I"}, {"id": "2", "text": "A-IV, B-III, C-I, D-II"}, {"id": "3", "text": "A-III, B-IV, C-II, D-I"}, {"id": "4", "text": "A-II, B-I, C-IV, D-III"}], "correctAnswer": "1", "explanation": "Detailed Explanation: Active Listening (A) requires total cognitive involvement to comprehend (III). Critical Listening (B) is used during debates or sales pitches to judge or evaluate the message (II). Empathic Listening (C) is heavily utilized in counseling to provide emotional support and understand feelings (IV). Appreciative Listening (D) is reserved for consuming media for aesthetic enjoyment (I).\nSection C: Difficult / Analytical & Case-Based Application (30% = 9 Questions)\nFocus: Assertion-Reasoning (A-R), Short Case Studies, Analytical application.", "id": 21}, {"question": "Given below are two statements, one labeled as Assertion (A) and the other as Reason (R).\nAssertion (A): The usage of highly technical jargon by a professor in a classroom of first-year beginners creates a profound semantic barrier to communication.\nReason (R): Semantic barriers arise primarily due to physical distortion in the transmission channel, such as background static, poor acoustics, or erratic internet connectivity.", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)."}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)."}, {"id": "3", "text": "(A) is true, but (R) is false."}, {"id": "4", "text": "(A) is false, but (R) is true."}], "correctAnswer": "3", "explanation": "Detailed Explanation: Assertion (A) is undeniably true; using terminology beyond the students' vocabulary range causes a breakdown in meaning, which is the definition of a semantic barrier. However, Reason (R) is completely false; physical distortion, static, and poor internet are examples of physical or technical barriers, not semantic ones. Semantic barriers pertain entirely to signs, symbols, language, and meaning formulation.", "id": 22}, {"question": "Given below are two statements, one labeled as Assertion (A) and the other as Reason (R).\nAssertion (A): Modern and effective classroom communication is inherently viewed as a transactional process rather than a linear or one-way process.\nReason (R): In a transactional process, both the educator and the learners simultaneously and continuously act as senders and receivers, mutually negotiating meaning through real-time feedback.", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)."}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)."}, {"id": "3", "text": "(A) is true, but (R) is false."}, {"id": "4", "text": "(A) is false, but (R) is true."}], "correctAnswer": "1", "explanation": "Detailed Explanation: Both the Assertion and the Reason are factually accurate. The linear model (like a lecture without questions) is outdated for effective pedagogy. The transactional model accurately reflects modern classrooms where communication is dynamic, simultaneous, and mutually shaping. Reason (R) perfectly defines the transactional theory of communication and acts as the direct, logical explanation for why Assertion (A) categorizes modern classrooms under this model.", "id": 23}, {"question": "Read the short case application:\nA multinational corporation replaces its monthly, text-dense email reports with an interactive, rich-media video conferencing meeting where stakeholders can immediately ask questions and read body language. According to Daft and Lengel's 'Media Richness Theory', this shift will most likely result in:", "options": [{"id": "1", "text": "Increased ambiguity and greater misinterpretation of complex statistical data."}, {"id": "2", "text": "Slower feedback loops causing delayed executive decision-making."}, {"id": "3", "text": "A higher capacity to process complex, ambiguous issues due to the availability of multiple cues and immediate feedback."}, {"id": "4", "text": "The complete and permanent elimination of physiological and organizational barriers."}], "correctAnswer": "3", "explanation": "Detailed Explanation: Media Richness Theory evaluates a communication medium's ability to reproduce information sent over it without distortion. Video conferencing is a \"rich\" medium (providing vocal tone, facial expressions, and instant feedback) compared to a \"lean\" medium like email. Therefore, shifting to video conferencing significantly enhances the organization's ability to tackle highly ambiguous and complex issues efficiently.", "id": 24}, {"question": "Given below are two statements, one labeled as Assertion (A) and the other as Reason (R).\nAssertion (A): The proliferation of transnational mass media often contributes to cultural homogenization on a global scale.\nReason (R): The repeated global broadcast and digital streaming of dominant cultural narratives standardize consumer tastes, values, and behavioral norms across distinct and diverse societies.", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)."}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)."}, {"id": "3", "text": "(A) is true, but (R) is false."}, {"id": "4", "text": "(A) is false, but (R) is true."}], "correctAnswer": "1", "explanation": "Detailed Explanation: Assertion (A) accurately states a widely documented effect of globalization and mass media: cultural homogenization, where local cultures are overshadowed by a dominant global culture (often Western). Reason (R) correctly explains the mechanism behind this\u2014mass media acts as an ideological vehicle that continuously streams uniform consumer habits, pop culture, and values worldwide, eroding local distinctions.", "id": 25}, {"question": "In an international postgraduate classroom, a Western teacher notes that students from certain Asian backgrounds consistently avert their gaze and avoid direct eye contact during debates. If the teacher interprets this purely as a lack of confidence or evasiveness, the teacher is primarily failing to recognize which cultural communication concept?", "options": [{"id": "1", "text": "The structural norms of low-context communication."}, {"id": "2", "text": "The cultural variance in interpreting high power distance and respect-based non-verbal cues."}, {"id": "3", "text": "The strict scientific principles of Chronemics."}, {"id": "4", "text": "The proven universal standards of Paralinguistics."}], "correctAnswer": "2", "explanation": "Detailed Explanation: In many high power distance cultures (common in parts of Asia), avoiding direct eye contact with an authority figure (like a teacher) is a non-verbal cue signifying profound respect and deference, not evasion. Western cultures (usually lower power distance) equate eye contact with honesty and confidence. The teacher's misinterpretation reveals an ethnocentric failure to understand intercultural variances in power dynamics and respect markers.", "id": 26}, {"question": "Given below are two statements, one labeled as Assertion (A) and the other as Reason (R).\nAssertion (A): When a speaker's verbal message contradicts their non-verbal message, the receiver will almost universally believe the non-verbal message.\nReason (R): Non-verbal cues, such as vocal inflection and micro-expressions, are deeply rooted in the subconscious, making them significantly harder to fake and generally more reliable indicators of genuine emotion.", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)."}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)."}, {"id": "3", "text": "(A) is true, but (R) is false."}, {"id": "4", "text": "(A) is false, but (R) is true."}], "correctAnswer": "1", "explanation": "Detailed Explanation: This draws on Dr. Albert Mehrabian's seminal research (the 7-38-55 rule). Assertion (A) is correct; humans default to trusting body language and tone over words during incongruent communication. Reason (R) is the scientifically accepted explanation for this behavioral phenomenon: words are conscious and easily fabricated, whereas the autonomic nervous system heavily influences non-verbal micro-behaviors, betraying true feelings.", "id": 27}, {"question": "Case Study Application:\nDuring a high-stakes university syndicate meeting, a highly cohesive group of senior professors is discussing a radical syllabus overhaul. Despite several glaring flaws in the proposal, members quickly agree to it, deliberately suppressing their own dissenting opinions and ignoring external warnings solely to maintain interpersonal harmony and group consensus. In communication studies, this toxic phenomenon is strictly termed as:", "options": [{"id": "1", "text": "Group Polarization"}, {"id": "2", "text": "Social Loafing"}, {"id": "3", "text": "Groupthink"}, {"id": "4", "text": "Cognitive Dissonance"}], "correctAnswer": "3", "explanation": "Detailed Explanation: \"Groupthink,\" a psychological phenomenon coined by Irving Janis, occurs within a cohesive group of people where the desire for harmony, conformity, and avoiding conflict overrides rational decision-making and critical evaluation of alternatives. Social Loafing (Option 2) refers to putting in less effort in a group. Group Polarization (Option 1) is when a group makes a more extreme decision. Groupthink is the exact terminology for the case provided.", "id": 28}, {"question": "Given below are two statements, one labeled as Assertion (A) and the other as Reason (R).\nAssertion (A): In low-context cultures, effective communication relies heavily on implicit understandings, shared history, and subtle non-verbal cues rather than explicitly spoken words.\nReason (R): Anthropologist Edward T. Hall postulated that low-context cultures value directness, clarity, and explicitly spelled-out verbal messages to prevent ambiguity.", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)."}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)."}, {"id": "3", "text": "(A) is true, but (R) is false."}, {"id": "4", "text": "(A) is false, but (R) is true."}], "correctAnswer": "4", "explanation": "Detailed Explanation: Assertion (A) provides the exact definition of a High-Context culture (like Japan or Arab countries), not a Low-Context culture, rendering it entirely false. Reason (R), however, correctly explains Edward T. Hall's theory regarding Low-Context cultures (like the USA or Germany), which indeed rely heavily on explicit, direct, and transparent verbal communication where the words carry the primary meaning.", "id": 29}, {"question": "A mid-level college administrator receives a highly critical report regarding student dissatisfaction with hostel facilities. Before passing this report upward to the Vice-Chancellor, the administrator intentionally alters the language to soften the criticism and completely omits several negative statistical metrics to make the department look better. This specific structural barrier in communication is technically termed as:", "options": [{"id": "1", "text": "Information Overload"}, {"id": "2", "text": "Filtering"}, {"id": "3", "text": "Semantic Distortion"}, {"id": "4", "text": "The Halo Effect"}], "correctAnswer": "2", "explanation": "Detailed Explanation: Filtering is a prominent barrier in upward organizational communication. It occurs when a sender deliberately manipulates, dilutes, or omits information so it will be seen more favorably by the receiver (usually upper management). Because subordinates fear the consequences of bearing bad news, they \"filter\" the message. It is a psychological-structural issue, entirely distinct from information overload or semantic distortion.", "id": 30}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                const initStatus = {};
+                TEST_DATA.questions.forEach((q, i) => { initStatus[q.id] = i === 0 ? 'not_answered' : 'not_visited'; });
+                setStatus(initStatus);
+            }, []);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            // =====================================
+            // RESULT SCREEN
+            // =====================================
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            
+                            {/* Result Header */}
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        {/* Fixed Badge Layout: Text Left, Icon Right */}
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            {/* Analytics Grid */}
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Detailed Solutions */}
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            // TEST INTERFACE
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    
+                    {/* Strict Mode Warning */}
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Pause Overlay */}
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Navbar */}
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    {/* Main Layout */}
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        {/* Sidebar Palette */}
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
