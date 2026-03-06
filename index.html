@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Examtym | Premium Test Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-3VM8E0EVYF"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -14,46 +15,61 @@
     </script>
     <style>
         :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --bg-color: #F9FAFB;
+            --primary: #2563EB;
+            --primary-hover: #1D4ED8;
+            --accent: #F59E0B;
+            --accent2: #10B981;
+            --bg-color: #F0F4FF;
             --card-bg: #FFFFFF;
-            --text-main: #111827;
-            --text-muted: #6B7280;
-            --border-color: #E5E7EB;
+            --text-main: #0F172A;
+            --text-muted: #64748B;
+            --border-color: #E2E8F0;
+            --shadow: 0 4px 24px rgba(37,99,235,0.07);
+            --shadow-hover: 0 12px 40px rgba(37,99,235,0.15);
+            --skeleton: #E2E8F0;
+            --skeleton-shine: #F8FAFC;
         }
 
         [data-theme="dark"] {
-            --bg-color: #111827;
-            --card-bg: #1F2937;
-            --text-main: #F9FAFB;
-            --text-muted: #9CA3AF;
-            --border-color: #374151;
+            --bg-color: #0B1120;
+            --card-bg: #141E30;
+            --text-main: #F1F5F9;
+            --text-muted: #94A3B8;
+            --border-color: #1E2D45;
+            --shadow: 0 4px 24px rgba(0,0,0,0.3);
+            --shadow-hover: 0 12px 40px rgba(37,99,235,0.25);
+            --skeleton: #1E2D45;
+            --skeleton-shine: #243552;
         }
 
+        * { box-sizing: border-box; }
+
         body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            font-family: 'DM Sans', sans-serif;
             background-color: var(--bg-color);
             color: var(--text-main);
             margin: 0;
             padding: 0;
-            transition: background-color 0.3s, color 0.3s;
+            transition: background-color 0.4s, color 0.4s;
+            min-height: 100vh;
         }
 
+        /* ── HEADER ── */
         header {
             background: var(--card-bg);
-            padding: 1rem 5%;
+            padding: 0.9rem 5%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: var(--shadow);
             position: sticky;
             top: 0;
-            z-index: 100;
+            z-index: 200;
             border-bottom: 1px solid var(--border-color);
         }
 
         .logo {
+            font-family: 'Syne', sans-serif;
             font-size: 1.5rem;
             font-weight: 800;
             color: var(--primary);
@@ -61,75 +77,155 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            letter-spacing: -0.5px;
         }
 
-        .header-actions {
+        .logo-icon {
+            background: var(--primary);
+            color: white;
+            width: 34px;
+            height: 34px;
+            border-radius: 9px;
             display: flex;
-            gap: 15px;
             align-items: center;
+            justify-content: center;
+            font-size: 0.95rem;
         }
+
+        .header-actions { display: flex; gap: 12px; align-items: center; }
+
+        .progress-pill {
+            background: rgba(37,99,235,0.1);
+            color: var(--primary);
+            border: none;
+            padding: 0.45rem 1rem;
+            border-radius: 20px;
+            font-size: 0.82rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+        .progress-pill:hover { background: rgba(37,99,235,0.18); }
 
         .theme-toggle {
-            background: none;
-            border: none;
+            background: var(--bg-color);
+            border: 1px solid var(--border-color);
             color: var(--text-main);
-            font-size: 1.2rem;
+            font-size: 1rem;
             cursor: pointer;
-            padding: 5px;
+            padding: 7px 10px;
+            border-radius: 10px;
             display: flex;
             align-items: center;
+            transition: background 0.2s;
         }
+        .theme-toggle:hover { background: var(--border-color); }
 
+        /* ── HERO ── */
         .hero {
-            background: linear-gradient(135deg, var(--primary) 0%, #7C3AED 100%);
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 45%, #0EA5E9 100%);
             color: white;
             text-align: center;
-            padding: 4rem 2rem;
-            margin-bottom: 2rem;
+            padding: 3.5rem 2rem 3rem;
+            position: relative;
+            overflow: hidden;
         }
 
+        .hero::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+
+        .hero-content { position: relative; z-index: 1; }
+
         .hero h1 {
-            font-size: 2.5rem;
-            margin: 0 0 1rem 0;
+            font-family: 'Syne', sans-serif;
+            font-size: 2.6rem;
+            margin: 0 0 0.75rem;
             font-weight: 800;
+            letter-spacing: -1px;
+            animation: fadeUp 0.6s ease both;
         }
 
         .hero p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-            max-width: 600px;
-            margin: 0 auto;
+            font-size: 1.05rem;
+            opacity: 0.88;
+            max-width: 520px;
+            margin: 0 auto 1.5rem;
+            animation: fadeUp 0.6s 0.1s ease both;
         }
 
+        .hero-stats {
+            display: flex;
+            justify-content: center;
+            gap: 2.5rem;
+            animation: fadeUp 0.6s 0.2s ease both;
+        }
+
+        .hero-stat { text-align: center; }
+        .hero-stat .num {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            display: block;
+        }
+        .hero-stat .lbl { font-size: 0.8rem; opacity: 0.75; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── CONTAINER ── */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 5% 4rem 5%;
+            padding: 2rem 5% 5rem;
         }
 
+        /* ── CONTROLS ── */
         .controls {
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
+            gap: 1.2rem;
             margin-bottom: 2rem;
+        }
+
+        .controls-row {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            flex-wrap: wrap;
         }
 
         .search-box {
             position: relative;
-            width: 100%;
-            max-width: 500px;
+            flex: 1;
+            min-width: 220px;
+            max-width: 460px;
         }
 
         .search-box input {
             width: 100%;
-            padding: 1rem 1rem 1rem 2.5rem;
+            padding: 0.85rem 1rem 0.85rem 2.6rem;
             border-radius: 12px;
-            border: 1px solid var(--border-color);
+            border: 1.5px solid var(--border-color);
             background: var(--card-bg);
             color: var(--text-main);
-            font-size: 1rem;
+            font-size: 0.95rem;
+            font-family: 'DM Sans', sans-serif;
             outline: none;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-box input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
         }
 
         .search-box i {
@@ -138,227 +234,801 @@
             top: 50%;
             transform: translateY(-50%);
             color: var(--text-muted);
+            font-size: 0.9rem;
         }
 
+        .sort-select {
+            padding: 0.85rem 1.1rem;
+            border-radius: 12px;
+            border: 1.5px solid var(--border-color);
+            background: var(--card-bg);
+            color: var(--text-main);
+            font-size: 0.9rem;
+            font-family: 'DM Sans', sans-serif;
+            font-weight: 500;
+            cursor: pointer;
+            outline: none;
+            appearance: none;
+            padding-right: 2.2rem;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748B' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.8rem center;
+            transition: border-color 0.2s;
+        }
+        .sort-select:focus { border-color: var(--primary); }
+
+        .results-count {
+            margin-left: auto;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        /* ── FILTERS ── */
         .filters {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             flex-wrap: wrap;
         }
 
         .filter-btn {
             background: var(--card-bg);
-            border: 1px solid var(--border-color);
-            color: var(--text-main);
-            padding: 0.6rem 1.2rem;
+            border: 1.5px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 0.5rem 1.1rem;
             border-radius: 25px;
             cursor: pointer;
             font-weight: 600;
-            font-size: 0.9rem;
+            font-size: 0.83rem;
+            font-family: 'DM Sans', sans-serif;
             transition: all 0.2s;
+            white-space: nowrap;
         }
 
-        .filter-btn.active, .filter-btn:hover {
+        .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .filter-btn.active {
             background: var(--primary);
             color: white;
             border-color: var(--primary);
         }
 
+        /* ── GRID ── */
         .test-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 1.5rem;
+            gap: 1.4rem;
         }
 
+        /* ── SKELETON ── */
+        .skeleton-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            animation: skeletonPulse 1.4s ease-in-out infinite;
+        }
+
+        .skel {
+            background: linear-gradient(90deg, var(--skeleton) 25%, var(--skeleton-shine) 50%, var(--skeleton) 75%);
+            background-size: 200% 100%;
+            border-radius: 6px;
+            animation: shimmer 1.4s infinite;
+        }
+
+        .skel-tag  { height: 22px; width: 80px; margin-bottom: 1rem; border-radius: 8px; }
+        .skel-h3   { height: 20px; width: 90%; margin-bottom: 0.5rem; }
+        .skel-h3b  { height: 20px; width: 65%; margin-bottom: 1.2rem; }
+        .skel-meta { height: 14px; width: 55%; margin-bottom: 1.5rem; }
+        .skel-btn  { height: 42px; border-radius: 10px; }
+
+        @keyframes shimmer {
+            0%   { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ── CARD ── */
         .card {
             background: var(--card-bg);
             border-radius: 16px;
             padding: 1.5rem;
             border: 1px solid var(--border-color);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+            box-shadow: var(--shadow);
             display: flex;
             flex-direction: column;
-            transition: transform 0.2s;
+            transition: transform 0.22s, box-shadow 0.22s;
+            animation: cardIn 0.35s ease both;
+            position: relative;
+            overflow: hidden;
         }
 
         .card:hover {
-            transform: translateY(-4px);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        @keyframes cardIn {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .card-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.9rem;
         }
 
         .tag {
-            display: inline-block;
-            background: rgba(79, 70, 229, 0.1);
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            background: rgba(37,99,235,0.09);
             color: var(--primary);
-            font-size: 0.75rem;
+            font-size: 0.72rem;
             font-weight: 700;
-            padding: 0.4rem 0.8rem;
+            padding: 0.35rem 0.75rem;
             border-radius: 8px;
-            margin-bottom: 1rem;
-            width: max-content;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-new {
+            background: linear-gradient(135deg, #F59E0B, #EF4444);
+            color: white;
+            font-size: 0.68rem;
+            font-weight: 700;
+            padding: 0.3rem 0.6rem;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            animation: badgePop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes badgePop {
+            from { transform: scale(0); }
+            to   { transform: scale(1); }
         }
 
         .card h3 {
-            margin: 0 0 0.75rem 0;
-            font-size: 1.25rem;
+            margin: 0 0 0.75rem;
+            font-family: 'Syne', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 700;
             line-height: 1.4;
+            letter-spacing: -0.2px;
         }
 
         .meta {
             display: flex;
             gap: 1rem;
             color: var(--text-muted);
-            font-size: 0.85rem;
-            margin-bottom: 1.5rem;
+            font-size: 0.82rem;
+            margin-bottom: 1.2rem;
+            flex-wrap: wrap;
+        }
+
+        .meta span { display: flex; align-items: center; gap: 5px; }
+
+        .card-footer {
+            margin-top: auto;
+            display: flex;
+            gap: 8px;
+            align-items: center;
         }
 
         .btn {
-            margin-top: auto;
+            flex: 1;
             background: var(--primary);
             color: white;
             text-align: center;
-            padding: 0.8rem;
+            padding: 0.75rem;
             border-radius: 10px;
             text-decoration: none;
             font-weight: 700;
+            font-size: 0.9rem;
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 8px;
+            gap: 7px;
+            transition: background 0.2s, transform 0.1s;
+            font-family: 'DM Sans', sans-serif;
+        }
+
+        .btn:hover { background: var(--primary-hover); }
+        .btn:active { transform: scale(0.97); }
+
+        .btn.done {
+            background: var(--accent2);
+            cursor: default;
+        }
+
+        .mark-btn {
+            background: var(--bg-color);
+            border: 1.5px solid var(--border-color);
+            color: var(--text-muted);
+            width: 40px;
+            height: 40px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .mark-btn:hover { border-color: var(--accent2); color: var(--accent2); }
+        .mark-btn.done  { background: rgba(16,185,129,0.1); border-color: var(--accent2); color: var(--accent2); }
+
+        .done-ribbon {
+            position: absolute;
+            top: 12px;
+            right: -22px;
+            background: var(--accent2);
+            color: white;
+            font-size: 0.65rem;
+            font-weight: 700;
+            padding: 3px 28px;
+            transform: rotate(45deg);
+            letter-spacing: 0.5px;
+        }
+
+        /* ── PROGRESS MODAL ── */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 500;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(4px);
+        }
+        .modal-overlay.open { display: flex; }
+
+        .modal {
+            background: var(--card-bg);
+            border-radius: 20px;
+            padding: 2rem;
+            width: 90%;
+            max-width: 480px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            animation: modalIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+        }
+
+        @keyframes modalIn {
+            from { transform: scale(0.85); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.3rem;
+            margin: 0;
+            font-weight: 800;
+        }
+
+        .modal-close {
+            background: var(--bg-color);
+            border: none;
+            color: var(--text-muted);
+            width: 34px;
+            height: 34px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .progress-overview {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-box {
+            background: var(--bg-color);
+            border-radius: 12px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .stat-box .n {
+            font-family: 'Syne', sans-serif;
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--primary);
+            display: block;
+        }
+
+        .stat-box .l { font-size: 0.8rem; color: var(--text-muted); }
+
+        .progress-bar-wrap { margin-bottom: 1.5rem; }
+        .progress-bar-wrap label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: var(--border-color);
+            border-radius: 99px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), #0EA5E9);
+            border-radius: 99px;
+            transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        .modal-actions { display: flex; gap: 10px; }
+
+        .btn-outline {
+            flex: 1;
+            background: none;
+            border: 1.5px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.7rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            transition: border-color 0.2s;
+        }
+        .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+        .btn-danger {
+            flex: 1;
+            background: none;
+            border: 1.5px solid #FCA5A5;
+            color: #EF4444;
+            padding: 0.7rem;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
             transition: background 0.2s;
         }
+        .btn-danger:hover { background: rgba(239,68,68,0.08); }
 
-        .btn:hover {
-            background: var(--primary-hover);
+        /* ── TOAST ── */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+            padding: 0.9rem 1.3rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            z-index: 999;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
+        .toast.show { transform: translateY(0); opacity: 1; }
+        .toast-icon { font-size: 1.1rem; }
 
-        #loading {
+        /* ── EMPTY STATE ── */
+        .empty-state {
+            grid-column: 1 / -1;
             text-align: center;
-            padding: 3rem;
+            padding: 4rem 2rem;
             color: var(--text-muted);
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 1rem; opacity: 0.4; display: block; }
+        .empty-state p { font-size: 1rem; margin: 0; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 600px) {
+            .hero h1 { font-size: 1.9rem; }
+            .hero-stats { gap: 1.5rem; }
+            .hero-stat .num { font-size: 1.4rem; }
+            .controls-row { flex-direction: column; align-items: stretch; }
+            .search-box { max-width: 100%; }
+            .results-count { margin-left: 0; }
+            .sort-select { width: 100%; }
         }
     </style>
 </head>
 <body>
 
     <header>
-        <a href="#" class="logo"><i class="fa-solid fa-graduation-cap"></i> Examtym</a>
+        <a href="#" class="logo">
+            <span class="logo-icon"><i class="fa-solid fa-graduation-cap"></i></span>
+            Examtym
+        </a>
         <div class="header-actions">
+            <button class="progress-pill" id="openProgressModal">
+                <i class="fa-solid fa-chart-simple"></i>
+                <span id="progressPillText">My Progress</span>
+            </button>
             <button class="theme-toggle" id="themeToggle"><i class="fa-solid fa-moon"></i></button>
         </div>
     </header>
 
     <div class="hero">
-        <h1>Master Your Preparation</h1>
-        <p>Access high-quality mock tests for UGC NET, CUET PG, and more.</p>
+        <div class="hero-content">
+            <h1>Master Your Preparation</h1>
+            <p>Access high-quality mock tests for UGC NET, CUET PG, and more. Track every attempt.</p>
+            <div class="hero-stats">
+                <div class="hero-stat">
+                    <span class="num" id="heroTotal">—</span>
+                    <span class="lbl">Total Tests</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="num" id="heroAttempted">0</span>
+                    <span class="lbl">Attempted</span>
+                </div>
+                <div class="hero-stat">
+                    <span class="num" id="heroSubjects">—</span>
+                    <span class="lbl">Subjects</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="container">
         <div class="controls">
-            <div class="search-box">
-                <i class="fa-solid fa-search"></i>
-                <input type="text" id="searchInput" placeholder="Search for subjects or topics...">
+            <div class="controls-row">
+                <div class="search-box">
+                    <i class="fa-solid fa-search"></i>
+                    <input type="text" id="searchInput" placeholder="Search subjects or topics...">
+                </div>
+                <select class="sort-select" id="sortSelect">
+                    <option value="default">Sort: Default</option>
+                    <option value="newest">Sort: Newest First</option>
+                    <option value="oldest">Sort: Oldest First</option>
+                    <option value="az">Sort: A → Z</option>
+                    <option value="za">Sort: Z → A</option>
+                    <option value="questions_asc">Sort: Fewest Questions</option>
+                    <option value="questions_desc">Sort: Most Questions</option>
+                </select>
+                <span class="results-count" id="resultsCount"></span>
             </div>
             <div class="filters" id="filterContainer"></div>
         </div>
 
-        <div id="loading"><i class="fas fa-spinner fa-spin"></i> Loading test library...</div>
         <div class="test-grid" id="test-container"></div>
     </div>
 
+    <!-- Progress Modal -->
+    <div class="modal-overlay" id="progressModal">
+        <div class="modal">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-chart-simple" style="color:var(--primary)"></i> My Progress</h2>
+                <button class="modal-close" id="closeProgressModal"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="progress-overview">
+                <div class="stat-box">
+                    <span class="n" id="modalAttempted">0</span>
+                    <span class="l">Tests Attempted</span>
+                </div>
+                <div class="stat-box">
+                    <span class="n" id="modalRemaining">0</span>
+                    <span class="l">Remaining</span>
+                </div>
+            </div>
+            <div class="progress-bar-wrap">
+                <label>
+                    <span>Overall Completion</span>
+                    <span id="modalPercent">0%</span>
+                </label>
+                <div class="progress-bar">
+                    <div class="progress-bar-fill" id="modalProgressFill" style="width:0%"></div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn-outline" id="closeProgressModal2">Close</button>
+                <button class="btn-danger" id="resetProgress">Reset Progress</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast">
+        <span class="toast-icon" id="toastIcon">✅</span>
+        <span id="toastMsg">Marked as done!</span>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <script>
-        // Dark Mode Toggle
+        // ── THEME ──
         const themeToggle = document.getElementById('themeToggle');
+        const savedTheme = localStorage.getItem('examtym_theme') || 'light';
+        document.body.dataset.theme = savedTheme;
+        themeToggle.innerHTML = savedTheme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
+
         themeToggle.addEventListener('click', () => {
             const isDark = document.body.dataset.theme === 'dark';
-            document.body.dataset.theme = isDark ? 'light' : 'dark';
-            themeToggle.innerHTML = isDark ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+            const newTheme = isDark ? 'light' : 'dark';
+            document.body.dataset.theme = newTheme;
+            localStorage.setItem('examtym_theme', newTheme);
+            themeToggle.innerHTML = newTheme === 'dark' ? '<i class="fa-solid fa-sun"></i>' : '<i class="fa-solid fa-moon"></i>';
         });
 
+        // ── PROGRESS STORAGE ──
+        function getAttempted() {
+            try { return JSON.parse(localStorage.getItem('examtym_attempted') || '[]'); }
+            catch { return []; }
+        }
+
+        function setAttempted(arr) {
+            localStorage.setItem('examtym_attempted', JSON.stringify(arr));
+        }
+
+        function toggleAttempted(id) {
+            const arr = getAttempted();
+            const idx = arr.indexOf(id);
+            if (idx === -1) { arr.push(id); showToast('✅', 'Marked as attempted!'); }
+            else            { arr.splice(idx, 1); showToast('↩️', 'Removed from attempted.'); }
+            setAttempted(arr);
+            updateProgressUI();
+            return idx === -1;
+        }
+
+        // ── TOAST ──
+        let toastTimer;
+        function showToast(icon, msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastIcon').textContent = icon;
+            document.getElementById('toastMsg').textContent = msg;
+            t.classList.add('show');
+            clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => t.classList.remove('show'), 2500);
+        }
+
+        // ── DATA ──
         const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTp4gzDWBvB6kVTJOTjv89SwpUsgt5OVUU1ZsfYTOxiYft0GIEy6JaY7W-C12k86WDrzOProbGT-9Wo/pub?output=csv';
         let allTests = [];
         let currentFilter = 'All';
 
-        // Load Data from Google Sheets
-        fetch(csvUrl)
-            .then(res => res.text())
-            .then(csv => {
-                document.getElementById('loading').style.display = 'none';
-                const rows = csv.split('\n').slice(1);
-                allTests = rows.map(row => {
-                    // Simple CSV parser that handles basic commas
-                    const cols = row.split(',');
-                    if (cols.length >= 5) {
+        // ── SKELETON ──
+        function showSkeletons(n = 6) {
+            const c = document.getElementById('test-container');
+            c.innerHTML = Array(n).fill(`
+                <div class="skeleton-card">
+                    <div class="skel skel-tag"></div>
+                    <div class="skel skel-h3"></div>
+                    <div class="skel skel-h3b"></div>
+                    <div class="skel skel-meta"></div>
+                    <div class="skel skel-btn"></div>
+                </div>`).join('');
+        }
+
+        showSkeletons();
+
+        // ── IS NEW (within 30 days) ──
+        function isNew(dateStr) {
+            if (!dateStr) return false;
+            const d = new Date(dateStr);
+            if (isNaN(d)) return false;
+            return (Date.now() - d.getTime()) < 30 * 24 * 60 * 60 * 1000;
+        }
+
+        // ── UNIQUE ID for a test ──
+        function testId(t) {
+            return (t.tag + '|' + t.title).replace(/\s+/g, '_').toLowerCase();
+        }
+
+        // ── FETCH ──
+        Papa.parse(csvUrl, {
+            download: true,
+            header: false,
+            skipEmptyLines: true,
+            complete: function(results) {
+                const rows = results.data.slice(1); // skip header
+                allTests = rows.map(cols => {
+                    if (cols.length >= 5 && cols[0].trim() !== '') {
                         return {
-                            tag: cols[0].trim(),
+                            tag:   cols[0].trim(),
                             title: cols[1].trim(),
-                            time: cols[2].trim(),
-                            q: cols[3].trim(),
-                            link: cols[4].trim()
+                            time:  cols[2].trim(),
+                            q:     cols[3].trim(),
+                            link:  cols[4].trim(),
+                            date:  cols[5] ? cols[5].trim() : ''   // Column F: Date Added
                         };
                     }
                     return null;
-                }).filter(t => t && t.tag !== "");
-                
+                }).filter(Boolean);
+
+                // Hero stats
+                document.getElementById('heroTotal').textContent = allTests.length;
+                document.getElementById('heroSubjects').textContent = new Set(allTests.map(t => t.tag)).size;
+
                 generateFilters();
                 renderTests();
-            })
-            .catch(err => {
-                document.getElementById('loading').innerHTML = 'Error loading tests. Please refresh.';
-                console.error(err);
-            });
+                updateProgressUI();
+            },
+            error: function() {
+                document.getElementById('test-container').innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+                        <p>Error loading tests. Please refresh the page.</p>
+                    </div>`;
+            }
+        });
 
+        // ── FILTERS ──
         function generateFilters() {
             const container = document.getElementById('filterContainer');
             const tags = ['All', ...new Set(allTests.map(t => t.tag))];
-            
+            container.innerHTML = '';
             tags.forEach(tag => {
                 const btn = document.createElement('button');
                 btn.className = `filter-btn ${tag === 'All' ? 'active' : ''}`;
-                btn.innerText = tag;
+                btn.textContent = tag;
                 btn.onclick = () => {
                     document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
                     btn.classList.add('active');
                     currentFilter = tag;
                     renderTests();
+                    gtag('event', 'filter_click', { filter: tag });
                 };
                 container.appendChild(btn);
             });
         }
 
         document.getElementById('searchInput').addEventListener('input', renderTests);
+        document.getElementById('sortSelect').addEventListener('change', renderTests);
 
+        // ── SORT ──
+        function sortTests(arr) {
+            const s = document.getElementById('sortSelect').value;
+            const copy = [...arr];
+            if (s === 'newest')         return copy.sort((a, b) => new Date(b.date || 0) - new Date(a.date || 0));
+            if (s === 'oldest')         return copy.sort((a, b) => new Date(a.date || 0) - new Date(b.date || 0));
+            if (s === 'az')             return copy.sort((a, b) => a.title.localeCompare(b.title));
+            if (s === 'za')             return copy.sort((a, b) => b.title.localeCompare(a.title));
+            if (s === 'questions_asc')  return copy.sort((a, b) => (parseInt(a.q) || 0) - (parseInt(b.q) || 0));
+            if (s === 'questions_desc') return copy.sort((a, b) => (parseInt(b.q) || 0) - (parseInt(a.q) || 0));
+            return copy;
+        }
+
+        // ── RENDER ──
         function renderTests() {
             const query = document.getElementById('searchInput').value.toLowerCase();
             const container = document.getElementById('test-container');
-            container.innerHTML = '';
-            
-            const filtered = allTests.filter(t => {
+            const attempted = getAttempted();
+
+            let filtered = allTests.filter(t => {
                 const matchesSearch = t.title.toLowerCase().includes(query) || t.tag.toLowerCase().includes(query);
                 const matchesFilter = currentFilter === 'All' || t.tag === currentFilter;
                 return matchesSearch && matchesFilter;
             });
-            
+
+            filtered = sortTests(filtered);
+
+            document.getElementById('resultsCount').textContent =
+                filtered.length === allTests.length ? `${allTests.length} tests` : `${filtered.length} of ${allTests.length}`;
+
+            container.innerHTML = '';
+
             if (filtered.length === 0) {
-                container.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: var(--text-muted);">No tests found matching your criteria.</p>';
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <p>No tests found matching your criteria.</p>
+                    </div>`;
                 return;
             }
 
-            filtered.forEach(t => {
-                const card = `
-                    <div class="card">
-                        <div class="tag">${t.tag}</div>
-                        <h3>${t.title}</h3>
-                        <div class="meta">
-                            <span><i class="fa-regular fa-clock"></i> ${t.time}</span>
-                            <span><i class="fa-solid fa-list-ol"></i> ${t.q} Qs</span>
-                        </div>
-                        <a href="${t.link}" class="btn" target="_blank">Start Test <i class="fa-solid fa-arrow-right"></i></a>
+            filtered.forEach((t, i) => {
+                const id = testId(t);
+                const done = attempted.includes(id);
+                const fresh = isNew(t.date);
+
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.style.animationDelay = `${Math.min(i * 0.04, 0.4)}s`;
+
+                card.innerHTML = `
+                    ${done ? '<div class="done-ribbon">Done</div>' : ''}
+                    <div class="card-top">
+                        <div class="tag"><i class="fa-solid fa-bookmark"></i> ${t.tag}</div>
+                        ${fresh ? '<div class="badge-new">🆕 New</div>' : ''}
+                    </div>
+                    <h3>${t.title}</h3>
+                    <div class="meta">
+                        <span><i class="fa-regular fa-clock"></i> ${t.time}</span>
+                        <span><i class="fa-solid fa-list-ol"></i> ${t.q} Qs</span>
+                        ${t.date ? `<span><i class="fa-regular fa-calendar"></i> ${formatDate(t.date)}</span>` : ''}
+                    </div>
+                    <div class="card-footer">
+                        <a href="${t.link}" class="btn ${done ? 'done' : ''}" target="_blank"
+                           onclick="trackStart('${t.title}')">
+                            ${done ? '<i class="fa-solid fa-check"></i> Attempted' : 'Start Test <i class="fa-solid fa-arrow-right"></i>'}
+                        </a>
+                        <button class="mark-btn ${done ? 'done' : ''}" title="${done ? 'Unmark' : 'Mark as done'}"
+                                onclick="handleMark(this, '${id}')">
+                            <i class="fa-solid ${done ? 'fa-check' : 'fa-check'}"></i>
+                        </button>
                     </div>
                 `;
-                container.innerHTML += card;
+                container.appendChild(card);
             });
         }
+
+        function formatDate(str) {
+            const d = new Date(str);
+            if (isNaN(d)) return str;
+            return d.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+        }
+
+        function handleMark(btn, id) {
+            const nowDone = toggleAttempted(id);
+            btn.classList.toggle('done', nowDone);
+            // Re-render to update ribbon and button label
+            setTimeout(renderTests, 300);
+        }
+
+        function trackStart(title) {
+            gtag('event', 'start_test', { test_title: title });
+        }
+
+        // ── PROGRESS UI ──
+        function updateProgressUI() {
+            const attempted = getAttempted();
+            const total = allTests.length;
+            const done = attempted.length;
+            const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+
+            document.getElementById('heroAttempted').textContent = done;
+            document.getElementById('progressPillText').textContent = `${done}/${total} done`;
+            document.getElementById('modalAttempted').textContent = done;
+            document.getElementById('modalRemaining').textContent = Math.max(0, total - done);
+            document.getElementById('modalPercent').textContent = `${pct}%`;
+            document.getElementById('modalProgressFill').style.width = `${pct}%`;
+        }
+
+        // ── MODAL ──
+        const modal = document.getElementById('progressModal');
+        document.getElementById('openProgressModal').addEventListener('click', () => {
+            modal.classList.add('open');
+            updateProgressUI();
+        });
+        ['closeProgressModal', 'closeProgressModal2'].forEach(id => {
+            document.getElementById(id).addEventListener('click', () => modal.classList.remove('open'));
+        });
+        modal.addEventListener('click', e => { if (e.target === modal) modal.classList.remove('open'); });
+
+        document.getElementById('resetProgress').addEventListener('click', () => {
+            if (confirm('Reset all progress? This cannot be undone.')) {
+                setAttempted([]);
+                updateProgressUI();
+                renderTests();
+                modal.classList.remove('open');
+                showToast('🔄', 'Progress reset!');
+            }
+        });
     </script>
 </body>
 </html>
