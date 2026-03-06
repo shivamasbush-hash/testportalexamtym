@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Examtym | Test Portal</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg-color: #F9FAFB;
+            --card-bg: #FFFFFF;
+            --text-main: #111827;
+            --text-muted: #6B7280;
+        }
+
+        body { font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 0; }
+        
+        header { background: var(--card-bg); padding: 1rem 5%; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1); position: sticky; top: 0; z-index: 100; }
+        .logo { font-size: 1.5rem; font-weight: 800; color: var(--primary); text-decoration: none; display: flex; align-items: center; gap: 10px; }
+        
+        .hero { background: linear-gradient(135deg, var(--primary) 0%, #7C3AED 100%); color: white; text-align: center; padding: 4rem 2rem; margin-bottom: 3rem; }
+        .hero h1 { font-size: 2.5rem; margin: 0 0 1rem 0; font-weight: 700; }
+        .hero p { font-size: 1.1rem; opacity: 0.9; max-width: 600px; margin: 0 auto; }
+        
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 5% 4rem 5%; }
+        .section-title { font-size: 1.5rem; margin-bottom: 2rem; color: var(--text-main); border-bottom: 2px solid #E5E7EB; padding-bottom: 0.5rem; }
+        
+        .test-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; }
+        
+        .card { background: var(--card-bg); border-radius: 12px; padding: 1.5rem; border: 1px solid #E5E7EB; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); transition: all 0.3s ease; display: flex; flex-direction: column; }
+        .card:hover { transform: translateY(-5px); box-shadow: 0 12px 20px -3px rgba(0, 0, 0, 0.1); border-color: var(--primary); }
+        .tag { display: inline-block; background: #EEF2FF; color: var(--primary); font-size: 0.75rem; font-weight: 700; padding: 0.4rem 0.8rem; border-radius: 9999px; margin-bottom: 1rem; width: max-content; text-transform: uppercase; letter-spacing: 0.5px; }
+        .card h3 { margin: 0 0 0.75rem 0; font-size: 1.25rem; line-height: 1.4; }
+        .meta { display: flex; gap: 1.5rem; color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.5rem; }
+        .meta span { display: flex; align-items: center; gap: 6px; }
+        
+        .btn { margin-top: auto; background: var(--primary); color: white; text-align: center; padding: 0.8rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: background 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        .btn:hover { background: var(--primary-hover); }
+
+        .loading-text { text-align: center; color: var(--text-muted); font-size: 1.2rem; grid-column: 1 / -1; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="#" class="logo">
+            <i class="fa-solid fa-graduation-cap"></i> Examtym
+        </a>
+    </header>
+
+    <div class="hero">
+        <h1>Master Your Exams</h1>
+        <p>Select a subject below to launch your mock test portal and assess your preparation.</p>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">Available Mock Tests</h2>
+        
+        <div class="test-grid" id="test-container">
+            <p class="loading-text"><i class="fa-solid fa-spinner fa-spin"></i> Loading latest tests...</p>
+        </div>
+    </div>
+
+    <script>
+        // Your specific Google Sheet CSV Link
+        const csvUrl = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTp4gzDWBvB6kVTJOTjv89SwpUsgt5OVUU1ZsfYTOxiYft0GIEy6JaY7W-C12k86WDrzOProbGT-9Wo/pub?output=csv';
+
+        fetch(csvUrl)
+            .then(response => response.text())
+            .then(csvText => {
+                const rows = csvText.split('\n').slice(1); // Ignore header row
+                const container = document.getElementById('test-container');
+                container.innerHTML = ''; // Clear the loading message
+
+                rows.forEach(row => {
+                    // Quick tip: Try not to use commas inside your test titles in the Google Sheet!
+                    const columns = row.split(','); 
+                    
+                    if(columns.length >= 5 && columns[0].trim() !== "") {
+                        const tag = columns[0].trim();
+                        const title = columns[1].trim();
+                        const time = columns[2].trim();
+                        const questions = columns[3].trim();
+                        const link = columns[4].trim();
+
+                        const card = `
+                            <div class="card">
+                                <div class="tag">${tag}</div>
+                                <h3>${title}</h3>
+                                <div class="meta">
+                                    <span><i class="fa-regular fa-clock"></i> ${time}</span>
+                                    <span><i class="fa-solid fa-list-ol"></i> ${questions}</span>
+                                </div>
+                                <a href="${link}" class="btn" target="_blank">Start Test <i class="fa-solid fa-arrow-right"></i></a>
+                            </div>
+                        `;
+                        container.innerHTML += card;
+                    }
+                });
+
+                if(container.innerHTML === '') {
+                    container.innerHTML = '<p class="loading-text">No tests found. Add some to your Google Sheet!</p>';
+                }
+            })
+            .catch(error => {
+                document.getElementById('test-container').innerHTML = '<p class="loading-text">Error loading tests. Please check your CSV link.</p>';
+                console.error('Error fetching data:', error);
+            });
+    </script>
+</body>
+</html>
