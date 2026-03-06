@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Marketing Mgt Test 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        /* Smooth Scrollbar */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        /* Status Colors */
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        /* Markdown Styling */
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        /* Glassmorphism */
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        /* Donut Chart */
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        /* --- ADVANCED PRINT ENGINE (Fixes 1-Page PDF Issue) --- */
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            
+            /* 1. Reset Global Layout */
+            html, body {
+                height: auto !important;
+                min-height: 100% !important;
+                overflow: visible !important;
+                background-color: white !important;
+                color: black !important;
+                position: static !important;
+                width: 100% !important;
+                display: block !important;
+            }
+
+            /* 2. Unlock Scroll Containers */
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col {
+                height: auto !important;
+                overflow: visible !important;
+                display: block !important;
+                position: static !important;
+            }
+
+            /* 3. Hide App Interface Elements */
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 {
+                display: none !important;
+            }
+
+            /* 4. Fix Content Width & Page Breaks */
+            .max-w-5xl, .max-w-4xl {
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+
+            /* 5. Chart & Question Protection */
+            .print-break-avoid {
+                break-inside: avoid !important;
+                page-break-inside: avoid !important;
+                display: block !important; /* Fix for flex containers cutting off */
+            }
+
+            /* 6. Color Accuracy */
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            
+            /* 7. Specific Fix for Charts */
+            .grid-cols-3 {
+                display: flex !important;
+                justify-content: space-between !important;
+                gap: 20px !important;
+            }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Marketing Mgt Test 1", "organization": "ExamTym", "durationMinutes": 35, "totalMarks": 60.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": true, "questions": [{"question": "Which of the following marketing concepts focuses on the premise that consumers will favor products that offer the most quality, performance, or innovative features?", "options": [{"id": "1", "text": "Production Concept"}, {"id": "2", "text": "Product Concept"}, {"id": "3", "text": "Selling Concept"}, {"id": "4", "text": "Societal Marketing Concept"}], "correctAnswer": "2", "explanation": "**Detailed Explanation:** The Product Concept holds that consumers favor products offering the highest quality, performance, and innovative features, leading managers to focus on continuous product improvement. In contrast, the Production Concept focuses on high production efficiency and wide distribution. The Selling Concept emphasizes aggressive promotion, and the Societal Marketing Concept balances company profits, consumer wants, and society's interests. Misunderstanding these foundational orientations is a common pitfall.", "id": 1}, {"question": "In the BCG Matrix, products characterized by high market growth but low relative market share are classified as:", "options": [{"id": "1", "text": "Stars"}, {"id": "2", "text": "Cash Cows"}, {"id": "3", "text": "Question Marks"}, {"id": "4", "text": "Dogs"}], "correctAnswer": "3", "explanation": "**Detailed Explanation:** Question Marks (or Problem Children) operate in high-growth markets but currently have low market share. They require substantial cash investments to keep up with the fast-growing market and to eventually become Stars. If they fail to increase market share, they risk becoming Dogs when market growth slows. Cash Cows have high share in low-growth markets, generating surplus cash. Stars have high share in high-growth markets.", "id": 2}, {"question": "What is the primary objective of a \"Market-Skimming Pricing\" strategy?", "options": [{"id": "1", "text": "To gain maximum market share quickly"}, {"id": "2", "text": "To drive competitors out of the market"}, {"id": "3", "text": "To recover R&D costs quickly by setting a high initial price"}, {"id": "4", "text": "To offer everyday low prices to consumers"}], "correctAnswer": "3", "explanation": "**Detailed Explanation:** Market-Skimming Pricing involves setting a high price for a new product to \"skim\" maximum revenues layer by layer from the segments willing to pay the high price. The company makes fewer but more profitable sales, which is highly effective for recovering high research and development (R&D) costs before competitors enter. Conversely, Penetration Pricing sets a low initial price to capture market share rapidly (Option 1).", "id": 3}, {"question": "In the Extended Marketing Mix for Services (7Ps), which \"P\" refers to the environment in which the service is delivered and where the firm and customer interact?", "options": [{"id": "1", "text": "Process"}, {"id": "2", "text": "People"}, {"id": "3", "text": "Physical Evidence"}, {"id": "4", "text": "Positioning"}], "correctAnswer": "3", "explanation": "**Detailed Explanation:** Physical Evidence encompasses the tangible elements of a service environment, such as the building, interior design, equipment, uniforms, and any printed materials. Because services are highly intangible, physical evidence helps tangibilize the service proposition and provides consumers with visual cues about the expected quality. \"Process\" refers to the service delivery mechanism, and \"People\" refers to the staff providing the service.", "id": 4}, {"question": "In the standard Product Life Cycle (PLC), during which stage do industry profits typically peak before they begin to decline due to increased competition?", "options": [{"id": "1", "text": "Introduction"}, {"id": "2", "text": "Growth"}, {"id": "3", "text": "Maturity"}, {"id": "4", "text": "Decline"}], "correctAnswer": "2", "explanation": "**Detailed Explanation:** While total sales usually peak during the Maturity stage, total industry *profits* typically peak towards the end of the Growth stage. This occurs because the Growth stage benefits from economies of scale and high consumer demand without the extreme price-cutting and heavy promotional spending required later. In the Maturity stage, fierce competition forces companies to lower prices and increase marketing budgets, thereby eroding profit margins.", "id": 5}, {"question": "What does the acronym \"CRM\" primarily stand for in modern marketing practices?", "options": [{"id": "1", "text": "Customer Retention Management"}, {"id": "2", "text": "Consumer Resource Marketing"}, {"id": "3", "text": "Customer Relationship Management"}, {"id": "4", "text": "Channel Revenue Maximization"}], "correctAnswer": "3", "explanation": "**Detailed Explanation:** Customer Relationship Management (CRM) is the overall process of building and maintaining profitable customer relationships by delivering superior customer value and satisfaction. It deals with acquiring, keeping, and growing customers by integrating sales, marketing, and customer support. While customer retention is a major goal of CRM, it is merely a subset of the broader relationship management discipline.", "id": 6}, {"question": "Selling exactly the same product in all international markets without any modifications is known as:", "options": [{"id": "1", "text": "Product Adaptation"}, {"id": "2", "text": "Product Invention"}, {"id": "3", "text": "Straight Extension"}, {"id": "4", "text": "Forward Integration"}], "correctAnswer": "3", "explanation": "**Detailed Explanation:** Straight Extension means marketing a product in a foreign market exactly as it is sold in the home market, without making any changes to the product itself. This strategy is highly cost-effective because it avoids additional R&D, manufacturing tooling, or promotional modifications. However, it can fail if foreign consumers have drastically different needs or preferences compared to domestic consumers, which would necessitate Product Adaptation.", "id": 7}, {"question": "A distribution strategy where a firm uses only a limited number of intermediaries who are given the sole rights to distribute the company's products in specific geographic territories is called:", "options": [{"id": "1", "text": "Intensive Distribution"}, {"id": "2", "text": "Exclusive Distribution"}, {"id": "3", "text": "Selective Distribution"}, {"id": "4", "text": "Mass Distribution"}], "correctAnswer": "2", "explanation": "**Detailed Explanation:** Exclusive Distribution severely limits the number of intermediaries, typically granting one dealer the exclusive right to distribute the company's products in a specific area. This is most common with prestige or luxury brands (e.g., Rolex, luxury cars) where the manufacturer wants to maintain tight control over service levels, pricing, and brand image. Intensive distribution seeks to place products in as many outlets as possible (e.g., FMCG).", "id": 8}, {"question": "The \"AIDA\" model is a classic framework used in marketing communications. What does the \"D\" stand for?", "options": [{"id": "1", "text": "Demand"}, {"id": "2", "text": "Desire"}, {"id": "3", "text": "Distribution"}, {"id": "4", "text": "Delight"}], "correctAnswer": "2", "explanation": "**Detailed Explanation:** The AIDA model traces the cognitive and behavioral stages a consumer goes through during the purchasing process. The letters stand for Attention (or Awareness), Interest, Desire, and Action. Generating \"Desire\" means moving the consumer from simply liking the product to actively wanting it and seeing how it fulfills a specific need. It is a critical transitional phase before the final \"Action\" (purchase) is taken.\n### **Section B: Moderate / Conceptual (40% - 12 Questions)**", "id": 9}, {"question": "Match List-I (Pricing Strategy) with List-II (Description):\nList-I\nA. Penetration Pricing\nB. Captive Product Pricing\nC. Value Pricing\nD. Dynamic Pricing\nList-II\nI. Adjusting prices continually to meet characteristics of individual customers.\nII. Setting a low initial price for a new product to attract many buyers.\nIII. Pricing products that must be used with the main product (e.g., printer ink).\nIV. Offering a combination of quality and good service at a fair price.\n**Codes:**", "options": [{"id": "1", "text": "A-II, B-III, C-IV, D-I"}, {"id": "2", "text": "A-II, B-IV, C-I, D-III"}, {"id": "3", "text": "A-III, B-II, C-IV, D-I"}, {"id": "4", "text": "A-I, B-III, C-II, D-IV"}], "correctAnswer": "1", "explanation": "**Detailed Explanation:** Penetration pricing (A-II) uses low initial prices for rapid market entry. Captive product pricing (B-III) involves pricing a core product low but putting high margins on the mandatory supplies needed to operate it (like razors and blades). Value pricing (C-IV) provides the right mix of quality at a fair price, famously used by Walmart. Dynamic pricing (D-I) changes in real-time based on demand, often used by airlines and ride-sharing apps.", "id": 10}, {"question": "Arrange the stages of the Consumer Buying Decision Process in the correct chronological order:\nA. Purchase Decision\nB. Information Search\nC. Problem Recognition\nD. Post-purchase Behavior\nE. Evaluation of Alternatives\n**Codes:**", "options": [{"id": "1", "text": "C, B, E, A, D"}, {"id": "2", "text": "C, E, B, A, D"}, {"id": "3", "text": "B, C, E, A, D"}, {"id": "4", "text": "C, B, A, E, D"}], "correctAnswer": "1", "explanation": "**Detailed Explanation:** The buying process always begins with Problem Recognition (C), where the consumer perceives a need. This triggers an Information Search (B) to find ways to solve the problem. Next, the consumer engages in the Evaluation of Alternatives (E) to compare different brands. This leads to the actual Purchase Decision (A). Finally, the consumer experiences Post-purchase Behavior (D), evaluating if they are satisfied or experiencing cognitive dissonance.", "id": 11}, {"question": "Consider the following statements regarding Market Segmentation:\nStatement I: Psychographic segmentation divides buyers into different segments based on social class, lifestyle, or personality characteristics.\nStatement II: Behavioral segmentation is usually considered a poor starting point for building market segments.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "3", "explanation": "**Detailed Explanation:** Statement I is entirely accurate; psychographics delve into the intrinsic psychological traits of consumers like their values and lifestyles. Statement II is incorrect because behavioral segmentation (dividing a market based on consumer knowledge, attitudes, uses, or responses to a product) is actually championed by many marketers as the *best* starting point for building viable market segments, as it directly relates to purchasing habits.", "id": 12}, {"question": "Match List-I (Advertising Objectives) with List-II (PLC Stage Applicability):\nList-I\nA. Informative Advertising\nB. Persuasive Advertising\nC. Reminder Advertising\nList-II\nI. Maturity Stage\nII. Growth Stage\nIII. Introduction Stage\n**Codes:**", "options": [{"id": "1", "text": "A-III, B-II, C-I"}, {"id": "2", "text": "A-III, B-I, C-II"}, {"id": "3", "text": "A-II, B-III, C-I"}, {"id": "4", "text": "A-I, B-II, C-III"}], "correctAnswer": "1", "explanation": "**Detailed Explanation:** Informative Advertising (A) is heavily used in the Introduction Stage (III) to build primary demand and educate the market about the new product's benefits. Persuasive Advertising (B) becomes critical in the Growth Stage (II) to build selective demand as competition increases. Reminder Advertising (C) is vital in the Maturity Stage (I) to maintain customer relationships and keep the brand fresh in consumers' minds against established competitors.", "id": 13}, {"question": "Arrange the following key steps of the New Product Development (NPD) process in chronological order:\nA. Concept Development and Testing\nB. Idea Generation\nC. Business Analysis\nD. Commercialization\nE. Product Development\n**Codes:**", "options": [{"id": "1", "text": "B, A, C, E, D"}, {"id": "2", "text": "B, C, A, E, D"}, {"id": "3", "text": "A, B, C, E, D"}, {"id": "4", "text": "B, A, E, C, D"}], "correctAnswer": "1", "explanation": "**Detailed Explanation:** The NPD process begins with Idea Generation (B), sourcing many ideas. The surviving ideas move to Concept Development and Testing (A), where they are turned into consumer-facing concepts. Next is Business Analysis (C) to evaluate sales and cost projections. If viable, it proceeds to actual physical Product Development (E). The final step is Commercialization (D), which is the full-scale launch of the product into the market.", "id": 14}, {"question": "Consider the following statements about Branding:\nStatement I: Brand Equity is the differential effect that knowing the brand name has on customer response to the product or its marketing.\nStatement II: Co-branding occurs when two established brand names of different companies are used on the same product.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "1", "explanation": "**Detailed Explanation:** Both statements are foundational marketing truths. Brand Equity (Statement I) measures the premium a brand commands over a generic equivalent purely due to its name and reputation. Co-branding (Statement II) leverages the equity of two distinct brands to create a single product, such as a credit card co-branded by an airline and a bank, allowing both companies to reach new audiences and share promotional costs.", "id": 15}, {"question": "Match List-I (Promotional Mix Elements) with List-II (Key Characteristics):\nList-I\nA. Advertising\nB. Sales Promotion\nC. Public Relations\nD. Personal Selling\nList-II\nI. Short-term incentives to encourage immediate purchase.\nII. Building good relations with the company's various publics to build a good corporate image.\nIII. Any paid form of non-personal presentation and promotion.\nIV. Personal presentation by the firm's sales force to build relationships.\n**Codes:**", "options": [{"id": "1", "text": "A-III, B-I, C-II, D-IV"}, {"id": "2", "text": "A-III, B-II, C-I, D-IV"}, {"id": "3", "text": "A-I, B-III, C-II, D-IV"}, {"id": "4", "text": "A-II, B-I, C-IV, D-III"}], "correctAnswer": "1", "explanation": "**Detailed Explanation:** Advertising (A) is strictly paid, non-personal communication (III). Sales Promotion (B) utilizes temporary incentives like coupons and discounts to spur immediate action (I). Public Relations (C) focuses on long-term image building and damage control without directly paying for media space (II). Personal Selling (D) is highly interactive, customized, and focuses on direct human interaction for closing high-value sales (IV).", "id": 16}, {"question": "Arrange the fundamental steps of the Marketing Research Process in chronological order:\nA. Analyzing the Information\nB. Defining the Problem and Research Objectives\nC. Presenting the Findings\nD. Developing the Research Plan\nE. Collecting the Information\n**Codes:**", "options": [{"id": "1", "text": "B, D, E, A, C"}, {"id": "2", "text": "B, E, D, A, C"}, {"id": "3", "text": "D, B, E, A, C"}, {"id": "4", "text": "B, D, A, E, C"}], "correctAnswer": "1", "explanation": "**Detailed Explanation:** Marketing research always starts with clearly Defining the Problem and Objectives (B), as solving the wrong problem wastes resources. Once defined, researchers must Develop the Research Plan (D) detailing how data will be gathered. The fieldwork then happens by Collecting the Information (E). Raw data is useless until Analyzing the Information (A) extracts insights. Finally, these insights are communicated by Presenting the Findings (C) to management.", "id": 17}, {"question": "Consider the following statements regarding Service Characteristics:\nStatement I: Perishability implies that services cannot be stored, warehoused, or inventoried for later sale or use.\nStatement II: Inseparability means that the quality of services depends heavily on who provides them, as well as when, where, and how they are provided.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "3", "explanation": "**Detailed Explanation:** Statement I correctly defines Perishability; an empty airline seat cannot be sold after the flight takes off. However, Statement II is incorrect because it defines *Variability* (or Heterogeneity), not Inseparability. Inseparability refers to the fact that services cannot be separated from their providers (the service is consumed at the exact moment it is produced). Understanding these nuanced distinctions is crucial for NTA NET exams.", "id": 18}, {"question": "Match List-I (Retail Store Types) with List-II (Description):\nList-I\nA. Specialty Store\nB. Category Killer\nC. Convenience Store\nD. Department Store\nList-II\nI. A giant specialty store that carries a very deep assortment of a particular line.\nII. A store that carries a narrow product line with a deep assortment.\nIII. A relatively small store located near residential areas, open long hours.\nIV. A retail organization that carries a wide variety of product lines.\n**Codes:**", "options": [{"id": "1", "text": "A-II, B-I, C-III, D-IV"}, {"id": "2", "text": "A-I, B-II, C-III, D-IV"}, {"id": "3", "text": "A-II, B-III, C-I, D-IV"}, {"id": "4", "text": "A-IV, B-I, C-III, D-II"}], "correctAnswer": "1", "explanation": "**Detailed Explanation:** Specialty stores (A-II) focus on a specific market (e.g., a boutique). A Category Killer (B-I) is a massive specialty store that dominates its category, leaving little room for competitors (e.g., Best Buy or Home Depot). Convenience stores (C-III) are small, local, and offer immediate gratification for high-turnover goods. Department stores (D-IV) offer multiple, distinct product lines (clothing, home goods) under one roof.", "id": 19}, {"question": "Arrange the following levels of Maslow\u2019s Hierarchy of Needs from the most basic (bottom) to the highest level (top), as applied in understanding consumer motivation:\nA. Esteem Needs\nB. Physiological Needs\nC. Self-Actualization Needs\nD. Safety Needs\nE. Social Needs\n**Codes:**", "options": [{"id": "1", "text": "B, D, E, A, C"}, {"id": "2", "text": "B, E, D, A, C"}, {"id": "3", "text": "D, B, E, C, A"}, {"id": "4", "text": "B, D, A, E, C"}], "correctAnswer": "1", "explanation": "**Detailed Explanation:** According to Maslow, motivation is driven by fulfilling needs in a strict hierarchy. Consumers must first satisfy their basic Physiological Needs (B) like hunger and thirst. Next are Safety Needs (D) for security and protection. Once secure, they seek Social Needs (E) like love and belonging. This is followed by Esteem Needs (A) for recognition and status. The ultimate peak is Self-Actualization Needs (C), achieving one's full potential.", "id": 20}, {"question": "Consider the following statements regarding Push and Pull Strategies:\nStatement I: A push strategy involves the manufacturer using advertising and consumer promotion to induce consumers to ask intermediaries for the product.\nStatement II: A pull strategy directs marketing activities toward channel members to induce them to carry the product and promote it to final consumers.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "2", "explanation": "**Detailed Explanation:** Both statements are fundamentally incorrect because their definitions are swapped. A \"Push\" strategy involves 'pushing' the product through marketing channels to final consumers (targeting wholesalers and retailers with trade promotions). A \"Pull\" strategy directs marketing efforts (consumer advertising) directly to final consumers to induce them to buy the product, thereby 'pulling' the product through the channel.\n### **Section C: Difficult / Analytical (30% - 9 Questions)**", "id": 21}, {"question": "Assertion (A):** Cognitive dissonance is inevitable after almost every major purchase decision.\n**Reason (R):** Every purchase involves compromise, as consumers are always aware of the benefits of the rejected alternatives and the drawbacks of the chosen brand.", "options": [{"id": "1", "text": "Both (A) and (R) are correct and (R) is the correct explanation of (A)."}, {"id": "2", "text": "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)."}, {"id": "3", "text": "(A) is correct but (R) is incorrect."}, {"id": "4", "text": "(A) is incorrect but (R) is correct."}], "correctAnswer": "1", "explanation": "**Detailed Explanation:** Cognitive dissonance, or buyer's remorse, is the psychological discomfort experienced after a significant purchase. Assertion (A) is true because major purchases have high involvement. Reason (R) perfectly explains this: whenever a consumer selects one item, they lose the unique benefits of the rejected brands and must accept the flaws of the chosen one. This inherent compromise creates post-purchase tension that marketers must mitigate.", "id": 22}, {"question": "Case Snippet:** \"GreenEarth\" is a startup producing organic, plant-based cleaning products. Their production costs are high, and they want to position their brand as a premium, eco-friendly alternative to standard chemical cleaners. They have a highly limited marketing budget and cannot afford mass media advertising.\n**Which of the following distribution and pricing strategies is most appropriate for GreenEarth?**", "options": [{"id": "1", "text": "Intensive distribution and Penetration pricing"}, {"id": "2", "text": "Exclusive distribution and Value pricing"}, {"id": "3", "text": "Selective distribution and Skimming pricing"}, {"id": "4", "text": "Mass distribution and Dynamic pricing"}], "correctAnswer": "3", "explanation": "**Detailed Explanation:** Given their high production costs and premium positioning, a Skimming pricing strategy is required to maintain brand image and recover costs. Because they lack a massive budget for mass media, Intensive distribution is unfeasible and would dilute the premium brand. Selective distribution aligns perfectly, allowing them to partner with a few premium, organic-focused retailers who attract their target audience, ensuring brand prestige is maintained.", "id": 23}, {"question": "A company incurs a fixed cost of \u20b95,00,000 for a new product line. The variable cost per unit is \u20b9150, and the company plans to sell the product at \u20b9250 per unit. If the company wishes to make a target profit of \u20b92,00,000, what is the required sales volume (in units)?", "options": [{"id": "1", "text": "5,000 units"}, {"id": "2", "text": "7,000 units"}, {"id": "3", "text": "9,000 units"}, {"id": "4", "text": "10,000 units"}], "correctAnswer": "2", "explanation": "**Detailed Explanation:** To calculate target volume, the formula is: $Volume = \\frac{Fixed Costs + Target Profit}{Price - Variable Cost}$. Here, the Contribution Margin per unit is $\u20b9250 - \u20b9150 = \u20b9100$. Plugging the numbers into the formula: $Volume = \\frac{\u20b95,00,000 + \u20b92,00,000}{\u20b9100} = \\frac{\u20b97,00,000}{\u20b9100} = 7,000$ units. The company must sell 7,000 units to cover all costs and achieve the exact desired profit.", "id": 24}, {"question": "Assertion (A):** If demand is highly elastic, a company should consider raising its prices to maximize total revenue.\n**Reason (R):** Highly elastic demand means that the percentage drop in quantity demanded will be less than the percentage increase in price.", "options": [{"id": "1", "text": "Both (A) and (R) are correct and (R) is the correct explanation of (A)."}, {"id": "2", "text": "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)."}, {"id": "3", "text": "(A) is correct but (R) is incorrect."}, {"id": "4", "text": "Both (A) and (R) are incorrect."}], "correctAnswer": "4", "explanation": "**Detailed Explanation:** Both statements are false. Elastic demand means consumers are highly sensitive to price changes. If a company raises prices in an elastic market, the quantity demanded will drop dramatically, resulting in a *decrease* in total revenue (making Assertion A false). Reason R actually describes *inelastic* demand. For elastic demand, the percentage drop in quantity demanded is *greater* than the percentage increase in price.", "id": 25}, {"question": "Case Snippet:** \"TechNova,\" an Indian software firm, wants to enter the European market. Management lacks knowledge of European labor laws, distribution networks, and local consumer preferences, but they possess highly proprietary technology. They want to share the financial risk while rapidly gaining local expertise.\n**Which market entry strategy is most suitable for TechNova?**", "options": [{"id": "1", "text": "Direct Exporting"}, {"id": "2", "text": "Joint Venture"}, {"id": "3", "text": "Wholly Owned Subsidiary"}, {"id": "4", "text": "Licensing"}], "correctAnswer": "2", "explanation": "**Detailed Explanation:** A Joint Venture is the most strategic choice here. By partnering with a local European firm, TechNova instantly gains the partner's knowledge of local labor laws and distribution channels. Additionally, a Joint Venture shares the financial burden and risk. Exporting won't provide local grounding, a Wholly Owned Subsidiary carries maximum financial risk, and Licensing might risk the theft of their highly proprietary technology.", "id": 26}, {"question": "A retailer purchases an electronics product from a wholesaler for a cost of \u20b9400. The retailer desires a profit markup of 20% based on the final *selling price*. What should be the final selling price of the product?", "options": [{"id": "1", "text": "\u20b9480"}, {"id": "2", "text": "\u20b9500"}, {"id": "3", "text": "\u20b9420"}, {"id": "4", "text": "\u20b9600"}], "correctAnswer": "2", "explanation": "**Detailed Explanation:** Markup on selling price is fundamentally different from markup on cost. The formula is: $Selling Price = \\frac{Cost}{1 - Markup Percentage}$. Converting 20% to a decimal (0.20), the calculation becomes: $Selling Price = \\frac{400}{1 - 0.20} = \\frac{400}{0.80} = 500$. If they simply added 20% to the cost (which yields \u20b9480), their margin relative to the final sale price would be incorrectly configured, a common accounting error.", "id": 27}, {"question": "Assertion (A):** \"Greenwashing\" is a highly effective and ethical long-term marketing strategy for building sustainable brand loyalty.\n**Reason (R):** Modern consumers are increasingly environmentally conscious, making deceptive \"green\" marketing a short-term temptation for firms seeking competitive advantage without making actual environmental improvements.", "options": [{"id": "1", "text": "Both (A) and (R) are correct and (R) is the correct explanation of (A)."}, {"id": "2", "text": "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)."}, {"id": "3", "text": "(A) is correct but (R) is incorrect."}, {"id": "4", "text": "(A) is incorrect but (R) is correct."}], "correctAnswer": "4", "explanation": "**Detailed Explanation:** Assertion (A) is wildly incorrect. Greenwashing\u2014making false, misleading, or unsubstantiated claims about the environmental benefits of a product\u2014is deeply unethical and destroys long-term brand loyalty once discovered. However, Reason (R) is entirely correct; because consumer demand for green products is so high, unethical companies are severely tempted to utilize deceptive greenwashing to gain a rapid, short-term sales boost.", "id": 28}, {"question": "Case Snippet:** \"FitMax\" sells fitness equipment exclusively via its website. They noticed a high cart abandonment rate. To fix this, they implemented a system: if a user abandons a cart, they receive an SMS within 1 hour, an automated email within 24 hours containing a 10% discount, and are immediately shown targeted banner ads for the exact product on their Instagram feed.\n**This approach is best described as:**", "options": [{"id": "1", "text": "Omni-channel Retailing"}, {"id": "2", "text": "Integrated Marketing Communications (IMC) targeting cart recovery"}, {"id": "3", "text": "Horizontal Channel Integration"}, {"id": "4", "text": "Brick-and-Click Marketing"}], "correctAnswer": "2", "explanation": "**Detailed Explanation:** This is a textbook example of Integrated Marketing Communications (IMC). FitMax is carefully coordinating multiple promotional channels (SMS, email, social media ads) to deliver a clear, consistent, and compelling message to a specific user regarding a specific action (cart recovery). It is not Omni-channel retailing because they are pure-play e-commerce and do not have physical retail touchpoints or physical integrations.", "id": 29}, {"question": "Assertion (A):** A \"Market Challenger\" firm usually attacks the market leader with a frontal attack to gain market dominance rapidly.\n**Reason (R):** A frontal attack requires the challenger to match the competitor's product, advertising, price, and distribution, which typically requires massive financial resources and a clear competitive advantage.", "options": [{"id": "1", "text": "Both (A) and (R) are correct and (R) is the correct explanation of (A)."}, {"id": "2", "text": "Both (A) and (R) are correct but (R) is NOT the correct explanation of (A)."}, {"id": "3", "text": "(A) is correct but (R) is incorrect."}, {"id": "4", "text": "(A) is incorrect but (R) is correct."}], "correctAnswer": "4", "explanation": "**Detailed Explanation:** Assertion (A) is incorrect because Market Challengers *rarely* use a frontal attack against an entrenched leader unless they have drastically superior resources. Instead, they typically employ flanking or guerrilla attacks, targeting the leader's weak points. Reason (R) is correct, as it accurately defines the demanding and resource-intensive nature of a frontal attack, explaining exactly why challengers generally avoid them.", "id": 30}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                const initStatus = {};
+                TEST_DATA.questions.forEach((q, i) => { initStatus[q.id] = i === 0 ? 'not_answered' : 'not_visited'; });
+                setStatus(initStatus);
+            }, []);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            // =====================================
+            // RESULT SCREEN
+            // =====================================
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            
+                            {/* Result Header */}
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        {/* Fixed Badge Layout: Text Left, Icon Right */}
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            {/* Analytics Grid */}
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Detailed Solutions */}
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            // TEST INTERFACE
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    
+                    {/* Strict Mode Warning */}
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Pause Overlay */}
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Navbar */}
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    {/* Main Layout */}
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        {/* Sidebar Palette */}
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
