@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Teaching Aptitude test 4</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Teaching Aptitude test 4", "organization": "ExamTym", "durationMinutes": 40, "totalMarks": 60.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "In the context of foundational learning theories, which scholar introduced the concept of \"Classical Conditioning\" through experiments demonstrating stimulus-response associations?", "options": [{"id": "1", "text": "B.F. Skinner"}, {"id": "2", "text": "Ivan Pavlov"}, {"id": "3", "text": "Edward Thorndike"}, {"id": "4", "text": "Albert Bandura"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Classical Conditioning was introduced by Russian physiologist Ivan Pavlov in the late 1890s.\n* It is a learning process that occurs when two stimuli are repeatedly paired.\n* A response that is at first elicited by the second stimulus is eventually elicited by the first stimulus alone.\n* In teaching, it explains how students might associate a specific environment (like a test room) with anxiety due to past experiences.\n*Related Concepts:*\n* **Unconditioned Stimulus (UCS):** A stimulus that naturally triggers a response (e.g., food).\n* **Conditioned Stimulus (CS):** A previously neutral stimulus that, after becoming associated with the UCS, eventually comes to trigger a conditioned response.", "id": 1}, {"question": "Consider the following statements regarding B.F. Skinner\u2019s theory of learning:\n**Statement I:** Operant conditioning suggests that learning is a passive process where the learner simply reacts to external stimuli.\n**Statement II:** The concept of \"Reinforcement\" (both positive and negative) is central to Operant Conditioning for shaping desired behavior.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* B.F. Skinner's Operant Conditioning argues that learning is an *active* process, making Statement I incorrect.\n* Behaviors are shaped by their consequences (rewards or punishments).\n* Positive reinforcement adds a desirable stimulus to increase behavior, while negative reinforcement removes an aversive stimulus to increase behavior.\n* This theory forms the basis of \"Programmed Instruction\" in educational technology.\n*Related Concepts:*\n* **Punishment:** Designed to decrease a behavior, unlike reinforcement which always aims to increase it.\n* **Law of Effect:** Thorndike's principle that responses followed by a rewarding state of affairs will be strengthened.", "id": 2}, {"question": "Match List I (Learning Theory) with List II (Core Pedagogical Focus):\n| List I (Theory) | List II (Core Focus) |\n| --- | --- |\n| a. Behaviorism | i. Learning as a personal act to fulfill potential and self-actualization |\n| b. Cognitivism | ii. Learning as an active process of constructing knowledge from experience |\n| c. Constructivism | iii. Learning as observable changes in behavior due to environmental conditioning |\n| d. Humanism | iv. Learning as an internal mental process involving memory and problem-solving |", "options": [{"id": "1", "text": "a-iii, b-iv, c-ii, d-i"}, {"id": "2", "text": "a-iv, b-iii, c-i, d-ii"}, {"id": "3", "text": "a-iii, b-ii, c-iv, d-i"}, {"id": "4", "text": "a-ii, b-iv, c-iii, d-i"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Behaviorism (Skinner/Pavlov) focuses strictly on external, observable behavioral changes through conditioning.\n* Cognitivism (Piaget/Information Processing) treats the brain like a computer, focusing on how information is stored and retrieved.\n* Constructivism (Vygotsky) posits that learners actively build their own understanding of reality through experiences.\n* Humanism (Maslow/Rogers) emphasizes the whole person, focusing on emotional well-being and self-actualization.\n*Related Concepts:*\n* **Connectivism:** A modern theory explaining learning in the digital age across networks.\n* **Experiential Learning:** Kolb's model focusing on learning through reflection on doing.", "id": 3}, {"question": "Assertion (A): According to Lev Vygotsky, a student's cognitive development is strictly limited by their biological maturation, regardless of social interaction.\n**Reason (R): Vygotsky's concept of the \"Zone of Proximal Development\" emphasizes the critical role of a \"More Knowledgeable Other\" in advancing a student's learning.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is false, but (R) is true"}, {"id": "4", "text": "(A) is true, but (R) is false"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Assertion (A) is false. It describes Jean Piaget's theory, not Vygotsky's. Vygotsky argued that social interaction fundamentally drives cognitive development.\n* Reason (R) is true. The Zone of Proximal Development (ZPD) is the distance between what a learner can do independently and what they can do with guidance.\n* A \"More Knowledgeable Other\" (MKO) provides the necessary support or \"scaffolding\" to help the learner cross the ZPD.\n* Vygotsky's theory is the cornerstone of social constructivism in the classroom.\n*Related Concepts:*\n* **Scaffolding:** Temporary support provided to a student to enable them to complete a task.\n* **Collaborative Learning:** Pedagogical practice rooted in Vygotsky's emphasis on peer interaction.", "id": 4}, {"question": "In Abraham Maslow\u2019s Hierarchy of Needs, which level must be satisfied immediately before a student can effectively focus on \"Cognitive Needs\" (knowledge and understanding) in the classroom?", "options": [{"id": "1", "text": "Physiological Needs"}, {"id": "2", "text": "Safety Needs"}, {"id": "3", "text": "Esteem Needs"}, {"id": "4", "text": "Self-Actualization Needs"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Maslow's theory (1943) posits a pyramid of human needs dictating motivation.\n* The original 5-stage model was later expanded. The expanded hierarchy places \"Cognitive Needs\" (the desire to know, understand, and explore) right above \"Esteem Needs.\"\n* A student cannot focus on higher-level intellectual tasks if they feel incompetent or lack self-respect and peer recognition (Esteem).\n* The progression is: Physiological -> Safety -> Love/Belonging -> Esteem -> Cognitive -> Aesthetic -> Self-Actualization.\n*Related Concepts:*\n* **Deficiency Needs (D-needs):** The lower four levels; motivation decreases as needs are met.\n* **Growth Needs (B-needs):** Higher levels; motivation increases as needs are met.", "id": 5}, {"question": "Arrange the following levels of Robert Gagne\u2019s Hierarchy of Learning in ascending order of complexity:\nA. Concept Learning\nB. Rule Learning\nC. Problem Solving\nD. Multiple Discrimination\nE. Verbal Association", "options": [{"id": "1", "text": "E, D, A, B, C"}, {"id": "2", "text": "E, A, D, B, C"}, {"id": "3", "text": "D, E, A, B, C"}, {"id": "4", "text": "E, D, B, A, C"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Gagne's model (1965) outlines eight conditions of learning moving from simple to complex.\n* The higher levels require the mastery of the lower levels first.\n* The correct ascending order of the cognitive stages listed is: Verbal Association (chaining words), Multiple Discrimination (distinguishing similar stimuli).\n* This is followed by Concept Learning (grouping items), Rule Learning (applying principles), and finally Problem Solving (combining rules).\n*Related Concepts:*\n* **Signal Learning:** The lowest level, equivalent to classical conditioning.\n* **Stimulus-Response Learning:** Equivalent to operant conditioning.", "id": 6}, {"question": "Case Study: An educator is designing a syllabus for undergraduate commerce students. They introduce the theoretical framework of \"Double-Entry Bookkeeping\" and then ask students to formulate hypotheses about how changing tax laws might affect corporate balance sheets. According to Jean Piaget's stages of cognitive development, which stage are these students utilizing?", "options": [{"id": "1", "text": "Sensorimotor Stage"}, {"id": "2", "text": "Preoperational Stage"}, {"id": "3", "text": "Concrete Operational Stage"}, {"id": "4", "text": "Formal Operational Stage"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* The students are engaged in abstract thinking, hypothesis generation, and understanding complex, non-tangible regulatory concepts.\n* This aligns with Piaget's \"Formal Operational Stage\" (ages 12 and up).\n* In this stage, individuals can think logically about abstract propositions and test hypotheses systematically.\n* This level of cognition is required for advanced subjects like auditing, strategic management, and economic forecasting.\n*Related Concepts:*\n* **Concrete Operational Stage (7-11 years):** Thinking logically but strictly about concrete, physical events.\n* **Schema:** Cognitive frameworks that help individuals organize and interpret information.", "id": 7}, {"question": "Which learning theory, proposed by Albert Bandura, bridges the gap between behaviorism and cognitivism by emphasizing the importance of observing, modeling, and imitating the behaviors of others?", "options": [{"id": "1", "text": "Experiential Learning Theory"}, {"id": "2", "text": "Social Learning Theory"}, {"id": "3", "text": "Meaningful Reception Theory"}, {"id": "4", "text": "Discovery Learning Theory"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Albert Bandura's Social Learning Theory (1977) posits that people learn from one another via observation, imitation, and modeling.\n* It bridges behaviorism and cognitivism because it involves attention, memory, and motivation (cognitive processes) along with reinforcement (behavioral).\n* The famous \"Bobo doll experiment\" demonstrated this theory.\n* In the classroom, teacher modeling and peer-to-peer demonstration are practical applications.\n*Related Concepts:*\n* **Self-Efficacy:** A core component of Bandura's theory; the belief in one's own ability to succeed.\n* **Vicarious Reinforcement:** Learning by observing the consequences of another person's behavior.", "id": 8}, {"question": "According to Edward Thorndike\u2019s \"Laws of Learning\", which law states that a learner must be physically, mentally, and emotionally prepared to learn for instruction to be effective?", "options": [{"id": "1", "text": "Law of Exercise"}, {"id": "2", "text": "Law of Effect"}, {"id": "3", "text": "Law of Readiness"}, {"id": "4", "text": "Law of Primacy"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Thorndike, a pioneer of educational psychology, proposed three primary laws of learning based on Connectionism.\n* The Law of Readiness emphasizes that learning can only take place when a student is mentally and physically prepared to absorb the information.\n* Forcing a student to learn when they are not ready causes frustration and hinders the learning process.\n* The Law of Effect states that positive outcomes strengthen learning, while the Law of Exercise emphasizes practice.\n*Related Concepts:*\n* **Connectionism:** The theory that learning is the result of forming associations between stimuli and responses.\n* **Law of Recency:** A secondary law stating that things most recently learned are best remembered.", "id": 9}, {"question": "Consider the following statements contrasting two major cognitive learning theories:\n**Statement I:** Jerome Bruner\u2019s \"Discovery Learning\" advocates that learners should be presented with the final form of information and strictly memorize it.\n**Statement II:** David Ausubel\u2019s \"Meaningful Reception Learning\" argues that new knowledge must be logically organized and explicitly linked to the learner\u2019s existing cognitive structure.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is incorrect. Bruner's Discovery Learning is an inquiry-based, constructivist approach where learners draw on past experiences to discover facts and relationships for themselves; they are *not* presented with the final form.\n* Statement II is correct. Ausubel argued that learning is most meaningful when teachers present structured information (reception) that anchors securely to the student's prior knowledge.\n* Ausubel utilized \"Advance Organizers\" to bridge the gap between what learners know and what they need to know.\n* Both are cognitive theories but differ heavily in pedagogical execution.\n*Related Concepts:*\n* **Advance Organizer:** Information presented before learning to help organize and interpret new incoming information.\n* **Spiral Curriculum:** Bruner's concept where basic ideas are revisited repeatedly, building upon them until full mastery.", "id": 10}, {"question": "Match List I (Basic Teaching Models) with List II (Primary Proponent):\n| List I (Teaching Model) | List II (Proponent) |\n| --- | --- |\n| a. Basic Teaching Model | i. Richard Suchman |\n| b. Concept Attainment Model | ii. Robert Glaser |\n| c. Inquiry Training Model | iii. Carl Rogers |\n| d. Non-Directive Teaching Model | iv. Jerome Bruner |", "options": [{"id": "1", "text": "a-ii, b-iv, c-i, d-iii"}, {"id": "2", "text": "a-i, b-ii, c-iv, d-iii"}, {"id": "3", "text": "a-ii, b-iii, c-i, d-iv"}, {"id": "4", "text": "a-iv, b-i, c-ii, d-iii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Robert Glaser's Basic Teaching Model (1962) divides the teaching process into Instructional Objectives, Entering Behavior, Instructional Procedures, and Performance Assessment.\n* Jerome Bruner's Concept Attainment Model helps students understand concepts by comparing and contrasting examples.\n* Richard Suchman's Inquiry Training Model is designed to teach students the research methodologies of academic disciplines.\n* Carl Rogers' Non-Directive Teaching Model focuses on facilitating self-discovery and emotional growth (Humanistic).\n*Related Concepts:*\n* **Information Processing Models:** A family of models including Concept Attainment and Inquiry Training.\n* **Personal Family Models:** Models focusing on individual self-awareness, like the Non-Directive model.", "id": 11}, {"question": "Assertion (A): David Kolb\u2019s Experiential Learning Theory considers learning as a linear, one-time transfer of information from the teacher to the student.\n**Reason (R): The cycle relies on Concrete Experience, Reflective Observation, Abstract Conceptualization, and Active Experimentation.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is false, but (R) is true"}, {"id": "4", "text": "(A) is true, but (R) is false"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Assertion (A) is completely false. Kolb's theory (1984) views learning as a continuous, cyclical process, explicitly rejecting the linear \"empty vessel\" transfer of information.\n* Reason (R) is true. It correctly outlines Kolb's four-stage learning cycle.\n* Learning occurs when a person has an experience (Concrete), reflects on it (Reflective Observation), learns from the experience to form new concepts (Abstract Conceptualization), and tests those concepts in new situations (Active Experimentation).\n* This theory strongly supports hands-on internships and practical lab work.\n*Related Concepts:*\n* **Accommodating Learning Style:** Kolb's style blending Active Experimentation and Concrete Experience (doing and feeling).\n* **Assimilating Learning Style:** Blending Reflective Observation and Abstract Conceptualization (watching and thinking).", "id": 12}, {"question": "In Howard Gardner\u2019s Theory of Multiple Intelligences, a student who excels at self-reflection, understanding their own motivations, and regulating their personal study habits is exhibiting a high level of:", "options": [{"id": "1", "text": "Interpersonal Intelligence"}, {"id": "2", "text": "Intrapersonal Intelligence"}, {"id": "3", "text": "Logical-Mathematical Intelligence"}, {"id": "4", "text": "Naturalistic Intelligence"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Howard Gardner (1983) proposed that intelligence is not singular but multiple.\n* Intrapersonal intelligence refers to a deep understanding of the self; what one's strengths/weaknesses are, what makes one unique, and the ability to act adaptively based on that knowledge.\n* This is crucial for self-directed learning and autonomy.\n* Interpersonal intelligence, by contrast, is the ability to understand and interact effectively with *others*.\n*Related Concepts:*\n* **Bodily-Kinesthetic Intelligence:** The ability to use the whole body or parts of the body to solve a problem or create a product.\n* **Spatial Intelligence:** The potential to recognize and use the patterns of wide space and more confined areas.", "id": 13}, {"question": "Arrange the sequential steps of Robert Glaser\u2019s Basic Teaching Model (1962):\nA. Performance Assessment\nB. Entering Behavior\nC. Instructional Objectives\nD. Instructional Procedures", "options": [{"id": "1", "text": "C, B, D, A"}, {"id": "2", "text": "B, C, D, A"}, {"id": "3", "text": "C, D, B, A"}, {"id": "4", "text": "B, D, C, A"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Glaser's model provides a psychological framework for the entire teaching process.\n* **1. Instructional Objectives (C):** The intended learning outcomes are defined first.\n* **2. Entering Behavior (B):** Assessing the learners' prior knowledge and current skill level before teaching begins.\n* **3. Instructional Procedures (D):** The actual teaching process, methods, and strategies used to deliver content.\n* **4. Performance Assessment (A):** Evaluating whether the instructional objectives were achieved.\n*Related Concepts:*\n* **Feedback Loop:** The model includes a feedback loop where poor performance assessment requires revisiting earlier steps.\n* **Systems Approach:** Glaser's model is a classic example of applying systems theory to educational design.", "id": 14}, {"question": "Case Study: In a corporate training seminar for a new accounting software portal, employees are first asked to watch a demonstrator use the software. Then, they are asked to replicate the exact sequence of clicks while following a manual. According to the Psychomotor Domain (Dave's Taxonomy), which specific level of learning are the employees currently demonstrating?", "options": [{"id": "1", "text": "Imitation"}, {"id": "2", "text": "Manipulation"}, {"id": "3", "text": "Precision"}, {"id": "4", "text": "Articulation"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* R.H. Dave (1970) developed a taxonomy for the Psychomotor Domain (physical skills).\n* The levels (lowest to highest) are: Imitation, Manipulation, Precision, Articulation, and Naturalization.\n* **Imitation** involves observing an action and attempting to copy it, often requiring guidance and a manual, as seen in the case study.\n* Manipulation would involve performing the action from memory or instruction without a physical model.\n*Related Concepts:*\n* **Precision:** Performing the skill accurately and independently without a manual or guide.\n* **Naturalization:** High level of performance where the skill becomes automatic and unconscious.", "id": 15}, {"question": "Which of the following educational frameworks specifically advocates for \"double-loop learning,\" where learners not only solve a problem but fundamentally question the underlying assumptions and values that created the problem in the first place?", "options": [{"id": "1", "text": "Pedagogy"}, {"id": "2", "text": "Andragogy"}, {"id": "3", "text": "Heutagogy"}, {"id": "4", "text": "Behaviorism"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Heutagogy (self-determined learning) emphasizes capability development and autonomy.\n* A core component of Heutagogy is \"double-loop learning.\"\n* While single-loop learning asks \"Are we doing things right?\" (fixing a symptom), double-loop learning asks \"Are we doing the right things?\" (questioning the root cause and system).\n* It requires profound critical thinking and is essential in advanced academic research and dynamic corporate leadership.\n*Related Concepts:*\n* **Andragogy:** Adult learning, primarily focused on single-loop problem-solving based on existing frameworks.\n* **Epistemology:** The philosophical study of knowledge and how it is acquired.", "id": 16}, {"question": "A student who has mastered the concepts of basic statistical variance in their research methodology class easily applies those same mathematical principles when learning \"Portfolio Risk Management\" in their Commerce specialization. This is a classic example of:", "options": [{"id": "1", "text": "Zero Transfer of Learning"}, {"id": "2", "text": "Negative Transfer of Learning"}, {"id": "3", "text": "Positive Transfer of Learning"}, {"id": "4", "text": "Bilateral Transfer of Learning"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* \"Transfer of Learning\" refers to how prior learning affects new learning.\n* Positive Transfer occurs when learning in one context improves or facilitates learning in a different context.\n* Understanding statistical variance directly aids the comprehension of financial risk, acting as a cognitive facilitator.\n* Negative Transfer occurs when prior learning interferes with new learning (e.g., driving a manual car vs. an automatic).\n*Related Concepts:*\n* **Zero Transfer:** When previous knowledge has absolutely no impact on learning a new skill.\n* **Near Transfer:** Transferring skills to a very similar context.", "id": 17}, {"question": "Consider the following statements regarding the Information Processing Theory of learning:\n**Statement I:** Sensory memory holds information for a long duration, allowing learners to process complex academic theories.\n**Statement II:** Working memory (or short-term memory) has a limited capacity and relies heavily on strategies like 'chunking' to transfer information to long-term memory.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Developed by Atkinson and Shiffrin (1968), this cognitive theory compares the human brain to a computer.\n* Statement I is incorrect; sensory memory lasts only milliseconds to a few seconds, capturing fleeting environmental stimuli.\n* Statement II is correct. Working memory has a limited capacity (often cited as 7 \u00b1 2 items).\n* To prevent cognitive overload, educators must use \"chunking\" (grouping data) and rehearsal to ensure data moves to Long-Term Memory.\n*Related Concepts:*\n* **Encoding:** The process of converting sensory input into a form that can be stored in memory.\n* **Cognitive Load Theory:** Sweller's theory emphasizing the limits of working memory during instruction.", "id": 18}, {"question": "Match List I (Elements of Teaching Variables) with List II (Associated Role):\n| List I (Variable Type) | List II (Classroom Entity) |\n| --- | --- |\n| a. Independent Variable | i. Curriculum, Teaching Methods, Environment |\n| b. Dependent Variable | ii. The Educator / Teacher |\n| c. Intervening Variable | iii. The Learner / Student |", "options": [{"id": "1", "text": "a-ii, b-iii, c-i"}, {"id": "2", "text": "a-i, b-ii, c-iii"}, {"id": "3", "text": "a-iii, b-i, c-ii"}, {"id": "4", "text": "a-ii, b-i, c-iii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* In the systemic model of teaching, the Teacher is the **Independent Variable**. They manipulate the environment and methods to cause learning.\n* The Student is the **Dependent Variable**. Their behavior and academic achievement depend upon the actions of the independent variable.\n* **Intervening Variables** are the contextual factors that facilitate the interaction: the syllabus, institutional infrastructure, teaching strategies, and student motivation.\n* Understanding these variables is foundational for educational research and classroom management.\n*Related Concepts:*\n* **Presage Variables:** Teacher characteristics (intelligence, training, personality) that exist before teaching begins.\n* **Process Variables:** What actually happens in the classroom during the interaction.", "id": 19}, {"question": "Assertion (A): Carl Rogers\u2019 theory of experiential learning asserts that the educator must maintain strict authority and control over the curriculum to ensure academic standards are met.\n**Reason (R): The humanistic approach to education emphasizes the development of the \"whole person\" through self-directed learning and emotional safety.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is false, but (R) is true"}, {"id": "4", "text": "(A) is true, but (R) is false"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Assertion (A) is false. Carl Rogers, a pioneering humanistic psychologist, heavily opposed strict authoritarian control. He advocated for a learner-centric, \"non-directive\" approach where the teacher acts as a facilitator, not a dictator.\n* Reason (R) is true. Humanism focuses on self-actualization, arguing that learning happens best in a non-threatening environment where the student has personal choice and autonomy.\n* Rogers believed that significant learning must be self-initiated and relevant to the student's personal goals.\n*Related Concepts:*\n* **Unconditional Positive Regard:** Rogers' concept of accepting and respecting the student without judgment.\n* **Facilitator of Learning:** The role the teacher assumes in the humanistic framework.", "id": 20}, {"question": "Which educational philosopher introduced the concept of \"Pragmatism,\" asserting that education should not be a preparation for life, but rather life itself, leading to the pedagogy of \"learning by doing\"?", "options": [{"id": "1", "text": "Jean-Jacques Rousseau"}, {"id": "2", "text": "John Dewey"}, {"id": "3", "text": "Swami Vivekananda"}, {"id": "4", "text": "Rabindranath Tagore"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* John Dewey (1859\u20131952) was a leading proponent of Pragmatism and progressive education.\n* He argued that education must be experiential and hands-on (\"learning by doing\").\n* Dewey believed that truth is instrumental\u2014ideas are tools to solve problems, and curriculum should be integrated with real-world democratic societal functions.\n* His theories directly oppose the rote memorization of static facts found in traditional education.\n*Related Concepts:*\n* **Naturalism (Rousseau):** Education should align with the natural development of the child, away from societal constraints.\n* **Idealism (Plato):** Focuses on the development of the mind and spiritual values over material reality.", "id": 21}, {"question": "Arrange the phases of the \"5E Instructional Model\", a constructivist teaching approach, in the correct pedagogical sequence:\nA. Explain\nB. Evaluate\nC. Engage\nD. Elaborate\nE. Explore", "options": [{"id": "1", "text": "C, E, A, D, B"}, {"id": "2", "text": "C, A, E, D, B"}, {"id": "3", "text": "E, C, A, B, D"}, {"id": "4", "text": "C, E, D, A, B"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* The 5E Model (developed by BSCS in 1987) is rooted in constructivist learning theory.\n* **1. Engage (C):** Hook the students' interest and access prior knowledge.\n* **2. Explore (E):** Students actively investigate a concept or problem hands-on.\n* **3. Explain (A):** Students articulate their understanding, and the teacher provides formal definitions/clarifications.\n* **4. Elaborate (D):** Students apply their newly learned knowledge to new, deeper contexts.\n* **5. Evaluate (B):** Both teacher and students assess the learning outcomes.\n*Related Concepts:*\n* **Inquiry-Based Learning:** An approach closely tied to the 5E model, starting with questioning.\n* **Constructivism:** The underlying philosophy that learners construct meaning through experience.", "id": 22}, {"question": "Case Study: An educator running an online preparation portal for competitive exams flips the traditional teaching model. Students study the core theoretical PDF notes at home and use the live interactive portal sessions purely to solve difficult assertion-reason mock test questions. This strategy predominantly shifts the live session's focus to which levels of Bloom\u2019s Cognitive Taxonomy?", "options": [{"id": "1", "text": "Remembering and Understanding"}, {"id": "2", "text": "Receiving and Responding"}, {"id": "3", "text": "Analyzing and Evaluating"}, {"id": "4", "text": "Imitation and Manipulation"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The Flipped Classroom model shifts lower-order cognitive tasks (Remembering, Understanding) to independent study.\n* The live, interactive sessions are then freed up for higher-order cognitive tasks that require teacher guidance.\n* Solving difficult assertion-reason questions requires breaking down information (Analyzing) and making judgments based on criteria (Evaluating).\n* This maximizes the utility of the educator's time, making the learning process highly active rather than passive.\n*Related Concepts:*\n* **Lower-Order Thinking Skills (LOTS):** Remembering, Understanding, Applying.\n* **Higher-Order Thinking Skills (HOTS):** Analyzing, Evaluating, Creating.", "id": 23}, {"question": "In the context of instructional motivation theories, Bernard Weiner\u2019s \"Attribution Theory\" suggests that a student's future academic motivation is most heavily influenced by:", "options": [{"id": "1", "text": "The biological maturation of their prefrontal cortex."}, {"id": "2", "text": "Their perceived reasons for their past successes or failures."}, {"id": "3", "text": "The strictness of the teacher's operant conditioning schedule."}, {"id": "4", "text": "Their innate, unchanging intelligence quotient (IQ)."}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Weiner's Attribution Theory (1970s) deals with how individuals interpret events and how this relates to their thinking and behavior.\n* It states that high achievers will approach rather than avoid tasks because they attribute success to internal factors (effort, ability) rather than external factors (luck, easy exam).\n* If a student fails and attributes it to a stable, uncontrollable factor (e.g., \"I'm just bad at Commerce\"), their motivation plummets.\n* If they attribute failure to an unstable, controllable factor (e.g., \"I didn't study enough\"), motivation is preserved.\n*Related Concepts:*\n* **Locus of Control:** Whether a student believes their outcomes are driven by internal vs. external forces.\n* **Learned Helplessness:** A state where repeated failure leads a student to stop trying, believing outcomes are out of their control.", "id": 24}, {"question": "Which psychological theory, formulated by Kurt Lewin, explains classroom learning as a function of the continuous interaction between the individual student and their \"life space\" or psychological environment?", "options": [{"id": "1", "text": "Field Theory"}, {"id": "2", "text": "Meaningful Reception Theory"}, {"id": "3", "text": "Connectionism"}, {"id": "4", "text": "Gestalt Theory"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Kurt Lewin's Field Theory (often summarized by the equation B = f(P,E), Behavior is a function of the Person and their Environment) posits that behavior is the result of forces acting within a psychological field.\n* The \"Life Space\" encompasses all past, present, and future events that influence an individual's behavior.\n* In teaching, this means an educator cannot just look at the curriculum; they must account for the social, emotional, and physical forces operating on the student in the classroom environment.\n* Lewin is heavily associated with Gestalt psychology, emphasizing the \"whole\" context.\n*Related Concepts:*\n* **Gestalt Psychology:** The brain creates a perception that is more than simply the sum of available sensory inputs.\n* **Vector and Valence:** Lewin used these physics terms to describe the psychological forces pushing a student toward or away from a goal.", "id": 25}, {"question": "Assertion (A): In a strictly Constructivist classroom, evaluation is solely a summative process conducted at the end of the year via standardized testing.\n**Reason (R): Constructivism views learning as a subjective, ongoing process of meaning-making, requiring continuous, formative, and qualitative assessment.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is false, but (R) is true"}, {"id": "4", "text": "(A) is true, but (R) is false"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Assertion (A) is completely false. Constructivist pedagogy inherently rejects relying solely on rigid, summative standardized testing because it views knowledge as subjective and individualized.\n* Reason (R) is true. Because constructivists view learning as ongoing meaning-making, assessment must also be ongoing (formative).\n* Assessment tools in this framework include portfolios, self-assessments, peer reviews, and project-based qualitative rubrics.\n* Evaluation is woven seamlessly into the instructional process rather than acting as an isolated terminal event.\n*Related Concepts:*\n* **Portfolio Assessment:** A collection of student work over time showing growth and development.\n* **Authentic Assessment:** Evaluating a student's ability to apply knowledge to real-world tasks.", "id": 26}, {"question": "Arrange the foundational elements of the \"Micro-Teaching Cycle\" as standardized by the NCERT (National Council of Educational Research and Training) in India:\nA. Re-plan\nB. Teach\nC. Re-teach\nD. Feedback\nE. Re-feedback", "options": [{"id": "1", "text": "B, D, A, C, E"}, {"id": "2", "text": "A, B, D, C, E"}, {"id": "3", "text": "B, A, D, C, E"}, {"id": "4", "text": "B, D, C, A, E"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Micro-teaching is a teacher training technique scaling down teaching to simplify the complexities of regular teaching.\n* The standard NCERT cycle (36 minutes total) begins after an initial lesson plan is made.\n* The sequence is: **Teach** (6 mins) -> **Feedback** (6 mins) -> **Re-plan** (12 mins) -> **Re-teach** (6 mins) -> **Re-feedback** (6 mins).\n* It allows pre-service educators to master specific pedagogical skills (e.g., the skill of questioning or stimulus variation) in a highly controlled environment.\n*Related Concepts:*\n* **Simulated Teaching:** Creating artificial classroom scenarios for practice.\n* **Stanford University:** The institution where Dwight W. Allen first developed the micro-teaching concept.", "id": 27}, {"question": "The concept of \"Situated Learning\", which argues that learning is an unintentional byproduct of engaging in authentic social and professional activities (like an apprenticeship), was primarily theorized by:", "options": [{"id": "1", "text": "Jean Lave and Etienne Wenger"}, {"id": "2", "text": "Malcolm Knowles"}, {"id": "3", "text": "John B. Watson"}, {"id": "4", "text": "Erik Erikson"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Lave and Wenger (1991) formulated Situated Learning Theory.\n* They introduced the concept of \"Legitimate Peripheral Participation,\" where newcomers enter a \"Community of Practice\" at the edges and gradually move to the center as they become experts.\n* Learning is not a separate, abstract activity but is embedded within the activity, context, and culture in which it occurs.\n* This theory strongly underpins vocational training, medical residencies, and corporate mentorships.\n*Related Concepts:*\n* **Community of Practice (CoP):** A group of people who share a craft or profession and learn from each other.\n* **Cognitive Apprenticeship:** Similar framework emphasizing the visible modeling of internal cognitive processes by experts.", "id": 28}, {"question": "Match List I (Levels of Teaching) with List II (Primary Mode of Testing):\n| List I (Teaching Level) | List II (Testing Mode) |\n| --- | --- |\n| a. Memory Level | i. Essay type, highly analytical problem-solving tasks, research papers |\n| b. Understanding Level | ii. Objective type tests focusing heavily on rapid recall and recognition |\n| c. Reflective Level | iii. A mix of objective and short-answer questions testing comprehension and relationships |", "options": [{"id": "1", "text": "a-ii, b-iii, c-i"}, {"id": "2", "text": "a-i, b-ii, c-iii"}, {"id": "3", "text": "a-ii, b-i, c-iii"}, {"id": "4", "text": "a-iii, b-ii, c-i"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* The **Memory Level** (Herbart) is thoughtless rote learning. Evaluation must test raw retention, making rapid objective/recall tests (ii) appropriate.\n* The **Understanding Level** (Morrison) requires grasping relationships and concepts. Evaluation must be comprehensive, using a mix of short-answer and objective tests (iii) to gauge conceptual clarity.\n* The **Reflective Level** (Hunt) is the highest, problem-centric level. Evaluation must be highly subjective and analytical, utilizing essays and research projects (i) to test critical thinking.\n* Aligning the evaluation method to the teaching level is a core psychometric principle.\n*Related Concepts:*\n* **Rote Learning:** Memorization technique based on repetition.\n* **Pedagogical Shift:** Moving a classroom from memory-level delivery to reflective-level inquiry.", "id": 29}, {"question": "Case Study: An educator is revising their commerce curriculum. They possess strong content knowledge in \"Auditing Standards\" and know how to teach it using group discussions (pedagogy). However, to modernize, they integrate an AI-driven audit simulation software into the lesson plan seamlessly. According to the TPACK framework, the intersection of these three domains creates optimal teaching. What does 'TPACK' stand for?", "options": [{"id": "1", "text": "Technical, Practical, and Content Knowledge"}, {"id": "2", "text": "Technological Pedagogical Content Knowledge"}, {"id": "3", "text": "Teaching Practice and Curriculum Knowledge"}, {"id": "4", "text": "Taxonomic Psychological Content Knowledge"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* TPACK (Technological Pedagogical Content Knowledge) is a framework developed by Mishra and Koehler (2006).\n* It describes the complex interplay of three primary forms of knowledge: Content (CK - what you teach), Pedagogy (PK - how you teach), and Technology (TK - digital tools used).\n* True technological integration only occurs when an educator hits the center of the Venn diagram (TPACK), meaning they select a specific technology because it perfectly enhances a specific pedagogical strategy for a specific academic concept.\n* Using AI software to simulate auditing, rather than just reading a PDF, exemplifies this intersection.\n*Related Concepts:*\n* **SAMR Model:** Another technology integration model (Substitution, Augmentation, Modification, Redefinition).\n* **ICT Integration:** The broader administrative and academic integration of digital tools in education.", "id": 30}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

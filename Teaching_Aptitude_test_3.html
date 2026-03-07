@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Teaching Aptitude test 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Teaching Aptitude test 3", "organization": "ExamTym", "durationMinutes": 40, "totalMarks": 60.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "According to H.C. Morrison, which of the following is the correct sequence of steps in the 'Understanding Level' of teaching?", "options": [{"id": "1", "text": "Exploration, Presentation, Assimilation, Organization, Recitation"}, {"id": "2", "text": "Presentation, Exploration, Organization, Assimilation, Recitation"}, {"id": "3", "text": "Exploration, Assimilation, Presentation, Recitation, Organization"}, {"id": "4", "text": "Presentation, Assimilation, Exploration, Organization, Recitation"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* H.C. Morrison proposed a five-step model for the Understanding Level of teaching.\n* Exploration involves testing previous knowledge to prepare students for new content.\n* Presentation is the delivery of the new material, followed by Assimilation where students deeply absorb the concept.\n* Organization requires students to systematically structure the learned material without help, ending with Recitation (expressing it verbally/in writing).\n*Related Concepts:*\n* **Memory Level Steps (Herbart):** Preparation, Presentation, Association, Generalization, Application.\n* **Reflective Level (Hunt):** Focuses on creating a problematic situation to stimulate independent problem-solving.", "id": 1}, {"question": "Consider the following statements regarding the social and emotional characteristics of adolescent learners:\n**Statement I:** Adolescent learners generally experience high emotional stability and rely primarily on educators for their self-concept.\n**Statement II:** Peer group influence peaks during adolescence, significantly shaping their attitudes, values, and academic motivation.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Adolescence is a transitional stage characterized by rapid psychological and emotional changes, often leading to emotional instability (storm and stress).\n* Statement I is incorrect because adolescents seek autonomy and construct their self-concept largely independent of authority figures.\n* Statement II is correct; peer groups become the primary socializing agents, heavily influencing behavior and academic engagement.\n* Educators must utilize collaborative learning and peer-mentoring to leverage this characteristic positively.\n*Related Concepts:*\n* **Adult Learners (Andragogy):** Characterized by high emotional stability, intrinsic motivation, and self-directedness.\n* **Cognitive Development (Adolescence):** Transitioning into Piaget's 'Formal Operational' stage, capable of abstract thought.", "id": 2}, {"question": "Match List I (SWAYAM Quadrants) with List II (Associated Content):\n| List I (Quadrant) | List II (Content) |\n| --- | --- |\n| a. Quadrant I | i. Web resources, further reading, related links |\n| b. Quadrant II | ii. Self-assessment tests and quizzes |\n| c. Quadrant III | iii. E-tutorials, video and audio content |\n| d. Quadrant IV | iv. E-content, PDFs, text materials, e-books |", "options": [{"id": "1", "text": "a-iii, b-iv, c-i, d-ii"}, {"id": "2", "text": "a-i, b-ii, c-iii, d-iv"}, {"id": "3", "text": "a-iv, b-iii, c-ii, d-i"}, {"id": "4", "text": "a-iii, b-iv, c-ii, d-i"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* SWAYAM operates on a 4-quadrant pedagogical approach to ensure comprehensive digital learning.\n* Quadrant I represents 'e-Tutorials' which include structured video and audio lectures, animations, and virtual labs.\n* Quadrant II is 'e-Content', containing downloadable/printable materials like PDFs, e-Books, and transcriptions.\n* Quadrant III is 'Web Resources' (wiki links, glossaries), and Quadrant IV is 'Self-Assessment' (quizzes, discussion forums).\n*Related Concepts:*\n* **MOOCs:** Massive Open Online Courses, the framework under which SWAYAM operates.\n* **NPTEL:** One of the national coordinators for SWAYAM, specifically focusing on engineering and technical content.", "id": 3}, {"question": "Assertion (A): The introduction of the Choice Based Credit System (CBCS) has shifted the focus from 'teacher-centric' to 'learner-centric' education.\n**Reason (R): CBCS restricts inter-disciplinary mobility to ensure students strictly master one core subject.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Assertion (A) is true because CBCS allows learners to choose their courses (core, elective, soft skills), empowering them to drive their own education.\n* Reason (R) is entirely false; the primary objective of CBCS is to *promote* inter-disciplinary and intra-disciplinary mobility.\n* It breaks traditional silos, allowing a commerce student to take a minor in psychology or environmental science.\n* It uses a credit-based grading system (CGPA/SGPA) rather than percentage-based marking to standardize evaluation globally.\n*Related Concepts:*\n* **Core Course:** A compulsory subject that must be studied as a core requirement of a specific program.\n* **Elective Course:** A subject chosen from a pool, which may be specific to the discipline or entirely open/generic.", "id": 4}, {"question": "In the context of instructional design models, what does the letter 'U' stand for in the ASSURE model?", "options": [{"id": "1", "text": "Understand Learners"}, {"id": "2", "text": "Utilize Technology, Media, and Materials"}, {"id": "3", "text": "Update Curriculum"}, {"id": "4", "text": "Unify Objectives"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The ASSURE model is an instructional framework designed by Heinich, Molenda, Russell, and Smaldino for integrating technology into teaching.\n* The acronym stands for: Analyze learners; State standards and objectives; Select strategies, technology, media, and materials.\n* 'U' stands for **Utilize Technology, Media, and Materials**, which involves planning how the selected tools will be implemented in the lesson.\n* The final two steps are Require learner participation and Evaluate and revise.\n*Related Concepts:*\n* **ADDIE Model:** Another foundational design framework (Analysis, Design, Development, Implementation, Evaluation).\n* **Instructional Scaffolding:** Providing temporary support mechanisms (often media-based) to help learners achieve understanding.", "id": 5}, {"question": "Arrange the following phases of George Siemens' Connectivism theory of learning in the modern digital age:\nA. Filtering critical information from noise\nB. Recognizing patterns across data nodes\nC. Connecting to specialized information sources (nodes)\nD. Making decisions based on shifting knowledge bases", "options": [{"id": "1", "text": "A, C, B, D"}, {"id": "2", "text": "C, A, B, D"}, {"id": "3", "text": "C, B, A, D"}, {"id": "4", "text": "A, B, C, D"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Connectivism argues that in the digital age, knowledge rests in networks, not just within individuals.\n* Learning begins by Connecting (C) to external nodes (databases, peers, search engines).\n* Learners must then Filter (A) the massive influx of information to find what is relevant and accurate.\n* They Recognize patterns (B) across these fragmented sources to synthesize understanding, finally leading to Decision making (D).\n*Related Concepts:*\n* **Constructivism:** Knowledge is built internally through experience, contrasting Connectivism's external network focus.\n* **Personal Learning Environment (PLE):** The specific combination of digital tools and networks a student uses to learn.", "id": 6}, {"question": "Case Study: Professor Rao is teaching an advanced auditing course. He realizes his students are struggling to understand complex fraud detection algorithms. He decides to start with a simple, familiar manual auditing example, slowly introduces one automated variable at a time, and finally explains the complex AI-based algorithm. Which maxim of teaching is he predominantly applying?", "options": [{"id": "1", "text": "Empirical to Rational"}, {"id": "2", "text": "Known to Unknown"}, {"id": "3", "text": "Simple to Complex"}, {"id": "4", "text": "Psychological to Logical"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The scenario specifically highlights starting with a basic, foundational idea (simple manual audit) and gradually layering in difficulty (automated variables, then AI algorithms).\n* This is the application of the 'Simple to Complex' maxim.\n* It prevents cognitive overload and ensures learners build confidence before tackling advanced material.\n* While 'Known to Unknown' is similar, the explicit progressive addition of difficulty specifically identifies 'Simple to Complex'.\n*Related Concepts:*\n* **Concrete to Abstract:** Moving from tangible, physical objects to theoretical, invisible concepts.\n* **Analysis to Synthesis:** Breaking a problem into parts (analysis) and then putting the parts back together (synthesis).", "id": 7}, {"question": "Which of the following best defines \"Heutagogy\" in the context of adult education paradigms?", "options": [{"id": "1", "text": "The traditional art and science of teaching children."}, {"id": "2", "text": "The study of self-determined learning where learners are highly autonomous."}, {"id": "3", "text": "A teacher-centered model strictly focusing on rote memorization."}, {"id": "4", "text": "A peer-led approach focusing exclusively on collaborative group work."}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Heutagogy (coined by Hase and Kenyon in 2000) is the management of self-determined learning.\n* It is an extension of andragogy but places the learner in absolute control of *what* and *how* they learn.\n* The teacher acts merely as a resource provider or facilitator, not a director of the curriculum.\n* It is highly relevant in modern e-learning and PhD-level research where independent exploration is mandatory.\n*Related Concepts:*\n* **Pedagogy:** Teacher-led learning, traditionally associated with schooling.\n* **Paragogy (or Peeragogy):** The study of peer-to-peer learning and co-creation of knowledge.", "id": 8}, {"question": "Consider the following statements regarding 'Formative Assessment' tools:\n**Statement I:** Tools like Kahoot!, Quizizz, and interactive polls are primarily used for summative evaluation at the end of a semester.\n**Statement II:** The primary objective of formative assessment tools is to provide real-time feedback to adjust ongoing teaching strategies.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is incorrect because platforms like Kahoot! and Quizizz are classic digital *formative* assessment tools, not summative.\n* They are used during the instructional process to quickly gauge classroom understanding in a gamified, low-stakes environment.\n* Statement II is correct; the core defining feature of formative assessment is immediate feedback for both the educator and the student.\n* This allows the teacher to reteach concepts immediately if the class shows poor comprehension.\n*Related Concepts:*\n* **Diagnostic Assessment:** Given before instruction begins to test baseline knowledge.\n* **Summative Assessment:** High-stakes testing (like a final written exam) to certify mastery.", "id": 9}, {"question": "In Robert Gagne's \"Nine Events of Instruction\", what is the immediate next step after \"Gaining Attention\"?", "options": [{"id": "1", "text": "Stimulating recall of prior learning"}, {"id": "2", "text": "Presenting the stimulus material"}, {"id": "3", "text": "Informing learners of the objective"}, {"id": "4", "text": "Eliciting performance"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Gagne's Nine Events provide a systematic framework for instructional design based on the information processing model.\n* Step 1 is \"Gaining Attention\" (reception) to ensure learners are ready.\n* Step 2 is \"Informing learners of the objective\" (expectancy), so students know what they will be able to do by the end of the session.\n* Step 3 is \"Stimulating recall of prior learning\" (retrieval), linking new content to existing cognitive schemas.\n* Presenting the content occurs at Step 4.\n*Related Concepts:*\n* **Providing Learning Guidance (Step 5):** Using scaffolding, mnemonics, or analogies to help students encode information.\n* **Enhancing Retention and Transfer (Step 9):** Applying the newly learned skill to real-world situations.", "id": 10}, {"question": "Assertion (A): The reliability of a psychometric test guarantees its validity.\n**Reason (R): A highly reliable test yields consistent results over multiple administrations under identical conditions.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is false, but (R) is true"}, {"id": "4", "text": "(A) is true, but (R) is false"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Assertion (A) is completely false. Reliability (consistency) does *not* guarantee validity (accuracy). A broken clock that always reads 5:00 is perfectly reliable, but entirely invalid.\n* Reason (R) is true; reliability refers strictly to the repeatability and consistency of test scores.\n* Validity means the test measures exactly what it claims to measure.\n* For a test to be scientifically useful in education, it must be *both* reliable and valid, but validity is the ultimate criterion.\n*Related Concepts:*\n* **Test-Retest Reliability:** Administering the same test twice over a period of time to a group of individuals to check for score stability.\n* **Content Validity:** The extent to which a test comprehensively represents the entire subject area it aims to measure.", "id": 11}, {"question": "Match List I (Types of Variable in Teaching Research) with List II (Classroom Example):\n| List I (Variable) | List II (Example) |\n| --- | --- |\n| a. Independent Variable | i. The socio-economic background of the student |\n| b. Dependent Variable | ii. The specific teaching method used (e.g., Flipped Classroom) |\n| c. Intervening Variable | iii. The academic score achieved by the student |\n| d. Extraneous Variable | iv. The student's internal motivation and fatigue level |", "options": [{"id": "1", "text": "a-ii, b-iii, c-iv, d-i"}, {"id": "2", "text": "a-ii, b-iv, c-iii, d-i"}, {"id": "3", "text": "a-iii, b-ii, c-i, d-iv"}, {"id": "4", "text": "a-i, b-iii, c-iv, d-ii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* In educational research, the Independent Variable (IV) is manipulated by the teacher (e.g., teaching method).\n* The Dependent Variable (DV) is the outcome being measured (e.g., student test scores).\n* Intervening variables are internal, theoretical constructs that affect the DV but cannot be directly observed (e.g., motivation, fatigue, anxiety).\n* Extraneous variables are external factors that might influence the experiment and need to be controlled (e.g., classroom temperature, socio-economic status).\n*Related Concepts:*\n* **Confounding Variable:** An extraneous variable that correlates with both the independent and dependent variables, ruining the experiment.\n* **Control Group:** The group in an experiment that does not receive the experimental treatment (teaching method).", "id": 12}, {"question": "Case Study: A university implements a system where students submit their Commerce assignments through a portal that automatically checks for plagiarism using \"Urkund/Ouriginal\" and issues a digital badge upon original submission. This is an example of integrating ICT into which specific domain?", "options": [{"id": "1", "text": "Instructional Delivery"}, {"id": "2", "text": "Evaluation and Assessment System"}, {"id": "3", "text": "Synchronous Learning"}, {"id": "4", "text": "Curriculum Designing"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The scenario focuses on assignment submission, originality checking, and digital credentialing (badges).\n* These are purely functions of the Evaluation and Assessment System.\n* ICT in evaluation improves efficiency, transparency, and academic integrity (via plagiarism software).\n* It does not represent instructional delivery (teaching the content) or curriculum design (planning the syllabus).\n*Related Concepts:*\n* **Digital Credentials/Badging:** Micro-credentials issued digitally to recognize specific skills or achievements.\n* **LMS (Learning Management System):** Platforms like Moodle that house these assessment and submission portals.", "id": 13}, {"question": "In the context of mapping cognitive development, which of the following scholars is famous for the theory of \"Multiple Intelligences\", arguing against a single generalized IQ?", "options": [{"id": "1", "text": "Jean Piaget"}, {"id": "2", "text": "Howard Gardner"}, {"id": "3", "text": "B.F. Skinner"}, {"id": "4", "text": "Albert Bandura"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Howard Gardner introduced the Theory of Multiple Intelligences in 1983.\n* He argued that intelligence is not a single entity (like the 'g factor' in traditional IQ tests) but consists of distinct modalities.\n* His original intelligences include Linguistic, Logical-Mathematical, Spatial, Bodily-Kinesthetic, Musical, Interpersonal, Intrapersonal, and Naturalist.\n* This theory profoundly impacts teaching aptitude, urging educators to diversify their teaching methods to cater to different intellectual profiles.\n*Related Concepts:*\n* **Emotional Intelligence (Goleman):** The ability to perceive, control, and evaluate emotions.\n* **Triarchic Theory of Intelligence (Sternberg):** Divides intelligence into analytical, creative, and practical components.", "id": 14}, {"question": "Arrange the following forms of educational media from lowest learning retention to highest learning retention, according to Edgar Dale's Cone of Experience:\nA. Participating in a role-play simulation\nB. Reading a textbook chapter\nC. Watching an educational video\nD. Conducting a real-life physical experiment", "options": [{"id": "1", "text": "B, C, A, D"}, {"id": "2", "text": "C, B, A, D"}, {"id": "3", "text": "B, A, C, D"}, {"id": "4", "text": "D, A, C, B"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Dale's Cone of Experience organizes media based on abstraction, where highly abstract media yield lower retention than concrete, active experiences.\n* Reading text (B) is highly abstract verbal symbols (lowest retention, top of the cone).\n* Watching a video (C) is a passive visual/audio experience (moderate retention).\n* Role-play simulation (A) is an active, contrived experience (high retention).\n* Conducting a real-life experiment (D) is a direct, purposeful experience (highest retention, base of the cone).\n*Related Concepts:*\n* **Active vs. Passive Learning:** The cone visually separates passive reception (top) from active doing (bottom).\n* **Multimedia Learning Theory (Mayer):** People learn more deeply from words and pictures than from words alone.", "id": 15}, {"question": "Consider the following statements about the 'Mind Mapping' technique in teaching:\n**Statement I:** It is a linear, hierarchical note-taking technique that strictly uses text and numerical bullet points.\n**Statement II:** It is a visual representation of hierarchical information that uses branches, colors, and keywords radiating from a central concept.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Mind Mapping (popularized by Tony Buzan) is inherently non-linear and visual, making Statement I completely incorrect.\n* It mimics the brain's natural associative networking, placing a central core idea in the middle and radiating branches outward.\n* It heavily utilizes colors, images, and single keywords to enhance memory and creative association.\n* It is a highly effective tool for brainstorming, summarizing complex chapters, and organizing essays.\n*Related Concepts:*\n* **Concept Mapping:** Similar to mind mapping but uses multiple nodes and labeled connecting lines (cross-links) to show specific relationships between concepts.\n* **Brainstorming:** A group creativity technique designed to generate a large number of ideas for the solution of a problem.", "id": 16}, {"question": "Which of the following evaluation methods operates by mathematically comparing a student's score strictly to a predetermined cut-off score, entirely ignoring how the rest of the classroom performed?", "options": [{"id": "1", "text": "Norm-Referenced Testing"}, {"id": "2", "text": "Criterion-Referenced Testing"}, {"id": "3", "text": "Ipsative Testing"}, {"id": "4", "text": "Formative Testing"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Criterion-Referenced Testing (CRT) measures student performance against a fixed set of criteria or learning standards.\n* A predetermined cut-off score (e.g., getting 50% to pass a driving test) determines success.\n* If every student hits the benchmark, everyone passes; the performance of peers is mathematically irrelevant.\n* This contrasts with Norm-Referenced Testing, where grading is on a curve (e.g., top 6% qualify for NET).\n*Related Concepts:*\n* **Standardized Testing:** Can be either norm or criterion-referenced, but implies uniformity in administration and scoring.\n* **Mastery Learning:** An instructional strategy assuming all students can learn material if given enough time and appropriate instruction; heavily relies on CRT.", "id": 17}, {"question": "Match List I (Philosophical Approaches to Education) with List II (Core Belief):\n| List I (Philosophy) | List II (Core Belief) |\n| --- | --- |\n| a. Idealism | i. Education should focus on practical utility and real-world problem solving |\n| b. Naturalism | ii. Education should focus on spiritual/mental reality and character building |\n| c. Pragmatism | iii. Education should be child-centered, focusing on free expression in nature |\n| d. Existentialism | iv. Education should focus on individual choice, freedom, and self-definition |", "options": [{"id": "1", "text": "a-ii, b-iii, c-i, d-iv"}, {"id": "2", "text": "a-ii, b-i, c-iii, d-iv"}, {"id": "3", "text": "a-iii, b-ii, c-i, d-iv"}, {"id": "4", "text": "a-i, b-iii, c-iv, d-ii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Idealism (Plato) posits that ideas/mind are the ultimate reality; education should focus on moral and spiritual development.\n* Naturalism (Rousseau) argues that nature is the only reality; education must be child-centric and away from societal artificiality.\n* Pragmatism (John Dewey) believes truth is what works practically; education is life itself, emphasizing \"learning by doing.\"\n* Existentialism (Sartre) focuses on human freedom; the learner creates their own meaning and values through free choice.\n*Related Concepts:*\n* **Constructivism:** Epistemologically aligns well with Pragmatism, focusing on experiential learning.\n* **Essentialism:** A traditional approach ensuring students learn foundational, basic academic skills strictly.", "id": 18}, {"question": "Assertion (A): The Flipped Classroom model demands high self-regulation and motivation from learners.\n**Reason (R): In a Flipped Classroom, students are required to independently process foundational instructional content before arriving at the physical classroom.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Assertion (A) is true. Because the direct instruction (lecture) happens at home via videos or readings, students who lack self-regulation will fail to prepare.\n* Reason (R) perfectly explains why this self-regulation is needed. If a student doesn't process the foundational content independently, they cannot participate in the advanced application activities planned for classroom time.\n* The model shifts the cognitive load: basic \"Remember/Understand\" tasks happen asynchronously at home, while complex \"Apply/Analyze\" tasks happen synchronously with the teacher.\n*Related Concepts:*\n* **Blended Learning:** A broader mix of online and face-to-face learning that doesn't strictly require the \"flip\" of homework and lecture.\n* **Self-Directed Learning:** A process where individuals take the initiative to diagnose their learning needs and formulate goals.", "id": 19}, {"question": "Consider the following statements regarding the \"National Academic Depository\" (NAD):\n**Statement I:** NAD is an online platform established exclusively for hosting massive open online courses (MOOCs).\n**Statement II:** NAD ensures the 24x7 digital availability, authenticity, and safe storage of academic awards and certificates.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is entirely incorrect; the platform for hosting MOOCs in India is SWAYAM, not NAD.\n* Statement II is correct. The National Academic Depository (NAD) is an initiative by the Ministry of Education to provide an online storehouse of all academic awards (degrees, mark sheets).\n* It eliminates the need for physical paper certificates, drastically reducing document forgery and simplifying the verification process for employers.\n* It operates as a highly secure, centralized digital repository.\n*Related Concepts:*\n* **DigiLocker:** The flagship initiative under Digital India where NAD records are often integrated and accessed by citizens.\n* **Academic Bank of Credits (ABC):** Established under NEP 2020 to digitally store academic credits earned by students.", "id": 20}, {"question": "Case Study: A researcher wants to solve a highly localized, immediate problem: the commerce students in Section A are consistently failing to engage with digital accounting software. The researcher implements a new software tutorial, observes the class over two weeks, evaluates the engagement, and immediately adjusts the tutorial based on the findings. What type of research is being conducted?", "options": [{"id": "1", "text": "Fundamental Research"}, {"id": "2", "text": "Action Research"}, {"id": "3", "text": "Historical Research"}, {"id": "4", "text": "Experimental Quantitative Research"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The scenario describes Action Research, which is specifically designed to solve immediate, localized, and practical problems in a specific classroom or organizational setting.\n* It does not aim to create universal theories or generalize findings across the population.\n* Its hallmark is the cyclical process: Plan -> Act -> Observe -> Reflect.\n* It is predominantly conducted by practitioners (teachers) rather than external academic researchers.\n*Related Concepts:*\n* **Fundamental (Basic) Research:** Driven by curiosity to expand the boundaries of knowledge without an immediate practical application.\n* **Applied Research:** Uses theories derived from basic research to solve broader, generalized practical problems.", "id": 21}, {"question": "In the context of the ADDIE model of instructional design, during which specific phase are the actual learning materials, videos, graphics, and course structures physically created and coded?", "options": [{"id": "1", "text": "Analysis"}, {"id": "2", "text": "Design"}, {"id": "3", "text": "Development"}, {"id": "4", "text": "Implementation"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The ADDIE model consists of Analysis, Design, Development, Implementation, and Evaluation.\n* While the 'Design' phase outlines the blueprints, storyboards, and learning objectives, the actual creation happens in the **Development** phase.\n* In Development, instructional designers build out the multimedia, program the e-learning modules, and finalize the written content based on the Design blueprint.\n* It is the heavy-lifting phase where the theoretical plan becomes a tangible product.\n*Related Concepts:*\n* **Implementation Phase:** The phase where the completed course is delivered to the actual learners and the LMS is tested live.\n* **Formative Evaluation:** Occurs *throughout* the ADDIE process to refine the course before final release.", "id": 22}, {"question": "Arrange the following forms of assessment from the LEAST formal to the MOST formal:\nA. High-stakes University Final Exam\nB. Spontaneous classroom questioning by the teacher\nC. A weekly scheduled 10-mark quiz\nD. State-level standardized entrance exam (e.g., UGC NET)", "options": [{"id": "1", "text": "B, C, A, D"}, {"id": "2", "text": "C, B, A, D"}, {"id": "3", "text": "B, C, D, A"}, {"id": "4", "text": "C, B, D, A"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Formality in assessment refers to the standardization, weightage, and environmental control of the test.\n* Spontaneous questioning (B) is the least formal, highly formative, and unrecorded.\n* A weekly quiz (C) introduces slight formality and recorded grades.\n* A University Final Exam (A) is highly formal, summative, and dictates degree completion.\n* A standardized entrance exam like UGC NET (D) is the most formal, featuring absolute standardization, extreme security protocols, and national-level implications.\n*Related Concepts:*\n* **Low-stakes testing:** Assessments whose results do not carry significant consequences (promotes lower anxiety).\n* **High-stakes testing:** Assessments that dictate significant life outcomes like graduation, licensure, or university admission.", "id": 23}, {"question": "Assertion (A): In modern psychometrics, establishing the 'Face Validity' of a Teaching Aptitude test is considered the most scientifically rigorous and conclusive evidence of its quality.\n**Reason (R): Face validity merely indicates whether a test appears, on the surface, to measure what it claims to measure, based on subjective judgment.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is false, but (R) is true"}, {"id": "4", "text": "(A) is true, but (R) is false"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Assertion (A) is false. Face validity is actually considered the *weakest* and least scientific form of validity in psychometrics.\n* Reason (R) is true; face validity is a purely superficial, subjective assessment (e.g., \"Yes, this exam paper *looks* like it's about commerce\").\n* Rigorous tests require Construct Validity, Content Validity, and Criterion-Related Validity, which involve complex statistical correlations and expert panel reviews.\n* A test can lack face validity but still be scientifically valid.\n*Related Concepts:*\n* **Construct Validity:** Ensuring the test accurately measures the complex theoretical concept (e.g., intelligence, motivation) it claims to.\n* **Concurrent Validity:** A form of criterion validity where test results correlate well with a simultaneously established benchmark.", "id": 24}, {"question": "Match List I (Barriers to Classroom Communication) with List II (Example):\n| List I (Barrier Type) | List II (Example) |\n| --- | --- |\n| a. Semantic Barrier | i. Traffic noise from outside the classroom |\n| b. Psychological Barrier | ii. The teacher using highly complex academic jargon |\n| c. Physical Barrier | iii. The student experiencing extreme anxiety about failure |\n| d. Organizational Barrier | iv. Rigid university policies preventing open discussion |", "options": [{"id": "1", "text": "a-ii, b-iii, c-i, d-iv"}, {"id": "2", "text": "a-i, b-ii, c-iii, d-iv"}, {"id": "3", "text": "a-ii, b-i, c-iii, d-iv"}, {"id": "4", "text": "a-iii, b-ii, c-iv, d-i"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Effective teaching relies heavily on uninterrupted communication.\n* Semantic barriers (a) relate to language and meaning; using jargon students don't know breaks communication.\n* Psychological barriers (b) are internal mental states like prejudice, anxiety, or disinterest.\n* Physical barriers (c) are environmental factors like distance, poor lighting, or noise.\n* Organizational barriers (d) relate to the structural hierarchy and rigid rules of an institution.\n*Related Concepts:*\n* **Kinesics:** The study of body language in communication (a non-verbal barrier if inconsistent with words).\n* **Paralanguage:** How something is said (pitch, tone, speed) rather than what is said.", "id": 25}, {"question": "Which of the following components is explicitly integrated into the \"Academic Bank of Credits\" (ABC) under the National Education Policy (NEP) 2020?", "options": [{"id": "1", "text": "Centralized allocation of hostel facilities across central universities"}, {"id": "2", "text": "Digital storage of credits earned by students to facilitate multiple entry and exit points"}, {"id": "3", "text": "Funding management for PhD scholars"}, {"id": "4", "text": "National tracking of faculty attendance via biometric portals"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The Academic Bank of Credits (ABC) is a core structural reform of NEP 2020.\n* It serves as a digital repository to store academic credits earned by students from various recognized higher education institutions (HEIs).\n* Its primary objective is to enable \"multiple entry and exit points\" in higher education, allowing students to pause their studies and resume later at the same or a different institution without losing their accumulated credits.\n* It promotes a highly flexible, multi-disciplinary approach to earning a degree.\n*Related Concepts:*\n* **DigiLocker:** The underlying infrastructure that powers the ABC framework.\n* **CBCS (Choice Based Credit System):** The pedagogical framework that generates the credits stored in the ABC.", "id": 26}, {"question": "Case Study: An educator utilizes the \"Jigsaw Method\" in a commerce class covering 'Types of Market Structures'. The class is divided into groups of four. What is the defining procedural characteristic of this specific cooperative learning method?", "options": [{"id": "1", "text": "Each group fiercely competes against the others to win a simulated market share."}, {"id": "2", "text": "Students leave their home group, join an 'expert group' to master one specific market type (e.g., Monopoly), and then return to teach it to their home group."}, {"id": "3", "text": "The teacher lectures for 30 minutes, and the groups spend 10 minutes summarizing the lecture."}, {"id": "4", "text": "One student solves a problem on the board while the other three critique their performance."}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The Jigsaw Method (developed by Elliot Aronson) is designed to create positive interdependence.\n* The defining feature is the creation of \"Expert Groups.\" A topic is broken into parts. One member from each \"Home Group\" meets with peers assigned the same part to study it deeply.\n* After mastering the fragment, they return to their Home Group and teach their fragment to their peers.\n* The learning of the whole group is dependent on each individual successfully teaching their part, drastically reducing classroom prejudice and passivity.\n*Related Concepts:*\n* **Think-Pair-Share:** A collaborative technique where students think individually, discuss with a partner, then share with the class.\n* **Positive Interdependence:** The feeling among group members that they \"sink or swim together.\"", "id": 27}, {"question": "Consider the following statements regarding the epistemology of learning:\n**Statement I:** Constructivism argues that objective knowledge exists independently in the world and the teacher's role is to transfer it into the student's empty mind.\n**Statement II:** Behaviorism heavily utilizes the concept of \"reinforcement\" (positive or negative) to shape observable student behaviors.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is incorrect. The idea that knowledge is objective and transferred to an \"empty mind\" (tabula rasa) belongs to traditional Objectivism/Behaviorism. Constructivism argues learners actively *create* their own subjective knowledge based on experiences.\n* Statement II is correct. Behaviorism (Skinner) relies on conditioning. Positive reinforcement (adding a reward) and negative reinforcement (removing an aversive stimulus) are core tools to shape behavior.\n* Understanding these foundational philosophies helps determine the appropriate teaching method for different contexts.\n*Related Concepts:*\n* **Tabula Rasa:** John Locke's concept that individuals are born without built-in mental content and all knowledge comes from experience/perception.\n* **Cognitivism:** Focuses on the inner mental activities of the mind (memory, thinking) rather than just observable behavior.", "id": 28}, {"question": "Arrange the following steps of \"Cognitive Apprenticeship\" (a model where an expert helps a novice master a cognitive skill) in the correct developmental sequence:\nA. Scaffolding\nB. Modeling\nC. Articulation\nD. Coaching", "options": [{"id": "1", "text": "B, D, A, C"}, {"id": "2", "text": "B, A, D, C"}, {"id": "3", "text": "A, B, D, C"}, {"id": "4", "text": "D, B, C, A"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Cognitive Apprenticeship (Collins, Brown, and Newman) adapts traditional physical apprenticeship (like blacksmithing) to cognitive skills (like math or writing).\n* **Modeling (B):** The expert performs the task so the student can observe the internal cognitive processes.\n* **Coaching (D):** The expert observes the student attempting the task and provides hints/feedback.\n* **Scaffolding (A):** The expert provides supports to help the student execute tasks they cannot quite do independently, gradually fading the support over time.\n* **Articulation (C):** Students are encouraged to verbally articulate their knowledge, reasoning, or problem-solving processes.\n*Related Concepts:*\n* **Fading:** The gradual removal of scaffolding as the learner becomes competent.\n* **Zone of Proximal Development (ZPD):** The theoretical space where scaffolding and coaching occur effectively.", "id": 29}, {"question": "Assertion (A): In the context of UGC NET evaluation criteria, implementing a \"Negative Marking\" scheme drastically alters the test's psychometric profile by penalizing guessing.\n**Reason (R): Negative marking increases the 'Standard Error of Measurement' by making scores highly dependent on risk-taking behavior rather than pure academic knowledge.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Assertion (A) is true; negative marking completely changes how candidates approach an exam, as blind guessing becomes a statistical liability.\n* Reason (R) is true. When negative marking is introduced, a student's final score becomes a combination of their actual knowledge *and* their psychological propensity for risk-taking.\n* Two students with identical knowledge but different risk appetites will get different scores, which inherently increases the Standard Error of Measurement (SEM) regarding pure knowledge assessment.\n* However, (R) is not the *direct explanation* of (A); (A) states it alters the profile by penalizing guessing, while (R) explains its effect on psychometric variance.\n*Related Concepts:*\n* **Standard Error of Measurement (SEM):** Estimates how repeated measures of a person on the same instrument tend to be distributed around their \"true\" score.\n* **Item Response Theory (IRT):** Advanced psychometrics that models the probability of a correct response based on item difficulty and person ability, often bypassing simple negative marking logic.", "id": 30}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

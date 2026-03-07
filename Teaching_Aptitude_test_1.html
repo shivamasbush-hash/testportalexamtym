@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Teaching Aptitude test 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Teaching Aptitude test 1", "organization": "ExamTym", "durationMinutes": 40, "totalMarks": 60.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Which of the following is the most fundamental objective of teaching at the higher education level?", "options": [{"id": "1", "text": "To dictate notes and ensure syllabus completion"}, {"id": "2", "text": "To develop the critical thinking and problem-solving capacity of students"}, {"id": "3", "text": "To maintain strict discipline and attendance in the classroom"}, {"id": "4", "text": "To prepare students exclusively for clearing competitive examinations"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The primary goal of teaching at the higher education level shifts from mere knowledge transfer to cognitive development.\n* It aims to foster critical thinking, enabling students to analyze, evaluate, and create new knowledge.\n* Higher education focuses on the \"Reflective Level\" of teaching, emphasizing independent thought and problem-solving skills.\n* Creating lifelong learners who can apply theoretical concepts to real-world scenarios is the ultimate objective.\n*Related Concepts:*\n* **Memory Level:** Focuses on rote learning and factual recall, which is insufficient for higher education.\n* **Andragogy:** The practice of teaching adult learners, which relies heavily on self-directed learning and critical inquiry.", "id": 1}, {"question": "Consider the following statements regarding the levels of teaching:\n**Statement I:** The Understanding Level of teaching implies mere memorization of facts without grasping their underlying meaning.\n**Statement II:** The Reflective Level of teaching is highly learner-centric and involves identifying a problem and finding its solution.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is incorrect because the Understanding Level (Morrison) goes beyond memorization; it requires grasping the meaning, relationships, and application of concepts.\n* Mere memorization is the defining characteristic of the Memory Level of teaching (Herbart).\n* Statement II is correct; the Reflective Level (Hunt) is the highest, most advanced level of teaching.\n* It is highly learner-centric, relying on problem-solving, independent research, and critical analysis.\n*Related Concepts:*\n* **Autonomous Development Level:** A level where self-learning occurs naturally without formal teaching.\n* **Pedagogical Paradigm Shift:** Moving from teacher-centric (Memory) to learner-centric (Reflective) methodologies.", "id": 2}, {"question": "Match List I (Teaching Models/Theories) with List II (Primary Proponent):\n| List I (Teaching Model) | List II (Proponent) |\n| --- | --- |\n| a. Memory Level of Teaching | i. Harry C. Morrison |\n| b. Understanding Level of Teaching | ii. John F. Herbart |\n| c. Reflective Level of Teaching | iii. Robert Glaser |\n| d. Basic Teaching Model | iv. Ernest E. Hunt |", "options": [{"id": "1", "text": "a-ii, b-i, c-iv, d-iii"}, {"id": "2", "text": "a-i, b-ii, c-iii, d-iv"}, {"id": "3", "text": "a-ii, b-iv, c-i, d-iii"}, {"id": "4", "text": "a-iv, b-i, c-ii, d-iii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* John F. Herbart is the main proponent of the Memory Level, focusing on the structured presentation of factual information.\n* Harry C. Morrison developed the Understanding Level, emphasizing mastery of the subject and insight into relationships.\n* Ernest E. Hunt proposed the Reflective Level, focusing on cognitive problem-solving and critical thinking.\n* Robert Glaser introduced the Basic Teaching Model in 1962, which outlines the systematic process of teaching (objectives, entering behavior, procedures, assessment).\n*Related Concepts:*\n* **Concept Attainment Model:** Developed by Jerome Bruner.\n* **Meaningful Reception Learning:** Proposed by David Ausubel.", "id": 3}, {"question": "Assertion (A): Learner-centered teaching methods are generally more effective than teacher-centered methods for developing higher-order thinking skills.\n**Reason (R): Learner-centered methods encourage active participation, peer collaboration, and self-directed inquiry among students.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Assertion (A) is true because higher-order skills (analyzing, evaluating, creating) require active mental engagement, which teacher-centric lectures often lack.\n* Reason (R) is true and perfectly explains the assertion by listing the exact mechanisms (participation, inquiry) that trigger higher-order thinking.\n* Learner-centered methods shift the teacher's role from a \"sage on the stage\" to a \"guide on the side.\"\n* Examples include project-based learning, heuristic methods, and flipped classrooms.\n*Related Concepts:*\n* **Teacher-Centered Methods:** Chalk-and-talk, lectures, and demonstrations.\n* **Constructivism:** The learning philosophy that underpins learner-centered methods, positing that students construct their own understanding.", "id": 4}, {"question": "Arrange the following phases of teaching in their correct chronological sequence according to Philip W. Jackson:\nA. Interactive Phase\nB. Post-active Phase\nC. Pre-active Phase", "options": [{"id": "1", "text": "A, B, C"}, {"id": "2", "text": "C, A, B"}, {"id": "3", "text": "B, A, C"}, {"id": "4", "text": "C, B, A"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Philip W. Jackson conceptualized teaching as a systematic, three-step process.\n* **Pre-active Phase (C):** The planning stage where the teacher formulates objectives, selects content, and prepares the lesson plan before entering the classroom.\n* **Interactive Phase (A):** The actual execution stage where the teacher delivers the content, asks questions, and interacts with students.\n* **Post-active Phase (B):** The evaluation stage where the teacher assesses student learning and reflects on the effectiveness of the lesson.\n*Related Concepts:*\n* **Formative Assessment:** Primarily utilized during the Interactive Phase to monitor real-time comprehension.\n* **Summative Assessment:** Heavily associated with the Post-active Phase to measure final learning outcomes.", "id": 5}, {"question": "Case Study: An educator begins a new unit on \"Business Economics.\" Before starting the first lecture, the educator gives a short, ungraded 10-question quiz to find out what basic economic concepts the students already know and where they lack foundational knowledge. Which type of evaluation is this?", "options": [{"id": "1", "text": "Summative Evaluation"}, {"id": "2", "text": "Formative Evaluation"}, {"id": "3", "text": "Diagnostic Evaluation"}, {"id": "4", "text": "Ipsative Evaluation"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Diagnostic evaluation is conducted *before* instruction begins to identify students' prior knowledge, strengths, and specific learning gaps.\n* It helps the teacher tailor the upcoming lesson plan to address existing misconceptions or skip material the students have already mastered.\n* It acts as a starting baseline and is typically low-stakes or ungraded.\n* It differs from formative assessment, which occurs *during* the active teaching process.\n*Related Concepts:*\n* **Placement Evaluation:** Used to place a student in the appropriate course level (e.g., an English proficiency test).\n* **Remedial Teaching:** The instructional action taken by a teacher *after* a diagnostic evaluation reveals severe learning gaps.", "id": 6}, {"question": "In which year was the original Bloom's Taxonomy of Educational Objectives (Cognitive Domain) published, and how many hierarchical levels did it contain?", "options": [{"id": "1", "text": "1956; Six levels"}, {"id": "2", "text": "2001; Five levels"}, {"id": "3", "text": "1964; Six levels"}, {"id": "4", "text": "1956; Eight levels"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Benjamin Bloom and his committee published the original Taxonomy of Educational Objectives (Cognitive Domain) in 1956.\n* It contained exactly six hierarchical levels: Knowledge, Comprehension, Application, Analysis, Synthesis, and Evaluation.\n* It was designed to classify learning objectives into levels of complexity and specificity.\n* The model assumes that mastering lower-order skills is a prerequisite for achieving higher-order skills.\n*Related Concepts:*\n* **Revised Bloom's Taxonomy (2001):** Updated by Anderson and Krathwohl, changing nouns to verbs and placing \"Creating\" at the top.\n* **Affective Domain:** Developed by Krathwohl (1964), focusing on emotions, values, and attitudes.", "id": 7}, {"question": "Consider the following statements regarding digital initiatives in education:\n**Statement I:** SWAYAM is a massive open online course (MOOC) platform providing courses from Class 9 to post-graduation.\n**Statement II:** SWAYAM PRABHA is a repository of electronic theses and dissertations primarily meant for PhD scholars.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Statement I is correct; SWAYAM is the Government of India's flagship MOOC platform designed to achieve access, equity, and quality in education.\n* Statement II is incorrect; SWAYAM PRABHA is a group of DTH channels telecasting high-quality educational programs 24x7 using the GSAT-15 satellite.\n* The repository for Indian electronic theses and dissertations is actually **Shodhganga**, managed by INFLIBNET.\n* Understanding the specific functions of different ICT initiatives is crucial for the NTA UGC NET exam.\n*Related Concepts:*\n* **National Digital Library (NDL):** A virtual repository of learning resources with a single-window search facility.\n* **e-ShodhSindhu:** A consortium providing access to e-resources and peer-reviewed journals to higher education institutions.", "id": 8}, {"question": "Match List I (Characteristics of Learners) with List II (Specific Domain):\n| List I (Characteristic) | List II (Domain) |\n| --- | --- |\n| a. Ability to solve abstract mathematical problems | i. Social Characteristic |\n| b. Tendency to seek peer approval and group belonging | ii. Emotional Characteristic |\n| c. Managing test anxiety and coping with failure | iii. Cognitive Characteristic |\n| d. Physical maturation and motor skill coordination | iv. Physical Characteristic |", "options": [{"id": "1", "text": "a-iii, b-i, c-ii, d-iv"}, {"id": "2", "text": "a-iii, b-ii, c-i, d-iv"}, {"id": "3", "text": "a-i, b-iii, c-ii, d-iv"}, {"id": "4", "text": "a-ii, b-i, c-iv, d-iii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Learner characteristics are broadly divided into cognitive, social, emotional, and physical domains.\n* Cognitive characteristics relate to memory, mental processing, and problem-solving (e.g., abstract math).\n* Social characteristics deal with interpersonal relationships, group dynamics, and peer influence.\n* Emotional characteristics involve self-regulation, feelings, and coping mechanisms (e.g., test anxiety).\n* Physical characteristics refer to bodily growth, health, and psychomotor development.\n*Related Concepts:*\n* **Adolescent Learners:** Highly influenced by social domains (peer pressure) and experiencing rapid emotional shifts.\n* **Adult Learners (Andragogy):** Characterized by self-direction, intrinsic motivation, and practical application needs.", "id": 9}, {"question": "Assertion (A): Traditional support systems in teaching, such as blackboards and physical textbooks, have become entirely obsolete and irrelevant with the advent of ICT tools like smartboards and tablets.\n**Reason (R): Effective teaching requires a blended approach where technology acts as an aid rather than a complete replacement for foundational pedagogical tools.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Assertion (A) is false. Traditional tools like blackboards and printed textbooks are not obsolete; they remain fundamental, highly accessible, and reliable foundations of the education system, especially in resource-constrained areas.\n* Reason (R) is true. ICT (Information and Communication Technology) is designed to *supplement* and enhance traditional teaching, creating a \"Blended Learning\" environment, not to eradicate traditional tools entirely.\n* Teaching aids\u2014whether traditional or digital\u2014only serve to clarify concepts and stimulate interest; they do not replace the teacher.\n* The effectiveness of a tool depends on the pedagogical context, not just its technological novelty.\n*Related Concepts:*\n* **Edgar Dale's Cone of Experience:** A model showing how different teaching aids (from text to direct experience) affect learning retention.\n* **Blended Learning:** Combining face-to-face classroom methods with computer-mediated activities.", "id": 10}, {"question": "According to the research by Gary Borich, which of the following is considered a \"Key Behavior\" that directly contributes to effective teaching?", "options": [{"id": "1", "text": "Using student ideas and contributions"}, {"id": "2", "text": "Structuring the classroom environment"}, {"id": "3", "text": "Lesson clarity"}, {"id": "4", "text": "Probing for better answers"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Gary Borich categorized effective teaching practices into five \"Key Behaviors\" and five \"Helping Behaviors.\"\n* The five Key Behaviors are: **Lesson clarity**, Instructional variety, Teacher task orientation, Engagement in the learning process, and Student success rate.\n* These are the primary, direct actions a teacher must take to ensure students actually learn the material.\n* Using student ideas, structuring, questioning, probing, and teacher affect are classified as \"Helping Behaviors\"\u2014they support the key behaviors but are secondary.\n*Related Concepts:*\n* **Instructional Variety:** A key behavior involving the use of different presentation methods and teaching aids to maintain attention.\n* **Student Success Rate:** A key behavior indicating that students are learning at a level that is challenging yet manageable.", "id": 11}, {"question": "Arrange the original levels of Bloom's Taxonomy (Cognitive Domain, 1956) in ascending order from lowest to highest cognitive complexity:\nA. Application\nB. Knowledge\nC. Evaluation\nD. Analysis\nE. Comprehension\nF. Synthesis", "options": [{"id": "1", "text": "B, E, A, D, F, C"}, {"id": "2", "text": "B, A, E, D, C, F"}, {"id": "3", "text": "E, B, A, D, F, C"}, {"id": "4", "text": "B, E, A, F, D, C"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Benjamin Bloom's original 1956 taxonomy progresses from simple recall to complex judgment.\n* **1. Knowledge (B):** Rote recall of facts and terms.\n* **2. Comprehension (E):** Understanding the meaning of the facts.\n* **3. Application (A):** Using the knowledge in a new situation.\n* **4. Analysis (D):** Breaking down information into component parts.\n* **5. Synthesis (F):** Combining parts to form a new, original whole.\n* **6. Evaluation (C):** Judging the value of material for a given purpose based on criteria.\n*Related Concepts:*\n* **Higher-Order Thinking Skills (HOTS):** The top three levels (Analysis, Synthesis, Evaluation).\n* **Lower-Order Thinking Skills (LOTS):** The bottom three levels (Knowledge, Comprehension, Application).", "id": 12}, {"question": "Case Study: In a Commerce classroom, a teacher notices that students are struggling to understand the \"Double Entry System\" of accounting. Instead of giving a summative test, the teacher walks around during practice time, checks student ledgers, points out small calculation errors immediately, and re-explains the debit/credit rule on the spot. This is a classic example of:", "options": [{"id": "1", "text": "Criterion-Referenced Evaluation"}, {"id": "2", "text": "Formative Evaluation"}, {"id": "3", "text": "Placement Evaluation"}, {"id": "4", "text": "Summative Evaluation"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Formative Evaluation occurs *continuously* during the teaching-learning process.\n* Its primary objective is to monitor student progress and provide immediate, ongoing feedback to both the student (to correct errors) and the teacher (to adjust instruction).\n* It is highly developmental, low-stakes, and focuses on improvement rather than final grading.\n* Checking ledgers and re-explaining rules in real-time perfectly illustrates this concept.\n*Related Concepts:*\n* **Continuous and Comprehensive Evaluation (CCE):** A school-based evaluation system that heavily utilizes formative assessments throughout the academic year.\n* **Summative Evaluation:** Conducted at the end of a unit/term strictly for assigning grades or certification.", "id": 13}, {"question": "In the context of India's higher education system, what does the acronym CBCS stand for, which was introduced by the UGC to provide flexibility to students?", "options": [{"id": "1", "text": "Central Board of Credit System"}, {"id": "2", "text": "Choice Based Credit System"}, {"id": "3", "text": "Core Based Curriculum System"}, {"id": "4", "text": "Comprehensive Board of Choice System"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* CBCS stands for the **Choice Based Credit System**, introduced by the University Grants Commission (UGC).\n* It marks a shift from a teacher-centric to a learner-centric education model.\n* It allows students to choose inter-disciplinary, intra-disciplinary, and skill-based courses (Electives) alongside their Core subjects.\n* It utilizes a uniform grading system (SGPA and CGPA) rather than percentage marks, facilitating student mobility across institutions nationwide.\n*Related Concepts:*\n* **Academic Bank of Credits (ABC):** A digital repository under NEP 2020 that stores credits earned via CBCS to allow multiple entry and exit points.\n* **Core Course:** A compulsory subject that every student in a specific degree program must pass.", "id": 14}, {"question": "Which of the following concepts, foundational to modern teaching aptitude, refers to the difference between what a learner can do independently and what they can achieve with the guidance of a skilled partner?", "options": [{"id": "1", "text": "Scaffolding"}, {"id": "2", "text": "Zone of Proximal Development (ZPD)"}, {"id": "3", "text": "Experiential Learning Cycle"}, {"id": "4", "text": "Operant Conditioning"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The Zone of Proximal Development (ZPD) is a concept developed by Soviet psychologist Lev Vygotsky.\n* It identifies the optimal area where learning takes place\u2014tasks that are too hard for the student to do alone, but achievable with help.\n* The \"skilled partner\" is referred to as the More Knowledgeable Other (MKO), which could be a teacher, a peer, or even educational software.\n* The physical or verbal support provided by the MKO within this zone is called \"Scaffolding.\"\n*Related Concepts:*\n* **Social Constructivism:** Vygotsky's broader theory that learning is a collaborative, social process.\n* **Scaffolding:** The temporary support mechanism itself, which is gradually removed as the student becomes independent.\nHere are the remaining 15 questions to complete your easy-level Teaching Aptitude mock test.\n### SECTION A \u2013 MOCK TEST QUESTIONS (Continued)", "id": 15}, {"question": "Which of the following represents a traditional, offline method of teaching rather than a modern digital/ICT-based initiative?", "options": [{"id": "1", "text": "Massive Open Online Courses (MOOCs)"}, {"id": "2", "text": "Chalk and Talk Method"}, {"id": "3", "text": "SWAYAM Portal"}, {"id": "4", "text": "Virtual Laboratories"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The \"Chalk and Talk\" method is the most classic example of traditional, face-to-face, teacher-centric education.\n* It relies on a physical classroom setting where the educator lectures and writes on a blackboard.\n* It does not utilize internet connectivity, digital platforms, or asynchronous learning tools.\n* While effective for direct information delivery, it often lacks the interactive and visual capabilities of modern ICT tools.\n*Related Concepts:*\n* **Blended Learning:** A combination of traditional classroom methods (like chalk and talk) with digital online activities.\n* **ICT Integration:** The use of digital technology (like smartboards) to enhance traditional teaching environments.", "id": 16}, {"question": "Case Study: An educator running an educational YouTube channel named \"Examtym\" creates a series where students are required to watch theoretical video lectures at home. During the live weekend stream, the educator focuses entirely on solving doubts, engaging in discussions, and completing mock tests together. Which modern teaching model is being utilized?", "options": [{"id": "1", "text": "Rote Learning Method"}, {"id": "2", "text": "Flipped Classroom Model"}, {"id": "3", "text": "Programmed Instruction"}, {"id": "4", "text": "Traditional Lecture Method"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The Flipped Classroom model inverses the traditional homework-and-lecture dynamic.\n* Theoretical instruction (lectures) is delivered outside the classroom, typically via pre-recorded videos or online readings.\n* \"Class time\" (or in this case, the live stream) is repurposed for highly interactive, higher-order cognitive tasks like problem-solving and doubt clearance.\n* This approach maximizes the educator's presence for application and analysis rather than mere information delivery.\n*Related Concepts:*\n* **Asynchronous Learning:** The part of the model where students watch videos at their own pace.\n* **Synchronous Learning:** The live stream where all participants are present and interacting in real-time.", "id": 17}, {"question": "Assertion (A): Providing immediate and constructive feedback during a classroom discussion significantly enhances student learning and retention.\n**Reason (R): Immediate feedback allows learners to correct their misconceptions in real-time before those errors are permanently stored in their long-term memory.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Assertion (A) is true; feedback is a cornerstone of effective formative assessment and instructional design.\n* Reason (R) is true and perfectly explains the assertion by highlighting the cognitive mechanism behind feedback.\n* If a student practices a concept incorrectly without correction, they develop a flawed cognitive schema.\n* Prompt correction ensures accurate encoding of information, preventing the need for difficult remedial unlearning later.\n*Related Concepts:*\n* **Formative Assessment:** The framework within which immediate feedback is typically provided.\n* **Reinforcement:** Feedback can act as positive reinforcement when a student answers correctly, boosting motivation.", "id": 18}, {"question": "Match List I (Types of Evaluation) with List II (Primary Characteristic):\n| List I (Evaluation Type) | List II (Characteristic) |\n| --- | --- |\n| a. Formative Evaluation | i. Conducted at the end of a term to assign final grades |\n| b. Summative Evaluation | ii. Conducted before instruction to gauge prior knowledge |\n| c. Diagnostic Evaluation | iii. Compares a student's current performance against their own past performance |\n| d. Ipsative Evaluation | iv. Conducted during instruction to provide continuous feedback |", "options": [{"id": "1", "text": "a-iv, b-i, c-ii, d-iii"}, {"id": "2", "text": "a-i, b-iv, c-iii, d-ii"}, {"id": "3", "text": "a-iv, b-ii, c-i, d-iii"}, {"id": "4", "text": "a-ii, b-i, c-iv, d-iii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Formative evaluation (iv) is an ongoing process during classes (e.g., quizzes, oral questions) to improve teaching.\n* Summative evaluation (i) is a terminal assessment (e.g., final exams) used for grading and certification.\n* Diagnostic evaluation (ii) is a pre-assessment used to find out the specific strengths and weaknesses of a student before a topic begins.\n* Ipsative evaluation (iii) measures personal progress rather than comparing the student to external standards or peers.\n*Related Concepts:*\n* **Norm-Referenced Testing:** Comparing a student's score against a peer group.\n* **Criterion-Referenced Testing:** Comparing a student's score against a fixed standard or benchmark.", "id": 19}, {"question": "Arrange the following fundamental steps of the Information Processing Model (Memory) in their correct sequential order:\nA. Storage\nB. Retrieval\nC. Encoding", "options": [{"id": "1", "text": "B, A, C"}, {"id": "2", "text": "C, A, B"}, {"id": "3", "text": "A, B, C"}, {"id": "4", "text": "C, B, A"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The Information Processing Model compares human memory to a computer's processing system.\n* **1. Encoding (C):** The initial process of taking in sensory information, processing it, and transforming it into a format the brain can handle.\n* **2. Storage (A):** The process of maintaining and retaining that encoded information over time in short-term or long-term memory.\n* **3. Retrieval (B):** The final process of accessing and bringing the stored information back into conscious awareness when needed (e.g., during an exam).\n* Failing at any of these steps results in what we commonly call \"forgetting.\"\n*Related Concepts:*\n* **Cognitive Load:** The amount of working memory resources being used during the encoding phase.\n* **Chunking:** A strategy to improve encoding and storage by breaking large information into smaller, manageable units.", "id": 20}, {"question": "Which of the following is a primary characteristic of adult learners (Andragogy) as opposed to child learners (Pedagogy)?", "options": [{"id": "1", "text": "They are almost entirely dependent on the teacher for direction."}, {"id": "2", "text": "They are primarily motivated by external rewards and punishments."}, {"id": "3", "text": "They bring a vast reservoir of life experiences that serves as a resource for learning."}, {"id": "4", "text": "They prefer learning theoretical subjects without immediate practical application."}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Andragogy, popularized by Malcolm Knowles, outlines how adults learn differently from children.\n* Adults bring a wealth of prior personal and professional experience to the classroom, which must be respected and utilized as a foundation for new learning.\n* Unlike children, adults are highly self-directed and autonomous (eliminating option A).\n* They are intrinsically motivated to learn things that have immediate relevance to their job or personal life (eliminating options B and D).\n*Related Concepts:*\n* **Intrinsic Motivation:** Engaging in a behavior because it is personally rewarding.\n* **Self-Directed Learning:** Individuals taking the initiative to diagnose their learning needs and formulate goals.", "id": 21}, {"question": "Consider the following statements regarding the domains of learning:\n**Statement I:** The Cognitive Domain deals strictly with the development of physical coordination and motor skills.\n**Statement II:** The Affective Domain encompasses a learner's emotional development, attitudes, values, and motivations.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is incorrect because the Cognitive Domain (Bloom) deals with intellectual abilities, mental skills, and knowledge processing. Physical skills belong to the Psychomotor Domain.\n* Statement II is correct; the Affective Domain (Krathwohl) is entirely concerned with the emotional aspect of learning, including how a student values the material and behaves ethically.\n* Effective teaching requires addressing all three domains (Cognitive, Affective, Psychomotor) for holistic student development.\n* Teaching a student to calculate taxes is cognitive; teaching them the ethics of not evading taxes is affective.\n*Related Concepts:*\n* **Psychomotor Domain:** Involves physical movement, coordination, and use of the motor-skill areas.\n* **Holistic Education:** An approach that aims to develop the physical, emotional, moral, and intellectual aspects of a learner.", "id": 22}, {"question": "Case Study: A central university administration uses a comprehensive digital e-governance portal like \"Samarth\" to manage student admissions, maintain faculty service records, process CAS (Career Advancement Scheme) promotions, and generate automated payrolls. This represents the integration of ICT in which specific educational sphere?", "options": [{"id": "1", "text": "Instructional Delivery"}, {"id": "2", "text": "Educational Administration and Governance"}, {"id": "3", "text": "Formative Assessment"}, {"id": "4", "text": "Curriculum Design"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* ICT (Information and Communication Technology) integration is not just for teaching in the classroom; it is vital for institutional management.\n* Portals handling admissions, promotions, and payrolls fall strictly under Educational Administration and Governance.\n* These systems increase transparency, reduce manual administrative errors, and streamline bureaucratic workflows in higher education institutions.\n* They do not directly deliver educational content to students or design syllabi.\n*Related Concepts:*\n* **ERP (Enterprise Resource Planning):** The type of software system (like Samarth) used by organizations to manage day-to-day activities.\n* **E-Governance:** The application of digital technology to deliver government or institutional services.", "id": 23}, {"question": "In the context of educational television in India, SWAYAM PRABHA utilizes which of the following to broadcast high-quality educational programs on a 24x7 basis?", "options": [{"id": "1", "text": "Fiber Optic Cables"}, {"id": "2", "text": "GSAT-15 Satellite"}, {"id": "3", "text": "FM Radio Frequencies"}, {"id": "4", "text": "Local Area Networks (LAN)"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* SWAYAM PRABHA is an initiative by the Ministry of Education that provides a group of DTH (Direct to Home) channels.\n* These channels are specifically telecasted using the GSAT-15 satellite.\n* The content is broadcasted continuously, allowing students across the country\u2014especially in remote areas without high-speed internet\u2014to access quality education.\n* New content is provided daily, and it is repeated multiple times a day so students can choose a convenient time to watch.\n*Related Concepts:*\n* **INFLIBNET:** The center that maintains the web portal for the SWAYAM PRABHA channels.\n* **Digital Divide:** The gap between demographics that have access to modern ICT and those that do not, which SWAYAM PRABHA aims to bridge.", "id": 24}, {"question": "Assertion (A): Intrinsic motivation is generally more effective for long-term academic retention than extrinsic motivation.\n**Reason (R): Extrinsic motivation relies heavily on external rewards (like grades or money), which can lead students to focus merely on passing the test rather than truly understanding the subject matter.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Assertion (A) is true; students who learn because they are genuinely curious (intrinsic) retain knowledge much longer than those learning just to get a reward (extrinsic).\n* Reason (R) is true and perfectly explains the assertion. When the focus shifts to the external reward, students often resort to rote memorization (surface learning) just to clear the hurdle.\n* Once the external reward is removed (e.g., the exam is over), the studying immediately stops, leading to rapid forgetting.\n* Fostering intrinsic motivation is a core objective of the Reflective Level of teaching.\n*Related Concepts:*\n* **Surface Learning:** Memorizing facts just to pass an assessment without understanding the underlying concepts.\n* **Deep Learning:** Seeking to understand the meaning, relating new ideas to previous knowledge, and applying concepts critically.", "id": 25}, {"question": "Which of the following teaching methods was advocated by H.E. Armstrong, where the student is put in the position of an independent discoverer rather than a passive recipient of facts?", "options": [{"id": "1", "text": "The Lecture Method"}, {"id": "2", "text": "The Heuristic Method"}, {"id": "3", "text": "The Demonstration Method"}, {"id": "4", "text": "Programmed Instruction"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The Heuristic Method (derived from the Greek word \"heurisko\", meaning \"I find\") was championed by H.E. Armstrong.\n* It is a purely learner-centered, problem-solving approach.\n* The teacher provides a problem and minimal guidance, requiring the student to experiment, research, and discover the principles and solutions independently.\n* It fosters a highly scientific and analytical attitude in learners.\n*Related Concepts:*\n* **Discovery Learning:** A related constructivist theory proposed by Jerome Bruner.\n* **Inductive Reasoning:** Often used in heuristic learning, where students observe specific phenomena and form generalized rules.", "id": 26}, {"question": "Match List I (Teaching Media from Dale\u2019s Cone of Experience) with List II (Level of Abstraction):\n| List I (Media Type) | List II (Abstraction Level) |\n| --- | --- |\n| a. Reading a textbook | i. Highly concrete, direct active participation |\n| b. Watching an educational video | ii. Highly abstract, relies purely on verbal symbols |\n| c. Participating in a simulated role-play | iii. Moderately abstract, passive visual/auditory reception |", "options": [{"id": "1", "text": "a-ii, b-iii, c-i"}, {"id": "2", "text": "a-i, b-ii, c-iii"}, {"id": "3", "text": "a-iii, b-i, c-ii"}, {"id": "4", "text": "a-ii, b-i, c-iii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Edgar Dale's Cone of Experience visually represents how learning modalities range from concrete (doing) to abstract (reading/hearing).\n* Reading (a) is at the very top of the cone, representing highly abstract verbal symbols with generally lower retention rates (ii).\n* Watching a video (b) is in the middle of the cone, involving passive visual and auditory reception without physical interaction (iii).\n* Role-playing (c) is near the base of the cone, representing concrete, active, and highly engaging participation resulting in maximum retention (i).\n*Related Concepts:*\n* **Experiential Learning:** The process of learning through direct experience and reflection.\n* **Instructional Media:** The physical or digital means by which instruction is delivered to students.", "id": 27}, {"question": "Arrange the basic elements of the Classroom Communication Process in their standard sequential order:\nA. Receiver\nB. Channel/Medium\nC. Encoding\nD. Message\nE. Decoding", "options": [{"id": "1", "text": "C, D, B, E, A"}, {"id": "2", "text": "D, C, B, E, A"}, {"id": "3", "text": "C, B, D, A, E"}, {"id": "4", "text": "B, C, D, E, A"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Teaching is fundamentally an act of communication.\n* The sequence begins with a Sender (the teacher) who takes an idea and undergoes **Encoding (C)** into words or visuals.\n* This creates the actual **Message (D)**.\n* The message travels through a specific **Channel/Medium (B)**, such as spoken voice, a PowerPoint, or a video.\n* The message reaches the **Receiver (A)** (the student).\n* Finally, the student engages in **Decoding (E)** to interpret and understand the message.\n*Related Concepts:*\n* **Feedback:** The final step where the receiver responds to the sender, confirming understanding.\n* **Noise:** Any semantic, physical, or psychological barrier that disrupts this sequence.", "id": 28}, {"question": "What is the most significant educational advantage of using visual teaching aids (like charts, graphs, and smartboards) in a Commerce classroom?", "options": [{"id": "1", "text": "They entirely eliminate the need for a physical teacher."}, {"id": "2", "text": "They help to translate abstract financial and economic data into concrete, easily understandable representations."}, {"id": "3", "text": "They are primarily used to keep the classroom quiet and entertained."}, {"id": "4", "text": "They guarantee that students will achieve top percentiles in competitive exams."}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Commerce subjects (like economics and accounting) often deal with highly abstract, numerical, and theoretical data.\n* Visual aids transform these invisible concepts (like market trends or supply/demand shifts) into concrete, observable realities (like line graphs or pie charts).\n* This significantly reduces cognitive load and accelerates the \"Understanding Level\" of teaching.\n* Visuals are supplementary tools; they do not replace the educator or guarantee exam success on their own.\n*Related Concepts:*\n* **Maxims of Teaching:** Visual aids directly support the pedagogical maxim of moving from \"Concrete to Abstract.\"\n* **Multimedia Learning Theory:** Posits that students learn better from words and pictures than from words alone.", "id": 29}, {"question": "Consider the following statements regarding the Choice Based Credit System (CBCS):\n**Statement I:** Under CBCS, students are strictly restricted to studying only the core subjects of their chosen degree and cannot take courses from other departments.\n**Statement II:** CBCS promotes an inter-disciplinary approach by offering Core, Elective, and Foundation/Skill-enhancement courses.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is completely incorrect; the entire purpose of CBCS is to break academic restrictions and provide *choice*.\n* Statement II is correct. The CBCS framework mandates three course types: Core (compulsory), Elective (chosen from a pool, allowing cross-disciplinary study), and Foundation (skill-building like communication or environmental science).\n* This system ensures a holistic, well-rounded education rather than narrow specialization.\n* It aligns the Indian higher education system with global academic standards.\n*Related Concepts:*\n* **Credit System:** A system where course workload is measured in credits, which can be accumulated and transferred.\n* **SGPA/CGPA:** The standardized grading metrics utilized within the CBCS framework.\nWould you like to review any specific concepts from this test, or are you ready to move on to a different topic for your preparation?", "id": 30}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
