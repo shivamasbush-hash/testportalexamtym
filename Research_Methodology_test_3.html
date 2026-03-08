@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Research Methodology test 3</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Research Methodology test 3", "organization": "ExamTym", "durationMinutes": 35, "totalMarks": 60.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Which of the following philosophical paradigms of research insists that reality is objective, singular, and can be measured independent of the researcher's bias, heavily relying on the scientific method?", "options": [{"id": "1", "text": "Interpretivism"}, {"id": "2", "text": "Constructivism"}, {"id": "3", "text": "Positivism"}, {"id": "4", "text": "Pragmatism"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Positivism, heavily championed by Auguste Comte, is the foundation of quantitative research.\n* It asserts that factual knowledge gained through observation and precise measurement is the only trustworthy knowledge.\n* Positivists believe the universe operates by strict, universal laws that can be discovered through deductive reasoning.\n* It completely rejects subjective human interpretation as a valid source of scientific truth.\n*Related Concepts:*\n* **Post-Positivism:** Acknowledges an objective reality exists but accepts that human measurement is inherently flawed and biased.\n* **Interpretivism:** The qualitative opposite of positivism, focusing on subjective human experiences and meaning-making.", "id": 1}, {"question": "Consider the following statements regarding the types of variables in experimental research:\n**Statement I:** The dependent variable is the condition or characteristic that the researcher actively manipulates to observe its effect.\n**Statement II:** An extraneous variable is an uncontrollable factor that can negatively impact the dependent variable, thereby skewing the results.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is incorrect; the variable actively manipulated by the researcher is the *Independent Variable* (the cause).\n* The *Dependent Variable* is the outcome or effect that is measured to see if it changed due to the manipulation.\n* Statement II is correct; Extraneous variables are outside factors (like background noise or room temperature) that can affect the experiment's outcome.\n* If extraneous variables are not controlled, they ruin the internal validity of the study.\n*Related Concepts:*\n* **Confounding Variable:** An extraneous variable that was not controlled and ended up heavily influencing the results.\n* **Control Group:** A baseline group that does not receive the experimental manipulation, used to isolate the independent variable's effect.", "id": 2}, {"question": "Match List I (Sampling Methods) with List II (Key Characteristics):\n| List I (Sampling Method) | List II (Characteristic) |\n| --- | --- |\n| a. Simple Random Sampling | i. Population divided into naturally occurring groups; entire groups are randomly selected |\n| b. Stratified Sampling | ii. Participants refer other potential participants; used for hidden populations |\n| c. Cluster Sampling | iii. Every member of the population has an equal, known chance of selection |\n| d. Snowball Sampling | iv. Population divided into homogeneous subgroups; random sample taken from each |", "options": [{"id": "1", "text": "a-iii, b-iv, c-i, d-ii"}, {"id": "2", "text": "a-iv, b-iii, c-i, d-ii"}, {"id": "3", "text": "a-iii, b-i, c-iv, d-ii"}, {"id": "4", "text": "a-ii, b-iv, c-i, d-iii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Simple Random Sampling guarantees every unit an equal chance of selection, eliminating bias (a-iii).\n* Stratified Sampling ensures proportional representation by dividing a diverse population into specific strata (e.g., income levels) and sampling each (b-iv).\n* Cluster Sampling selects whole geographic or natural blocks (clusters) rather than individuals, saving time and money (c-i).\n* Snowball Sampling is a non-probability chain-referral method for hard-to-reach groups (d-ii).\n*Related Concepts:*\n* **Probability Sampling:** Methods that utilize random selection, allowing for statistical generalization.\n* **Quota Sampling:** The non-probability equivalent of stratified sampling, relying on researcher convenience to fill specific demographic quotas.", "id": 3}, {"question": "Assertion (A): In hypothesis testing, a researcher who sets an extremely low level of significance ($\\alpha = 0.01$) practically eliminates the chance of committing a Type II error.\n**Reason (R): A Type II error occurs when a researcher fails to reject a null hypothesis ($H_0$) that is actually false.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Assertion (A) is completely false. Lowering the level of significance ($\\alpha$) makes it harder to commit a Type I error (false positive), but it inherently *increases* the risk of a Type II error.\n* Type I ($\\alpha$) and Type II ($\\beta$) errors have an inverse relationship; you cannot minimize both simultaneously without increasing the sample size.\n* Reason (R) is true; it accurately provides the standard statistical definition of a Type II error (a false negative).\n* Balancing these errors depends on the real-world consequences of the research (e.g., medical testing vs. marketing surveys).\n*Related Concepts:*\n* **Type I Error ($\\alpha$):** Rejecting a true null hypothesis.\n* **Statistical Power:** The probability of correctly rejecting a false null hypothesis ($1 - \\beta$).", "id": 4}, {"question": "Arrange the following steps of the Research Process in their correct chronological sequence:\nA. Development of Working Hypothesis\nB. Formulation of Research Problem\nC. Execution of the Project and Data Collection\nD. Preparation of Research Design\nE. Data Analysis and Hypothesis Testing", "options": [{"id": "1", "text": "B, A, D, C, E"}, {"id": "2", "text": "B, D, A, C, E"}, {"id": "3", "text": "A, B, D, C, E"}, {"id": "4", "text": "B, A, C, D, E"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* The research process must follow a strict, logical sequence starting with the Formulation of the Research Problem (B).\n* Once the problem is defined and literature is reviewed, the researcher develops a Working Hypothesis (A).\n* The blueprint for the study, the Research Design (D), is prepared next to outline the methodology.\n* Only then does the Execution and Data Collection (C) take place.\n* The final operational step is Data Analysis and Hypothesis Testing (E) to draw conclusions.\n*Related Concepts:*\n* **Literature Review:** Typically conducted extensively between defining the problem and finalizing the hypothesis.\n* **Generalization and Interpretation:** The step that immediately follows data analysis, where final reports are drafted.", "id": 5}, {"question": "Case Study: An administrative assistant at a central university is tasked with streamlining the Career Advancement Scheme (CAS) promotion process using the Samarth ERP portal. They plan a new email drafting protocol, implement it within their specific department, observe the faculty response time, and reflect on the bottlenecks to further refine the protocol. Which specific research method is being applied here?", "options": [{"id": "1", "text": "Ex-post Facto Research"}, {"id": "2", "text": "Experimental Research"}, {"id": "3", "text": "Action Research"}, {"id": "4", "text": "Fundamental Research"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Action Research focuses entirely on solving immediate, practical, and highly localized problems within a specific organizational setting.\n* It is conducted by the practitioners themselves (like an administrative assistant or teacher) to improve their own workflows.\n* It strictly follows a continuous, iterative cycle: Plan $\\rightarrow$ Act $\\rightarrow$ Observe $\\rightarrow$ Reflect.\n* It does not aim to create broad, generalized theories applicable outside the specific department being studied.\n*Related Concepts:*\n* **Applied Research:** Solves practical problems but is usually conducted by external researchers on a larger scale.\n* **Kurt Lewin:** The scholar who coined the term \"Action Research\" in the 1940s.", "id": 6}, {"question": "Which of the following best differentiates \"Reliability\" from \"Validity\" in the context of research measurement tools?", "options": [{"id": "1", "text": "Reliability refers to the accuracy of the tool, while Validity refers to its consistency."}, {"id": "2", "text": "Reliability refers to the consistency of the tool, while Validity refers to whether it measures what it claims to measure."}, {"id": "3", "text": "Reliability is used in qualitative research, while Validity is exclusive to quantitative research."}, {"id": "4", "text": "Reliability measures sampling error, while Validity measures non-sampling error."}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Reliability strictly concerns the repeatability and consistency of a measurement (e.g., a weighing scale that shows 70kg five times in a row is highly reliable).\n* Validity strictly concerns accuracy and truthfulness (e.g., if the person actually weighs 65kg, the highly reliable 70kg scale is completely invalid).\n* A research instrument can be reliable without being valid, but an instrument *cannot* be valid unless it is first reliable.\n* Both metrics are essential for establishing the credibility of quantitative research data.\n*Related Concepts:*\n* **Test-Retest Reliability:** Measuring consistency over time.\n* **Construct Validity:** Ensuring the test accurately measures the theoretical concept (like intelligence or aptitude).", "id": 7}, {"question": "Consider the following complex statements regarding \"Ex-post Facto\" research:\n**Statement I:** Ex-post facto research relies heavily on the active manipulation of independent variables in a controlled environment to establish a definitive cause-and-effect relationship.\n**Statement II:** It is a non-experimental research design used primarily when studying historical events or social phenomena where the causal event has already occurred.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is completely incorrect; \"Ex-post facto\" translates to \"after the fact.\" The defining characteristic of this research is that the independent variable *cannot* be manipulated because the event has already happened.\n* Statement II is correct; it is a quasi-experimental/non-experimental design.\n* Researchers observe the current dependent variable and trace backward to identify the prior causes (e.g., studying the psychological effects of an earthquake).\n* It is widely used in social sciences where ethical or practical barriers prevent active experimentation.\n*Related Concepts:*\n* **Causal-Comparative Research:** Another term frequently used interchangeably with ex-post facto research.\n* **Experimental Research:** The only design that utilizes active manipulation and randomization.", "id": 8}, {"question": "Match List I (Scales of Measurement) with List II (Mathematical Operations Permitted):\n| List I (Measurement Scale) | List II (Operations Permitted) |\n| --- | --- |\n| a. Nominal | i. Addition, Subtraction, Multiplication, Division |\n| b. Ordinal | ii. Counting (Frequencies), Proportions, Mode |\n| c. Interval | iii. Counting, Median, Rank Correlation |\n| d. Ratio | iv. Addition, Subtraction, Mean, Standard Deviation (No True Zero ratios) |", "options": [{"id": "1", "text": "a-ii, b-iii, c-iv, d-i"}, {"id": "2", "text": "a-iii, b-ii, c-i, d-iv"}, {"id": "3", "text": "a-ii, b-iv, c-iii, d-i"}, {"id": "4", "text": "a-iv, b-iii, c-ii, d-i"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Nominal data merely categorizes (e.g., gender); you can only count frequencies or find the mode (a-ii).\n* Ordinal data provides a rank order (e.g., race finishing positions); you can find the median and rank correlation, but the exact distance between ranks is unknown (b-iii).\n* Interval data has equal spacing but no true zero (e.g., Celsius temperature); you can add/subtract and find the mean, but cannot say 20\u00b0C is \"twice as hot\" as 10\u00b0C (c-iv).\n* Ratio data has a true zero (e.g., income, weight), allowing for all mathematical operations including meaningful ratios and division (d-i).\n*Related Concepts:*\n* **Non-Parametric Data:** Nominal and Ordinal scales.\n* **Parametric Data:** Interval and Ratio scales.", "id": 9}, {"question": "Assertion (A): Self-plagiarism is a severe violation of research ethics, even though the researcher is reusing their own previously authored material.\n**Reason (R): Research ethics mandate that every published academic paper must contribute new, original knowledge to the field rather than recycling old data to artificially inflate a researcher's publication count.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Assertion (A) is true; self-plagiarism (or text recycling) is considered unethical in academic publishing.\n* Reason (R) is true and perfectly explains the assertion. The academic ecosystem relies on the dissemination of *novel* findings.\n* Republishing the same data or heavily duplicating text across multiple journals distorts the scientific record and falsely inflates an author's citation metrics (like the h-index).\n* If previous work must be used, it must be properly cited just like the work of a third-party author.\n*Related Concepts:*\n* **Salami Slicing:** Unethically splitting data from a single research project into multiple small papers to increase publication count.\n* **Urkund / Ouriginal:** Plagiarism detection software mandated by the UGC in India.", "id": 10}, {"question": "Which non-probability sampling technique is specifically utilized when the target population is extremely rare, hidden, or socially stigmatized, relying on initial subjects to recruit future subjects from among their acquaintances?", "options": [{"id": "1", "text": "Quota Sampling"}, {"id": "2", "text": "Purposive Sampling"}, {"id": "3", "text": "Snowball Sampling"}, {"id": "4", "text": "Convenience Sampling"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Snowball sampling (or chain-referral sampling) is essential when a sampling frame (a list of the population) does not exist.\n* It is heavily used to study hidden populations such as undocumented immigrants, rare disease sufferers, or underground organizational networks.\n* The sample group grows like a rolling snowball as one participant refers another.\n* Because it does not use random selection, it is highly prone to network bias and lacks statistical representativeness.\n*Related Concepts:*\n* **Non-Probability Sampling:** Methods relying on researcher judgment or convenience rather than random chance.\n* **Purposive Sampling:** The researcher uses their own expert judgment to select participants who are most useful to the study's specific purpose.", "id": 11}, {"question": "Case Study: An educator managing the YouTube educational channel 'Examtym' wants to evaluate the effectiveness of their UGC NET Commerce mock tests. To ensure a highly accurate representation, they divide their subscriber base into three distinct groups: postgraduates, current UGC NET aspirants, and qualified educators. They then draw a proportional random sample from each of these three groups. Which sampling technique is applied here?", "options": [{"id": "1", "text": "Cluster Sampling"}, {"id": "2", "text": "Stratified Random Sampling"}, {"id": "3", "text": "Systematic Sampling"}, {"id": "4", "text": "Quota Sampling"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Stratified Random Sampling is used when a population is heterogeneous (diverse) but contains specific, homogeneous subgroups called *strata*.\n* The researcher divides the population into these strata (postgraduates, aspirants, educators) to ensure no key demographic is left out.\n* A pure random sample is then drawn from within *each* stratum.\n* This method vastly increases precision and lowers sampling error compared to simple random sampling in diverse populations.\n*Related Concepts:*\n* **Quota Sampling:** The non-probability version of stratified sampling, where quotas are filled by convenience rather than random selection.\n* **Proportionate vs. Disproportionate Stratification:** Deciding whether the sample size from each stratum matches its actual proportion in the total population.", "id": 12}, {"question": "Arrange the following critical steps of Hypothesis Testing in the correct logical sequence:\nA. Select the appropriate statistical test (e.g., t-test, ANOVA)\nB. State the Null ($H_0$) and Alternative ($H_1$) hypotheses\nC. Make the final decision to reject or fail to reject $H_0$\nD. Set the Level of Significance ($\\alpha$)\nE. Compute the test statistic and determine the p-value", "options": [{"id": "1", "text": "B, D, A, E, C"}, {"id": "2", "text": "B, A, D, E, C"}, {"id": "3", "text": "D, B, A, E, C"}, {"id": "4", "text": "B, D, E, A, C"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Hypothesis testing follows a rigid mathematical and logical sequence.\n* **1. State Hypotheses (B):** Clearly define $H_0$ (no effect) and $H_1$ (effect exists).\n* **2. Set Level of Significance (D):** Decide the risk of a Type I error ($\\alpha$), typically 0.05.\n* **3. Select Test (A):** Choose the test based on data type (e.g., ANOVA for comparing 3+ groups).\n* **4. Compute (E):** Run the data to get the test statistic and the p-value.\n* **5. Make Decision (C):** If the p-value $\\le \\alpha$, reject $H_0$; otherwise, fail to reject $H_0$.\n*Related Concepts:*\n* **Critical Region:** The area under the probability distribution curve where the null hypothesis is rejected.\n* **Degrees of Freedom:** The number of independent values that can vary in an analysis without breaking any constraints.", "id": 13}, {"question": "In the context of writing a research report or thesis, which of the following best describes the APA (American Psychological Association) referencing style primarily used in social sciences and commerce?", "options": [{"id": "1", "text": "It utilizes numerical superscripts in the text that correspond to footnotes at the bottom of the page."}, {"id": "2", "text": "It uses an Author-Date format in the text, such as (Smith, 2023), with a full alphabetical reference list at the end."}, {"id": "3", "text": "It requires the author's full first name to be spelled out entirely in the final reference list."}, {"id": "4", "text": "It organizes the final bibliography strictly by the chronological year of publication, regardless of the author's name."}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The APA 7th edition referencing style relies on an \"Author-Date\" system for in-text citations to briefly identify the source (e.g., Doe, 2022).\n* The full publication details are listed alphabetically by the author's last name in the \"References\" section at the end of the document.\n* Unlike MLA, APA style strictly uses the author's initials for their first and middle names in the reference list, not their full names.\n* Footnotes and endnotes are minimized in APA style, used only for explanatory content, not for primary citations.\n*Related Concepts:*\n* **Chicago Style:** Often uses the Notes-Bibliography system with superscripts and footnotes, common in history.\n* **MLA Style:** Uses an Author-Page format (e.g., Smith 45) in-text, common in humanities.", "id": 14}, {"question": "Consider the following statements regarding the sources of data in research:\n**Statement I:** Primary data is inherently more accurate and specifically tailored to the researcher's current problem than secondary data.\n**Statement II:** Secondary data is generally more expensive and time-consuming to collect than primary data.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Statement I is correct; Primary data is collected firsthand (via surveys, interviews, experiments) directly for the specific research question, making it highly relevant and accurate.\n* Statement II is completely incorrect; Primary data is notoriously expensive and time-consuming to gather.\n* Secondary data (e.g., government census, previously published journals, company records) is data that already exists. It is much cheaper and faster to access.\n* The main drawback of secondary data is that it may be outdated or not perfectly aligned with the current researcher's objectives.\n*Related Concepts:*\n* **Questionnaire:** A primary data collection instrument.\n* **Literature Review:** An extensive evaluation of existing secondary data.", "id": 15}, {"question": "Match List I (Types of Validity) with List II (Practical Application):\n| List I (Validity Type) | List II (Application) |\n| --- | --- |\n| a. Face Validity | i. Comparing a new IQ test's results with an established Stanford-Binet IQ test given simultaneously |\n| b. Content Validity | ii. Using an entrance exam score to accurately forecast a student's final university GPA |\n| c. Concurrent Validity | iii. Asking an expert if the layout of a questionnaire simply \"looks\" relevant to the topic |\n| d. Predictive Validity | iv. Ensuring a UGC NET Commerce mock test actually covers all 10 units of the official syllabus |", "options": [{"id": "1", "text": "a-iii, b-iv, c-i, d-ii"}, {"id": "2", "text": "a-iv, b-iii, c-ii, d-i"}, {"id": "3", "text": "a-iii, b-i, c-iv, d-ii"}, {"id": "4", "text": "a-ii, b-iv, c-i, d-iii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Face Validity is subjective and superficial; does it \"look\" right? (a-iii).\n* Content Validity requires the instrument to comprehensively sample the entire domain or syllabus it intends to measure (b-iv).\n* Concurrent Validity tests a new instrument against an existing, validated \"gold standard\" instrument at the same time (c-i).\n* Predictive Validity measures how well a test score predicts a future real-world outcome or behavior (d-ii).\n*Related Concepts:*\n* **Construct Validity:** Ensuring the test measures the abstract psychological trait (e.g., motivation) it intends to.\n* **Criterion-Related Validity:** The umbrella term encompassing both concurrent and predictive validity.", "id": 16}, {"question": "Assertion (A): The 'Hawthorne Effect' poses a significant threat to the external validity of an experimental research study.\n**Reason (R): The Hawthorne Effect occurs when participants alter their natural behavior simply because they are aware they are being observed by researchers.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Assertion (A) is true. Because participants act artificially during the experiment, the researcher cannot confidently generalize those findings to the real world (which is the definition of external validity).\n* Reason (R) is true and perfectly explains the assertion. The effect was named after the Hawthorne Works factory experiments in the 1920s, where workers temporarily increased productivity just because management was paying attention to them.\n* To combat this, researchers often use double-blind studies or covert observational methods.\n*Related Concepts:*\n* **Placebo Effect:** Changes resulting from the psychological belief in a treatment, rather than the treatment itself.\n* **Internal Validity:** The degree to which an experiment establishes a definitive cause-and-effect relationship, which is also skewed by the Hawthorne effect.", "id": 17}, {"question": "Arrange the standard steps for conducting a robust Review of Literature:\nA. Synthesize the findings and write the literature review\nB. Critically evaluate and select the most relevant sources\nC. Identify the broad research topic and relevant keywords\nD. Search academic databases and library catalogs", "options": [{"id": "1", "text": "C, D, B, A"}, {"id": "2", "text": "D, C, B, A"}, {"id": "3", "text": "C, B, D, A"}, {"id": "4", "text": "B, D, C, A"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* A literature review maps the existing body of knowledge to identify research gaps.\n* **1. Identify (C):** The researcher must first define their topic and list the keywords needed for the search.\n* **2. Search (D):** Use those keywords in databases like Scopus, Google Scholar, or Shodhganga to pull up papers.\n* **3. Evaluate (B):** Skim abstracts and methodologies to select only the most robust and relevant studies.\n* **4. Synthesize (A):** Write the review, organizing the literature thematically to build an argument for why the current research is necessary.\n*Related Concepts:*\n* **Boolean Operators:** Using AND, OR, NOT to refine database searches.\n* **Citation Management Software:** Tools like Mendeley or Zotero used to organize the found literature.", "id": 18}, {"question": "In academic publishing, which of the following metrics is specifically used to measure the average number of citations to recent articles published in a specific academic journal, indicating the journal's relative importance?", "options": [{"id": "1", "text": "h-index"}, {"id": "2", "text": "i10-index"}, {"id": "3", "text": "Impact Factor"}, {"id": "4", "text": "Eigenfactor Score"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The Impact Factor (IF) is a journal-level metric. It measures the frequency with which the \"average article\" in a journal has been cited in a particular year.\n* It is heavily used by academic institutions to evaluate the prestige and quality of a journal.\n* The **h-index** and **i10-index**, by contrast, are *author-level* metrics used to measure the productivity and citation impact of an individual researcher, not a journal.\n* High impact factor journals generally have rigorous, low-acceptance peer-review processes.\n*Related Concepts:*\n* **Peer Review:** The process where independent experts evaluate a manuscript before it is published.\n* **Predatory Journals:** Unethical publications that charge authors fees to publish without conducting proper peer review.", "id": 19}, {"question": "Case Study: A researcher is conducting historical research on the economic policies of the East India Company using newly discovered letters from the 1800s. To ensure the research is valid, the researcher first uses chemical dating to prove the paper and ink are from the correct century. Then, they cross-reference the letters with known historical facts to determine if the author was telling the truth or exhibiting bias. These two steps represent:", "options": [{"id": "1", "text": "Primary Evaluation and Secondary Evaluation"}, {"id": "2", "text": "Construct Validity and Content Validity"}, {"id": "3", "text": "External Criticism and Internal Criticism"}, {"id": "4", "text": "Inductive Logic and Deductive Logic"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Historical research is unique because it relies on relics and documents from the past, requiring a strict two-step verification process.\n* **External Criticism** focuses on authenticity and physical evidence. Testing the age of the paper and ink answers the question: \"Is this document a forgery?\"\n* **Internal Criticism** focuses on credibility and accuracy. Cross-referencing the content answers the question: \"Was the author telling the truth, or were they biased/misinformed?\"\n* Both criticisms are absolutely necessary before a historical document can be used as evidence.\n*Related Concepts:*\n* **Primary Sources:** Eyewitness accounts, original documents, and raw artifacts.\n* **Secondary Sources:** Analyses or interpretations written after the fact by people who were not present.", "id": 20}, {"question": "Consider the following statements regarding Logical Reasoning in research:\n**Statement I:** Deductive logic is a \"bottom-up\" approach that begins with specific observations and moves toward formulating a broad, generalized theory.\n**Statement II:** Inductive logic is the primary reasoning framework utilized in qualitative research paradigms.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is incorrect; it provides the definition for *Inductive* logic. Deductive logic is a \"top-down\" approach\u2014it starts with a broad theory, creates a hypothesis, and tests it against specific data.\n* Statement II is correct; Inductive logic (bottom-up) starts with gathering specific, unstructured data (like interviews) and looks for patterns to build up a new theory.\n* Quantitative research generally relies on deductive logic (testing existing theories).\n* Qualitative research relies on inductive logic (generating new theories).\n*Related Concepts:*\n* **Syllogism:** A form of deductive reasoning (e.g., All mammals breathe air $\\rightarrow$ Whales are mammals $\\rightarrow$ Whales breathe air).\n* **Grounded Theory:** A purely inductive qualitative research methodology.", "id": 21}, {"question": "Match List I (ICT Tools in Research) with List II (Primary Function):\n| List I (ICT Tool) | List II (Primary Function) |\n| --- | --- |\n| a. Shodhganga | i. Plagiarism detection software mandated by UGC |\n| b. Urkund / Ouriginal | ii. Advanced statistical software for quantitative data analysis |\n| c. Mendeley | iii. National digital repository of Indian electronic theses and dissertations |\n| d. SPSS | iv. Reference management and citation generation software |", "options": [{"id": "1", "text": "a-iii, b-i, c-iv, d-ii"}, {"id": "2", "text": "a-i, b-iii, c-ii, d-iv"}, {"id": "3", "text": "a-iii, b-iv, c-i, d-ii"}, {"id": "4", "text": "a-ii, b-i, c-iv, d-iii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Shodhganga (managed by INFLIBNET) is the centralized digital repository where Indian PhD scholars must upload their final theses (a-iii).\n* Urkund (Ouriginal) is the official anti-plagiarism software provided to universities to ensure academic integrity before submission (b-i).\n* Mendeley (along with Zotero and EndNote) is a tool used to automatically organize PDFs and format bibliographies in APA/MLA styles (c-iv).\n* SPSS (Statistical Package for the Social Sciences) is the industry-standard software for running complex data tests like ANOVA and Regression (d-ii).\n*Related Concepts:*\n* **INFLIBNET:** Information and Library Network Centre, an autonomous Inter-University Centre of the UGC.\n* **Data Scrubbing:** Cleaning raw data before inputting it into software like SPSS.", "id": 22}, {"question": "In Grounded Theory research methodology, what is the term used for the final stage of data collection where gathering fresh data no longer sparks new theoretical insights or reveals new properties of the core categories?", "options": [{"id": "1", "text": "Theoretical Saturation"}, {"id": "2", "text": "Axial Coding"}, {"id": "3", "text": "Triangulation"}, {"id": "4", "text": "Phenomenological Reduction"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Grounded theory involves collecting and analyzing data simultaneously.\n* As researchers code the data (Open $\\rightarrow$ Axial $\\rightarrow$ Selective), categories begin to form.\n* \"Theoretical Saturation\" is the critical point where the researcher realizes that interviewing more people or reading more documents is yielding redundant information.\n* Reaching saturation is the signal that data collection can stop and the final theory can be formalized.\n*Related Concepts:*\n* **Constant Comparative Method:** Continuously comparing new data with existing codes to check for saturation.\n* **Selective Coding:** The final coding stage where a central, unifying core category is established.", "id": 23}, {"question": "Assertion (A): Fundamental research (Basic research) is primarily driven by academic curiosity to expand the boundaries of theoretical knowledge, without any immediate commercial or practical application in mind.\n**Reason (R): Applied research heavily utilizes the theories generated by fundamental research to solve specific, real-world problems faced by industries or society.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Assertion (A) is true; fundamental research (e.g., discovering a new subatomic particle or a new psychological behavioral pattern) is purely about knowledge generation.\n* Reason (R) is also true; applied research takes those basic theories and applies them practically (e.g., using that behavioral pattern to create a new marketing strategy).\n* However, (R) is *not* the direct explanation for (A). (A) describes the nature of fundamental research, while (R) simply describes how applied research interacts with it.\n* Both represent the two main pillars of academic inquiry.\n*Related Concepts:*\n* **Action Research:** A highly localized subset of applied research.\n* **Empirical Research:** Research relying on observation and measurement, applicable to both fundamental and applied paradigms.", "id": 24}, {"question": "Arrange the standard structural elements of a formal Research Thesis in their correct sequence according to the widely accepted \"IMRAD\" framework:\nA. Methodology / Materials and Methods\nB. Discussion and Conclusion\nC. Review of Literature\nD. Introduction\nE. Results / Data Analysis", "options": [{"id": "1", "text": "D, A, C, E, B"}, {"id": "2", "text": "D, C, A, E, B"}, {"id": "3", "text": "C, D, A, E, B"}, {"id": "4", "text": "D, C, E, A, B"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* A formal thesis generally follows a logical, standardized flow to ensure readability and peer review.\n* **1. Introduction (D):** Sets the context, problem statement, and objectives.\n* **2. Review of Literature (C):** Analyzes existing research to identify the gap.\n* **3. Methodology (A):** Explains how the research was conducted (design, sampling, tools).\n* **4. Results (E):** Presents the raw data and statistical analysis without interpretation.\n* **5. Discussion/Conclusion (B):** Interprets the results, discusses implications, and outlines limitations.\n*Related Concepts:*\n* **Abstract:** A 200-300 word summary placed at the very beginning of the thesis.\n* **Bibliography:** The exhaustive list of citations placed at the very end.", "id": 25}, {"question": "Case Study: A researcher is analyzing the average rental prices of 1 BHK and 2 BHK independent houses in the Lanka and Nagwa areas of Varanasi to understand the current cost-of-living index for students. The researcher strictly surveys landlords and records the data without manipulating any rent prices or introducing any new variables. What type of research design is primarily being utilized?", "options": [{"id": "1", "text": "Experimental Research"}, {"id": "2", "text": "Action Research"}, {"id": "3", "text": "Descriptive Research"}, {"id": "4", "text": "Exploratory Research"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Descriptive research is designed to provide an accurate, systematic snapshot of a population, situation, or phenomenon as it currently exists.\n* It answers the \"what, where, when, and how\" but cannot definitively answer the \"why\" (causation).\n* The key feature is that the researcher exercises *no control* over the variables; they only observe, survey, and report what has happened or is happening.\n* Surveying current rent prices in specific neighborhoods like Lanka and Nagwa perfectly aligns with this non-experimental approach.\n*Related Concepts:*\n* **Cross-Sectional Survey:** The typical data collection method for descriptive research.\n* **Ex-post Facto Research:** Similar lack of manipulation, but specifically aims to find causes for past events, whereas descriptive merely reports the present state.", "id": 26}, {"question": "Consider the following statements regarding statistical tests in quantitative research:\n**Statement I:** Parametric tests require the assumption that the population data follows a normal (bell-shaped) distribution.\n**Statement II:** Chi-Square and Mann-Whitney U are classic examples of powerful parametric statistical tests.", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Statement I is correct; parametric tests (like ANOVA, Pearson correlation, t-tests) rely on strict assumptions, primarily that the data is normally distributed and measured on interval/ratio scales.\n* Statement II is incorrect; Chi-Square and Mann-Whitney U are classic *Non-Parametric* tests.\n* Non-parametric tests are \"distribution-free\" and are used when data is skewed or measured on weaker nominal/ordinal scales.\n* Parametric tests generally possess greater statistical power (ability to find a true effect) than non-parametric tests.\n*Related Concepts:*\n* **Homogeneity of Variance:** Another key assumption of parametric tests, indicating equal variances across samples.\n* **Normal Distribution:** A symmetric probability distribution where most observations cluster around the central peak.", "id": 27}, {"question": "Match List I (Types of Academic Gatherings) with List II (Defining Feature):\n| List I (Gathering) | List II (Feature) |\n| --- | --- |\n| a. Seminar | i. A massive, formal meeting with multiple tracks for presenting broad academic research |\n| b. Workshop | ii. A small, focused academic meeting for deep, interactive discussion on a specific reading or topic |\n| c. Conference | iii. A formal gathering where several experts present their views on one single, highly specialized theme |\n| d. Symposium | iv. A hands-on, interactive session aimed explicitly at developing a practical skill or competency |", "options": [{"id": "1", "text": "a-ii, b-iv, c-i, d-iii"}, {"id": "2", "text": "a-i, b-ii, c-iii, d-iv"}, {"id": "3", "text": "a-ii, b-iv, c-iii, d-i"}, {"id": "4", "text": "a-iv, b-ii, c-i, d-iii"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Seminars are recurring, interactive group discussions often held in university settings to critique specific topics (a-ii).\n* Workshops are distinctly practical and hands-on, moving away from pure lectures to build tangible skills (b-iv).\n* Conferences are large-scale, formal events where researchers present findings to a broad audience, often spanning multiple days (c-i).\n* Symposiums bring together a few recognized experts to systematically address one single, specialized issue (d-iii).\n*Related Concepts:*\n* **Colloquium:** An academic gathering characterized by an informal, conversational presentation format.\n* **Webinar:** A seminar or presentation conducted entirely over the internet.", "id": 28}, {"question": "In survey methodology, what term describes the acceptable range of random deviation between the results obtained from the sample and the true value of the actual population?", "options": [{"id": "1", "text": "Level of Significance"}, {"id": "2", "text": "Margin of Error"}, {"id": "3", "text": "Standard Deviation"}, {"id": "4", "text": "Response Rate"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The Margin of Error (or Confidence Interval) expresses the amount of random sampling error in a survey's results.\n* Because researchers survey a sample instead of conducting a full census, the sample mean will slightly differ from the true population mean.\n* For example, if a survey shows 60% approval with a margin of error of $\\pm 3\\%$, the true population approval likely lies between 57% and 63%.\n* Increasing the sample size generally decreases the margin of error, increasing precision.\n*Related Concepts:*\n* **Confidence Level:** The probability (usually 95% or 99%) that the true population parameter lies within the calculated margin of error.\n* **Sampling Error:** The mathematically unavoidable discrepancy caused by observing a subset instead of the whole.", "id": 29}, {"question": "Assertion (A): Researchers subscribing to the interpretivist paradigm generally adopt an objectivist ontology.\n**Reason (R): Ontology deals with the nature of reality, and interpretivists believe that reality is highly subjective, multiple, and socially constructed by individuals.**", "options": [{"id": "1", "text": "Both (A) and (R) are true, and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are true, but (R) is NOT the correct explanation of (A)"}, {"id": "3", "text": "(A) is true, but (R) is false"}, {"id": "4", "text": "(A) is false, but (R) is true"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Assertion (A) is false; interpretivists actively *reject* an objectivist ontology. They adopt a *constructivist/subjectivist* ontology, believing reality is not a single tangible thing waiting to be discovered.\n* Reason (R) is true; it accurately defines both ontology (the study of existence/reality) and the interpretivist worldview (that reality is a subjective social construct).\n* Because interpretivists view reality as subjective, they rely on qualitative methodologies (like interviews and phenomenology) to understand the multiple realities of their participants.\n* Objectivist ontology belongs to the positivist paradigm.\n*Related Concepts:*\n* **Epistemology:** The study of knowledge; how the researcher can go about obtaining the knowledge of reality.\n* **Quantitative vs. Qualitative:** Positivism aligns with quantitative; Interpretivism aligns with qualitative.", "id": 30}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
