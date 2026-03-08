@@ -53,7 +53,7 @@
             padding: 3rem 2.5rem; width: 90%; max-width: 420px; text-align: center;
             animation: fadeUp 0.5s ease both;
         }
-        .login-logo-img { height: 56px; margin-bottom: 1.2rem; filter: brightness(0) invert(1); }
+        .login-logo-img { height: 56px; margin-bottom: 1.2rem; filter: none; background: white; border-radius: 10px; padding: 6px 12px; }
         .login-sub { color: rgba(255,255,255,0.55); font-size: 0.92rem; margin-bottom: 2rem; line-height: 1.6; }
         .login-sub strong { color: rgba(255,255,255,0.88); }
         .login-feats { display: flex; justify-content: center; gap: 1.5rem; margin-bottom: 2.2rem; }
@@ -83,10 +83,11 @@
             overflow-y: auto;
         }
         .sidebar-logo {
-            padding: 1.2rem 1.2rem 0.8rem;
+            padding: 1rem 1.2rem 0.8rem;
             border-bottom: 1px solid rgba(255,255,255,0.07);
+            background: white;
         }
-        .sidebar-logo img { height: 38px; filter: brightness(0) invert(1); }
+        .sidebar-logo img { height: 42px; filter: none; }
 
         .sidebar-section { padding: 1.2rem 0.8rem 0.4rem; }
         .sidebar-label {
@@ -357,18 +358,13 @@
                 <i class="fa-solid fa-clock-rotate-left"></i>
                 Previous Year Papers
             </a>
-            <a class="sidebar-item" onclick="switchSection('practice', this)">
-                <i class="fa-solid fa-pen-to-square"></i>
-                Practice Tests
+            <a class="sidebar-item" onclick="switchSection('commerce', this)">
+                <i class="fa-solid fa-chart-line"></i>
+                UGC NET Commerce
             </a>
-            <a class="sidebar-item" onclick="switchSection('mock', this)">
-                <i class="fa-solid fa-file-lines"></i>
-                Mock Tests
-            </a>
-            <a class="sidebar-item" onclick="switchSection('quiz', this)">
-                <i class="fa-solid fa-circle-question"></i>
-                Free Quizzes
-                <span class="sidebar-badge sb-orange">NEW</span>
+            <a class="sidebar-item" onclick="switchSection('paper1', this)">
+                <i class="fa-solid fa-book-open"></i>
+                UGC NET Paper 1
             </a>
             <a class="sidebar-item" onclick="switchSection('attempted', this)">
                 <i class="fa-solid fa-circle-check"></i>
@@ -492,17 +488,16 @@ let curSection = 'all';
 
 // section → which tags to show (matched via tag name contains)
 const SECTION_MAP = {
-  all:       null,          // show everything
-  pyq:       ['previous year', 'pyq', 'past year'],
-  practice:  ['practice'],
-  mock:      ['mock'],
-  quiz:      ['quiz'],
+  all:       null,
+  pyq:       ['previous year paper'],
+  commerce:  ['ugc net commerce'],
+  paper1:    ['ugc net paper 1'],
   attempted: '__attempted__'
 };
 const SECTION_TITLES = {
   all: 'All Tests', pyq: 'Previous Year Papers',
-  practice: 'Practice Tests', mock: 'Mock Tests',
-  quiz: 'Free Quizzes', attempted: 'Attempted Tests'
+  commerce: 'UGC NET Commerce', paper1: 'UGC NET Paper 1',
+  attempted: 'Attempted Tests'
 };
 
 // ═══════════════════════
