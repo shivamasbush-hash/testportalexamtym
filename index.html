@@ -406,7 +406,7 @@
 </div>
 
 <!-- MAIN APP -->
-<div id="app">
+<div id="app" style="display:none">
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
     <!-- SIDEBAR -->
@@ -585,8 +585,7 @@ let curFilter  = 'All';
 let curView    = 'grid';
 let curSection = 'all';
 
-// section → which tags to show (matched via tag name contains)
-const // section filter: { subject, tag } — null means show all
+// section filter: { subject, tag } — null means show all
 const SECTION_MAP = {
   all:        { subject: null,               tag: null },
   // BY TYPE
