@@ -355,35 +355,49 @@
                 </a>
             </div>
 
-            <div class="sidebar-section">
-                <div class="sidebar-label">SUBJECTS</div>
-                <a href="#" class="sidebar-item" onclick="filterTests('commerce')">
-                    <i>📈</i> UGC NET Commerce
-                </a>
-                <a href="#" class="sidebar-item" onclick="filterTests('paper1')">
-                    <i>📖</i> UGC NET Paper 1
-                </a>
-                <a href="#" class="sidebar-item" onclick="filterTests('economics')">
-                    <i>💹</i> Economics
-                </a>
-            </div>
+            <div class="sidebar-section" style="margin-bottom: 1.5rem;">
+            <div class="sidebar-label" style="font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 0.5rem;">TESTS</div>
+            <a class="sidebar-item active" onclick="switchSection('all', this)">
+                <i class="fa-solid fa-clipboard-list"></i>
+                All Tests
+            </a>
+        </div>
 
-            <div class="sidebar-section">
-                <div class="sidebar-label">BY TYPE</div>
-                <a href="#" class="sidebar-item" onclick="filterTests('pyq')">
-                    <i>🕐</i> Previous Year Papers
-                </a>
-                <a href="#" class="sidebar-item" onclick="filterTests('practice')">
-                    <i>✏️</i> Practice Tests
-                </a>
-                <a href="#" class="sidebar-item" onclick="filterTests('mock')">
-                    <i>📄</i> Mock Tests
-                </a>
-                <a href="#" class="sidebar-item" onclick="showAttempted()">
-                    <i>✅</i> Attempted Tests
-                    <span class="sidebar-badge sb-orange" id="attBadge">0</span>
-                </a>
-            </div>
+        <div class="sidebar-section" style="margin-bottom: 1.5rem;">
+            <div class="sidebar-label" style="font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 0.5rem;">SUBJECTS</div>
+            <a class="sidebar-item" onclick="switchSection('commerce', this)">
+                <i class="fa-solid fa-chart-line"></i>
+                UGC NET Commerce
+            </a>
+            <a class="sidebar-item" onclick="switchSection('paper1', this)">
+                <i class="fa-solid fa-book-open"></i>
+                UGC NET Paper 1
+            </a>
+            <a class="sidebar-item" onclick="switchSection('economics', this)">
+                <i class="fa-solid fa-chart-pie"></i>
+                Economics
+            </a>
+        </div>
+
+        <div class="sidebar-section" style="margin-bottom: 1.5rem;">
+            <div class="sidebar-label" style="font-size: 0.75rem; font-weight: 700; color: var(--muted); margin-bottom: 0.5rem;">BY TYPE</div>
+            <a class="sidebar-item" onclick="switchSection('pyq', this)">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Previous Year Papers
+            </a>
+            <a class="sidebar-item" onclick="switchSection('practice', this)">
+                <i class="fa-solid fa-pen-to-square"></i>
+                Practice Tests
+            </a>
+            <a class="sidebar-item" onclick="switchSection('mock', this)">
+                <i class="fa-solid fa-file-lines"></i>
+                Mock Tests
+            </a>
+            <a class="sidebar-item" onclick="switchSection('attempted', this)">
+                <i class="fa-solid fa-circle-check"></i>
+                Attempted Tests
+            </a>
+        </div>
 
             <div class="sidebar-user">
                 <div class="sb-user-avatar">S</div>
@@ -830,4 +844,5 @@ function toast(icon, msg) {
 </script>
 </body>
 </html>
+
 
