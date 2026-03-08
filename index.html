@@ -511,10 +511,36 @@ const SECTION_MAP = {
   attempted: '__attempted__'
 };
 const SECTION_TITLES = {
-  all: 'All Tests', pyq: 'Previous Year Papers',
-  commerce: 'UGC NET Commerce', paper1: 'UGC NET Paper 1',
+  all: 'All Tests', 
+  pyq: 'Previous Year Papers',
+  commerce: 'UGC NET Commerce', 
+  paper1: 'UGC NET Paper 1',
+  economics: 'Economics',
+  practice: 'Practice Tests',
+  mock: 'Mock Tests',
   attempted: 'Attempted Tests'
 };
+
+// Ye naya super-filter function hai jo aapki Excel sheet ke kisi bhi column (tag, title, category) se test dhoondh nikalega
+function sectionFilter(tests) {
+    if (curSection === 'all') return tests;
+    if (curSection === 'attempted') return tests.filter(t => !!attempted[tid(t)]);
+
+    // Keyword matching logic
+    let searchWord = curSection.toLowerCase();
+    if (curSection === 'pyq') searchWord = 'previous year';
+    if (curSection === 'paper1') searchWord = 'paper 1';
+    if (curSection === 'mock') searchWord = 'mock test';
+    if (curSection === 'practice') searchWord = 'practice test';
+    if (curSection === 'commerce') searchWord = 'commerce';
+    if (curSection === 'economics') searchWord = 'economics';
+
+    return tests.filter(t => {
+        // Har test ke title, tag aur category mein search karega
+        let fullText = (t.title + " " + (t.tag || "") + " " + (t.category || "") + " " + (t.subject || "")).toLowerCase();
+        return fullText.includes(searchWord);
+    });
+}
 
 // ═══════════════════════
 // THEME
@@ -836,6 +862,7 @@ function toast(icon, msg) {
 </script>
 </body>
 </html>
+
 
 
 
