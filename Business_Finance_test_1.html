@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Business Finance test 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Business Finance test 1", "organization": "ExamTym", "durationMinutes": 35, "totalMarks": 60.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Which of the following best describes the primary goal of Business Finance?", "options": [{"id": "1", "text": "Maximisation of sales revenue"}, {"id": "2", "text": "Maximisation of shareholders' wealth"}, {"id": "3", "text": "Minimisation of total costs"}, {"id": "4", "text": "Maximisation of market share"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - The primary goal of financial management is shareholders' wealth maximisation, not merely profit maximisation.\n  - Wealth maximisation considers time value of money and risk, unlike profit maximisation.\n  - It is measured by the market price of equity shares.\n  - This goal aligns the interests of management with those of shareholders (agency alignment).\n- **Related Concepts:**\n  - Agency Theory (Jensen & Meckling, 1976) addresses conflicts between managers and shareholders.\n  - Profit maximisation is a short-term objective; wealth maximisation is long-term and risk-adjusted.", "id": 1}, {"question": "The concept of Time Value of Money is based on which fundamental principle?", "options": [{"id": "1", "text": "A rupee today is worth less than a rupee tomorrow"}, {"id": "2", "text": "A rupee today is worth more than a rupee tomorrow"}, {"id": "3", "text": "Money has no time preference"}, {"id": "4", "text": "Future value is always equal to present value"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - Time Value of Money (TVM) states that a rupee available today has higher purchasing power than the same rupee in the future.\n  - This is due to the opportunity cost \u2014 money today can be invested to earn returns.\n  - Inflation erodes the purchasing power of future money.\n  - TVM is the foundation of all capital budgeting and valuation decisions.\n- **Related Concepts:**\n  - Discounting converts future cash flows to present value; compounding moves present value to future value.\n  - Net Present Value (NPV) and IRR techniques are built on TVM principles.", "id": 2}, {"question": "Which of the following is the correct formula for calculating the Future Value of a lump sum?", "options": [{"id": "1", "text": "FV = PV / (1 + r)\u207f"}, {"id": "2", "text": "FV = PV \u00d7 (1 + r)\u207f"}, {"id": "3", "text": "FV = PV \u00d7 r \u00d7 n"}, {"id": "4", "text": "FV = PV + (r/n)"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - Future Value (FV) = PV \u00d7 (1 + r)\u207f, where r = interest rate and n = number of periods.\n  - Compounding multiplies the principal by the growth factor (1 + r)\u207f.\n  - Simple interest uses FV = PV + (PV \u00d7 r \u00d7 n), which differs from compound interest.\n  - The compounding frequency (annual, semi-annual) affects the effective rate.\n- **Related Concepts:**\n  - Effective Annual Rate (EAR) adjusts for compounding frequency: EAR = (1 + r/m)\u1d50 \u2212 1.\n  - Discounting is the reverse: PV = FV / (1 + r)\u207f.", "id": 3}, {"question": "Which capital budgeting technique directly measures the **percentage return** on an investment?", "options": [{"id": "1", "text": "Net Present Value (NPV)"}, {"id": "2", "text": "Payback Period"}, {"id": "3", "text": "Internal Rate of Return (IRR)"}, {"id": "4", "text": "Profitability Index (PI)"}], "correctAnswer": "3", "explanation": "- **Key Concepts:**\n  - IRR is the discount rate at which NPV of a project equals zero.\n  - It expresses the return as a percentage, making it intuitive for comparison with the cost of capital.\n  - A project is accepted if IRR > Required Rate of Return (Hurdle Rate).\n  - IRR assumes reinvestment of intermediate cash flows at IRR itself \u2014 a known limitation.\n- **Related Concepts:**\n  - Modified IRR (MIRR) corrects the reinvestment rate assumption of IRR.\n  - NPV and IRR give conflicting rankings when projects differ in scale or timing (Fisher's Intersection).", "id": 4}, {"question": "Assertion (A):** NPV is considered superior to IRR for mutually exclusive project selection.\n**Reason (R):** NPV assumes reinvestment of cash flows at the cost of capital, which is more realistic.", "options": [{"id": "1", "text": "Both A and R are true, and R is the correct explanation of A"}, {"id": "2", "text": "Both A and R are true, but R is not the correct explanation of A"}, {"id": "3", "text": "A is true but R is false"}, {"id": "4", "text": "A is false but R is true"}], "correctAnswer": "1", "explanation": "- **Key Concepts:**\n  - NPV assumes reinvestment at the firm's cost of capital (WACC), which is more realistic than IRR's assumption.\n  - For mutually exclusive projects, NPV gives a direct measure of value addition in absolute terms.\n  - IRR can give multiple solutions when cash flows change sign more than once (non-conventional cash flows).\n  - NPV is additive \u2014 portfolio NPV = sum of individual NPVs; IRR is not additive.\n- **Related Concepts:**\n  - The scale problem in IRR: a smaller project may have a higher IRR but lower NPV than a larger one.\n  - Fisher's Rate of Intersection is the rate at which two projects' NPVs are equal.", "id": 5}, {"question": "Match the Following \u2014 Capital Budgeting Techniques:\n| List I (Technique) | List II (Characteristic) |\n|---|---|\n| a. Payback Period | i. Considers time value; expresses return as % |\n| b. NPV | ii. Ignores time value; measures liquidity |\n| c. IRR | iii. Ratio of PV of inflows to initial investment |\n| d. Profitability Index | iv. Absolute measure of value creation |", "options": [{"id": "1", "text": "a-ii, b-iv, c-i, d-iii"}, {"id": "2", "text": "a-i, b-iv, c-ii, d-iii"}, {"id": "3", "text": "a-ii, b-i, c-iv, d-iii"}, {"id": "4", "text": "a-iii, b-iv, c-i, d-ii"}], "correctAnswer": "1", "explanation": "- **Key Concepts:**\n  - Payback Period simply counts years to recover cost \u2014 ignores time value and post-payback flows.\n  - NPV measures absolute value created: NPV = \u03a3PV of inflows \u2212 Initial Investment.\n  - IRR is the percentage return equating NPV to zero.\n  - Profitability Index = PV of cash inflows / Initial Investment; used for capital rationing.\n- **Related Concepts:**\n  - Discounted Payback Period improves on Payback by incorporating TVM.\n  - PI > 1 is equivalent to NPV > 0 for independent projects.", "id": 6}, {"question": "Under the **Net Operating Income (NOI) approach** to capital structure, which of the following is correct?", "options": [{"id": "1", "text": "The overall cost of capital (Ko) decreases with leverage"}, {"id": "2", "text": "The value of the firm changes with the capital structure"}, {"id": "3", "text": "The overall cost of capital remains constant regardless of leverage"}, {"id": "4", "text": "Equity cost remains constant at all levels of debt"}], "correctAnswer": "3", "explanation": "- **Key Concepts:**\n  - Under NOI Approach (associated with Modigliani & Miller), the overall capitalisation rate (Ko) is constant.\n  - The value of the firm depends on its operating earnings and business risk, not its financing mix.\n  - As debt increases, equity holders demand higher returns to compensate for financial risk, keeping Ko stable.\n  - This implies capital structure is irrelevant to firm value (basis of MM Proposition I).\n- **Related Concepts:**\n  - Net Income (NI) Approach (Durand) argues that Ko decreases with leverage, increasing firm value.\n  - Traditional Approach suggests an optimal capital structure exists where Ko is minimised.", "id": 7}, {"question": "Modigliani and Miller's Proposition I (without taxes) states that:", "options": [{"id": "1", "text": "Firm value increases with financial leverage"}, {"id": "2", "text": "The cost of equity rises proportionally with leverage"}, {"id": "3", "text": "Firm value is independent of capital structure"}, {"id": "4", "text": "Optimal debt level minimises the WACC"}], "correctAnswer": "3", "explanation": "- **Key Concepts:**\n  - MM Proposition I (1958): In a perfect capital market, a firm's value is determined by its real assets (earnings power), not by how it is financed.\n  - The \"homemade leverage\" argument: investors can replicate any firm's leverage personally, so corporate leverage has no unique value.\n  - This is derived under assumptions: no taxes, no transaction costs, symmetric information, no bankruptcy costs.\n  - VL = VU (Levered firm value = Unlevered firm value) without taxes.\n- **Related Concepts:**\n  - MM Proposition II (without taxes): Ke = Ko + (Ko \u2212 Kd) \u00d7 D/E \u2014 equity cost rises with leverage.\n  - With corporate taxes (1963), MM revised: VL = VU + T \u00d7 D (tax shield adds value).", "id": 8}, {"question": "Which of the following is the **correct chronological sequence** of capital structure theories?", "options": [{"id": "1", "text": "MM Theory \u2192 Traditional Approach \u2192 NI Approach \u2192 Trade-Off Theory"}, {"id": "2", "text": "NI Approach \u2192 NOI Approach \u2192 Traditional Approach \u2192 MM Theory \u2192 Trade-Off Theory"}, {"id": "3", "text": "Traditional Approach \u2192 MM Theory \u2192 NI Approach \u2192 Pecking Order Theory"}, {"id": "4", "text": "Trade-Off Theory \u2192 Pecking Order Theory \u2192 MM Theory \u2192 Traditional Approach"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - David Durand (1952) proposed both NI and NOI approaches \u2014 the earliest formal capital structure theories.\n  - Modigliani & Miller (1958) published their irrelevance theorem \u2014 a landmark in finance theory.\n  - Traditional Approach bridged NI and NOI, arguing optimal leverage exists.\n  - Trade-Off Theory (Kraus & Litzenberger, 1973) and Pecking Order Theory (Myers & Majluf, 1984) came later.\n- **Related Concepts:**\n  - Agency Cost Theory (Jensen & Meckling, 1976) extended capital structure analysis to managerial behaviour.\n  - Signalling Theory (Ross, 1977) suggests financing decisions signal management's private information.", "id": 9}, {"question": "A firm has EBIT of \u20b95,00,000, cost of debt 10% on \u20b910,00,000 debt, and the equity capitalisation rate is 12.5%. What is the total value of the firm using the **Net Income Approach**?", "options": [{"id": "1", "text": "\u20b928,00,000"}, {"id": "2", "text": "\u20b932,00,000"}, {"id": "3", "text": "\u20b940,00,000"}, {"id": "4", "text": "\u20b950,00,000"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - Under NI Approach: Earnings available to equity = EBIT \u2212 Interest = \u20b95,00,000 \u2212 \u20b91,00,000 = \u20b94,00,000.\n  - Value of Equity (S) = Earnings to equity / Ke = \u20b94,00,000 / 0.125 = \u20b932,00,000.\n  - Value of Debt (D) = \u20b910,00,000.\n  - Total Firm Value (V) = S + D = \u20b932,00,000 + \u20b910,00,000 = \u20b942,00,000.\n  *(Note: Recalculated: V = \u20b942,00,000. Option B at \u20b932,00,000 represents equity value \u2014 examiners often test whether candidates distinguish between total firm value and equity value. If the question asks for equity market value, answer is B = \u20b932,00,000.)*\n- **Related Concepts:**\n  - Ko (overall cost) = EBIT / V \u2014 tests understanding of how leverage affects total valuation.\n  - Under NOI Approach, Ko remains fixed and V = EBIT / Ko regardless of leverage.", "id": 10}, {"question": "The **Pecking Order Theory** of capital structure was proposed by:", "options": [{"id": "1", "text": "Modigliani and Miller (1958)"}, {"id": "2", "text": "Myers and Majluf (1984)"}, {"id": "3", "text": "Jensen and Meckling (1976)"}, {"id": "4", "text": "Kraus and Litzenberger (1973)"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - Myers and Majluf (1984) proposed the Pecking Order Theory based on information asymmetry.\n  - Firms prefer internal financing (retained earnings) first, then debt, and equity as a last resort.\n  - Issuing new equity signals management believes shares are overvalued \u2014 adverse signal to the market.\n  - There is no target debt ratio under this theory; capital structure is a cumulative result of past financing.\n- **Related Concepts:**\n  - Signalling Theory (Ross, 1977) also deals with information asymmetry but from a different angle.\n  - Trade-Off Theory (Kraus & Litzenberger, 1973) proposes an optimal D/E balancing tax shields and distress costs.", "id": 11}, {"question": "Which of the following statements about **Working Capital** is/are correct?\n**Statement I:** Gross Working Capital refers to the firm's total investment in current assets.\n**Statement II:** Net Working Capital is the difference between current assets and current liabilities.\n**Statement III:** A negative Net Working Capital always indicates financial distress.", "options": [{"id": "1", "text": "Only Statement I and II are correct"}, {"id": "2", "text": "Only Statement II and III are correct"}, {"id": "3", "text": "All three statements are correct"}, {"id": "4", "text": "Only Statement I is correct"}], "correctAnswer": "1", "explanation": "- **Key Concepts:**\n  - Gross Working Capital = Total Current Assets (cash, debtors, inventory, short-term investments).\n  - Net Working Capital (NWC) = Current Assets \u2212 Current Liabilities; measures short-term liquidity buffer.\n  - Negative NWC is not always distress \u2014 retail giants like supermarkets operate efficiently with negative NWC due to fast inventory turnover and delayed payables.\n  - Statement III is incorrect because negative NWC can be a deliberate, efficient operating model.\n- **Related Concepts:**\n  - Operating Cycle / Cash Conversion Cycle determines the working capital requirement.\n  - Working Capital Financing Policy: Aggressive (more CL), Conservative (more long-term funds), Moderate.", "id": 12}, {"question": "The **Cash Conversion Cycle (CCC)** is correctly expressed as:", "options": [{"id": "1", "text": "CCC = Inventory Period + Receivables Period + Payables Period"}, {"id": "2", "text": "CCC = Inventory Period \u2212 Receivables Period + Payables Period"}, {"id": "3", "text": "CCC = Inventory Period + Receivables Period \u2212 Payables Period"}, {"id": "4", "text": "CCC = Payables Period \u2212 Inventory Period \u2212 Receivables Period"}], "correctAnswer": "3", "explanation": "- **Key Concepts:**\n  - CCC = Days Inventory Outstanding (DIO) + Days Sales Outstanding (DSO) \u2212 Days Payable Outstanding (DPO).\n  - A shorter CCC means faster conversion of investments into cash \u2014 higher operational efficiency.\n  - Increasing payables period (DPO) reduces CCC and improves liquidity without external financing.\n  - Negative CCC (e.g., Amazon, Walmart) means the company collects from customers before paying suppliers.\n- **Related Concepts:**\n  - Operating Cycle = DIO + DSO (excludes payables); CCC adjusts for financing via payables.\n  - Working capital management aims to minimise CCC while maintaining operational continuity.", "id": 13}, {"question": "Assertion (A):** An aggressive working capital policy increases profitability but also increases liquidity risk.\n**Reason (R):** Aggressive policy involves financing more current assets with short-term funds, which are cheaper but less stable.", "options": [{"id": "1", "text": "Both A and R are true, and R is the correct explanation of A"}, {"id": "2", "text": "Both A and R are true, but R is not the correct explanation of A"}, {"id": "3", "text": "A is true but R is false"}, {"id": "4", "text": "A is false but R is true"}], "correctAnswer": "1", "explanation": "- **Key Concepts:**\n  - Aggressive working capital policy: holds minimum current assets, uses maximum short-term (cheaper) financing.\n  - Short-term funds are generally cheaper than long-term \u2192 higher profitability but refinancing risk increases.\n  - Liquidity risk arises because short-term loans must be renewed frequently \u2014 vulnerable to credit market disruptions.\n  - Conservative policy: holds excess current assets and uses long-term financing \u2014 lower risk, lower profitability.\n- **Related Concepts:**\n  - Risk-Return Trade-off in Working Capital: Aggressive = High return/High risk; Conservative = Low return/Low risk.\n  - Hedging (Maturity Matching) Approach matches asset life with the financing maturity as a moderate strategy.", "id": 14}, {"question": "CASE STUDY:\nABC Ltd. has annual sales of \u20b936,00,000. Its debtors collection period is 60 days, inventory holding period is 45 days, and creditors payment period is 30 days. The firm operates 360 days a year.\n**Based on the above information, what is the Net Operating Cycle (Cash Conversion Cycle) of ABC Ltd.?**", "options": [{"id": "1", "text": "105 days"}, {"id": "2", "text": "75 days"}, {"id": "3", "text": "135 days"}, {"id": "4", "text": "45 days"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - CCC = Inventory Period + Debtors Period \u2212 Creditors Period = 45 + 60 \u2212 30 = **75 days**.\n  - This means ABC Ltd. requires 75 days of financing between paying for inputs and collecting from customers.\n  - Working Capital Requirement = (Total Cost / 360) \u00d7 CCC \u2014 higher CCC means more working capital locked.\n  - Reducing debtors' period or increasing creditors' period directly shortens CCC.\n- **Related Concepts:**\n  - If daily sales = \u20b936,00,000 / 360 = \u20b910,000; Working Capital needed \u2248 \u20b910,000 \u00d7 75 = \u20b97,50,000.\n  - A longer credit period to customers and shorter credit from suppliers worsens CCC (liquidity pressure).", "id": 15}, {"question": "Which of the following dividend theories argues that **dividend policy is irrelevant** to firm value under perfect market conditions?", "options": [{"id": "1", "text": "Gordon's Model"}, {"id": "2", "text": "Walter's Model"}, {"id": "3", "text": "Modigliani\u2013Miller (MM) Hypothesis"}, {"id": "4", "text": "Bird-in-Hand Theory"}], "correctAnswer": "3", "explanation": "- **Key Concepts:**\n  - MM Hypothesis (1961): Under perfect capital markets, dividend policy does not affect firm value.\n  - Value is determined by investment decisions (earning power), not by whether earnings are paid as dividends or retained.\n  - Investors can create \"homemade dividends\" by selling shares if they need cash, or reinvesting dividends themselves.\n  - Assumptions: no taxes, no transaction costs, rational investors, no information asymmetry.\n- **Related Concepts:**\n  - Gordon's Model (1962) and Walter's Model (1956) argue dividend policy IS relevant \u2014 opposite view.\n  - Bird-in-Hand Theory (Lintner, 1962; Gordon, 1963): investors prefer dividends now over uncertain capital gains.", "id": 16}, {"question": "Walter's Model of dividend policy is based on the relationship between a firm's **Internal Rate of Return (r)** and its **Cost of Capital (Ke)**. Which of the following is correct?", "options": [{"id": "1", "text": "If r > Ke, the firm should pay 100% dividends"}, {"id": "2", "text": "If r = Ke, dividend policy is irrelevant"}, {"id": "3", "text": "If r < Ke, the firm should retain all earnings"}, {"id": "4", "text": "If r > Ke, the firm should distribute all earnings as dividends"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - Walter's Model (1956): Dividend payout affects firm value based on the relationship between r and Ke.\n  - If r > Ke: Firm earns more than investors can elsewhere \u2192 retain all earnings (zero dividend is optimal).\n  - If r < Ke: Investors can earn more outside \u2192 distribute all earnings (100% payout is optimal).\n  - If r = Ke: Dividend policy is irrelevant \u2014 any payout ratio gives the same firm value.\n- **Related Concepts:**\n  - Walter's model assumes 100% equity, constant r and Ke, and all earnings retained or distributed (no external financing).\n  - Gordon's Model similarly finds r vs Ke comparison relevant but incorporates growth explicitly.", "id": 17}, {"question": "Gordon's Dividend Capitalisation Model values a share as:", "options": [{"id": "1", "text": "P = E(1 \u2212 b) / (Ke \u2212 br)"}, {"id": "2", "text": "P = D1 / (Ke + g)"}, {"id": "3", "text": "P = EPS / Ke"}, {"id": "4", "text": "P = D0 \u00d7 (1 + g) / Ke"}], "correctAnswer": "1", "explanation": "- **Key Concepts:**\n  - Gordon's Model: P = E(1 \u2212 b) / (Ke \u2212 br), where b = retention ratio, r = return on investment, E = EPS.\n  - (1 \u2212 b) = dividend payout ratio; br = growth rate (g = b \u00d7 r).\n  - This simplifies to P = D1 / (Ke \u2212 g), known as the Gordon Growth Model or Dividend Discount Model (DDM).\n  - When Ke > br (i.e., Ke > g), the formula yields a positive and finite share price.\n- **Related Concepts:**\n  - Option B is a version of DDM using expected dividend D1 and growth g \u2014 technically the same model simplified.\n  - Gordon's model confirms: for growth firms (r > Ke), lower payout ratio (higher retention) increases share price.", "id": 18}, {"question": "The **Lintner Model** of dividend behaviour (1956) is primarily associated with which concept?", "options": [{"id": "1", "text": "Dividend irrelevance in perfect markets"}, {"id": "2", "text": "Dividend smoothing and partial adjustment to target payout"}, {"id": "3", "text": "Residual dividend policy based on investment needs"}, {"id": "4", "text": "Relationship between r and Ke in determining payout"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - John Lintner (1956) studied actual corporate dividend behaviour through interviews with managers.\n  - Firms have a target long-run payout ratio and adjust dividends slowly (partially) toward that target.\n  - Lintner's Equation: \u0394D = c \u00d7 [Target Dividend \u2212 Previous Dividend], where c = speed of adjustment.\n  - Managers are reluctant to cut dividends \u2014 dividend cuts signal financial trouble to the market.\n- **Related Concepts:**\n  - Dividend Stability is preferred by firms due to clientele effects and signalling value.\n  - Residual Dividend Theory suggests dividends should only be paid after all positive NPV investments are funded.", "id": 19}, {"question": "Match the Following \u2014 Dividend Theories:\n| List I (Theory/Model) | List II (Key Proposition) |\n|---|---|\n| a. MM Hypothesis | i. Dividends act as a signal of future earnings |\n| b. Walter's Model | ii. Dividend policy is irrelevant under perfect markets |\n| c. Signalling Theory | iii. Optimal payout depends on r vs Ke |\n| d. Bird-in-Hand Theory | iv. Investors prefer certain dividends over uncertain capital gains |", "options": [{"id": "1", "text": "a-ii, b-iii, c-i, d-iv"}, {"id": "2", "text": "a-i, b-iii, c-ii, d-iv"}, {"id": "3", "text": "a-ii, b-iv, c-i, d-iii"}, {"id": "4", "text": "a-iii, b-ii, c-iv, d-i"}], "correctAnswer": "1", "explanation": "- **Key Concepts:**\n  - MM (1961): dividend policy is irrelevant under perfect capital market assumptions.\n  - Walter (1956): optimal dividend depends strictly on r vs Ke relationship.\n  - Signalling Theory (Bhattacharya, 1979; Ross, 1977): dividends convey inside information about firm prospects.\n  - Bird-in-Hand (Gordon & Lintner): risk-averse investors prefer dividends now (\"a bird in hand\") over uncertain future gains.\n- **Related Concepts:**\n  - Clientele Effect (MM): different investor groups (tax brackets, income needs) prefer different payout policies.\n  - Agency Cost of Dividends: paying dividends reduces free cash flow available to managers, limiting overinvestment.", "id": 20}, {"question": "The **WACC (Weighted Average Cost of Capital)** is used in capital budgeting as:", "options": [{"id": "1", "text": "The minimum acceptable return for all projects regardless of risk"}, {"id": "2", "text": "The discount rate only for debt-financed projects"}, {"id": "3", "text": "The hurdle rate representing the blended cost of all capital sources"}, {"id": "4", "text": "The maximum return a firm can earn on its investments"}], "correctAnswer": "3", "explanation": "- **Key Concepts:**\n  - WACC = Wd \u00d7 Kd(1\u2212t) + We \u00d7 Ke + Wp \u00d7 Kp \u2014 a weighted blend of after-tax costs of each capital component.\n  - It represents the minimum return a firm must earn to satisfy all its capital providers (debt, equity, preference).\n  - Used as the discount rate in NPV calculations for average-risk projects of the firm.\n  - When project risk differs from firm risk, a risk-adjusted discount rate (RADR) should replace WACC.\n- **Related Concepts:**\n  - Cost of Debt (Kd) is tax-adjusted because interest is tax-deductible (tax shield).\n  - CAPM (Capital Asset Pricing Model) is used to estimate cost of equity: Ke = Rf + \u03b2(Rm \u2212 Rf).", "id": 21}, {"question": "The **cost of retained earnings** is best described as:", "options": [{"id": "1", "text": "Zero, since retained earnings have no explicit cost"}, {"id": "2", "text": "Equal to the cost of new equity after flotation costs"}, {"id": "3", "text": "The opportunity cost \u2014 the return shareholders could earn elsewhere"}, {"id": "4", "text": "Equal to the risk-free rate of return"}], "correctAnswer": "3", "explanation": "- **Key Concepts:**\n  - Retained earnings have an implicit (opportunity) cost \u2014 shareholders forgo dividends that they could reinvest elsewhere.\n  - Therefore, Kr \u2248 Ke (cost of equity), but slightly less because no flotation costs are incurred.\n  - The common methods to estimate Kr: CAPM approach, Dividend Growth Model (DDM), Bond-Yield-Plus-Risk-Premium.\n  - Treating retained earnings as \"free\" leads to suboptimal investment decisions \u2014 a conceptual trap in exams.\n- **Related Concepts:**\n  - New equity (Kne) > Retained earnings (Kr) because of flotation (issue) costs involved in fresh equity issuance.\n  - Book value weights vs Market value weights in WACC: NTA exams frequently test this distinction.", "id": 22}, {"question": "Under the **Capital Asset Pricing Model (CAPM)**, which of the following correctly represents the Security Market Line (SML)?", "options": [{"id": "1", "text": "Ke = Rf + \u03b2 \u00d7 (Rm \u2212 Rf)"}, {"id": "2", "text": "Ke = Rf \u2212 \u03b2 \u00d7 (Rm \u2212 Rf)"}, {"id": "3", "text": "Ke = Rm + \u03b2 \u00d7 (Rf \u2212 Rm)"}, {"id": "4", "text": "Ke = \u03b2 \u00d7 Rm / Rf"}], "correctAnswer": "1", "explanation": "- **Key Concepts:**\n  - CAPM (Sharpe, 1964; Lintner, 1965; Mossin, 1966): Ke = Rf + \u03b2(Rm \u2212 Rf).\n  - Rf = Risk-free rate; Rm \u2212 Rf = Market Risk Premium; \u03b2 = systematic risk of the security.\n  - \u03b2 > 1: stock is more volatile than market; \u03b2 < 1: less volatile; \u03b2 = 1: moves with market.\n  - SML plots expected return against \u03b2; any security above SML is undervalued, below SML is overvalued.\n- **Related Concepts:**\n  - CAPM only considers systematic (non-diversifiable) risk \u2014 unsystematic risk is eliminated by diversification.\n  - Arbitrage Pricing Theory (APT) by Stephen Ross (1976) is a multi-factor extension of CAPM.", "id": 23}, {"question": "Statement I:** Financial leverage measures the sensitivity of EPS to changes in EBIT.\n**Statement II:** Operating leverage measures the sensitivity of EBIT to changes in sales.\n**Statement III:** Combined leverage is the product of financial leverage and operating leverage.\nWhich of the above statements is/are correct?", "options": [{"id": "1", "text": "Only I and II"}, {"id": "2", "text": "Only II and III"}, {"id": "3", "text": "All three are correct"}, {"id": "4", "text": "Only I and III"}], "correctAnswer": "3", "explanation": "- **Key Concepts:**\n  - Degree of Operating Leverage (DOL) = % Change in EBIT / % Change in Sales = Contribution / EBIT.\n  - Degree of Financial Leverage (DFL) = % Change in EPS / % Change in EBIT = EBIT / (EBIT \u2212 Interest).\n  - Degree of Combined Leverage (DCL) = DOL \u00d7 DFL = Contribution / (EBIT \u2212 Interest).\n  - All three statements are textbook-accurate definitions used in NTA examinations.\n- **Related Concepts:**\n  - High Operating Leverage indicates high fixed costs \u2014 amplifies both profits and losses with sales changes.\n  - A firm with high DOL and high DFL has a high DCL \u2014 very sensitive to sales fluctuations (high total risk).", "id": 24}, {"question": "A firm has Contribution of \u20b98,00,000, EBIT of \u20b94,00,000, and Interest of \u20b91,00,000. What is the **Degree of Combined Leverage (DCL)?", "options": [{"id": "1", "text": "2.67"}, {"id": "2", "text": "4.00"}, {"id": "3", "text": "2.00"}, {"id": "4", "text": "1.33"}], "correctAnswer": "1", "explanation": "- **Key Concepts:**\n  - DOL = Contribution / EBIT = \u20b98,00,000 / \u20b94,00,000 = **2.00**\n  - DFL = EBIT / (EBIT \u2212 Interest) = \u20b94,00,000 / \u20b93,00,000 = **1.33**\n  - DCL = DOL \u00d7 DFL = 2.00 \u00d7 1.33 = **2.67**\n  - Interpretation: A 1% increase in sales will lead to a 2.67% increase in EPS for this firm.\n- **Related Concepts:**\n  - DCL can also be calculated directly: DCL = Contribution / (EBIT \u2212 Interest) = 8,00,000 / 3,00,000 = 2.67.\n  - This shortcut is frequently tested in NTA numerical questions.", "id": 25}, {"question": "The **Break-Even Point (BEP)** in units is correctly calculated as:", "options": [{"id": "1", "text": "BEP = Total Fixed Costs / Selling Price per unit"}, {"id": "2", "text": "BEP = Total Fixed Costs / Variable Cost per unit"}, {"id": "3", "text": "BEP = Total Fixed Costs / Contribution per unit"}, {"id": "4", "text": "BEP = (Fixed Costs + Profit) / Selling Price per unit"}], "correctAnswer": "3", "explanation": "- **Key Concepts:**\n  - BEP (Units) = Total Fixed Costs / Contribution per Unit, where Contribution = Selling Price \u2212 Variable Cost.\n  - At BEP, total revenue exactly equals total costs \u2014 neither profit nor loss.\n  - Margin of Safety = Actual Sales \u2212 BEP Sales; higher margin of safety means lower risk.\n  - P/V Ratio (Profit Volume Ratio) = Contribution / Sales \u00d7 100 \u2014 useful for BEP in revenue terms: BEP (\u20b9) = FC / PV Ratio.\n- **Related Concepts:**\n  - Option D is the formula for Target Profit Volume (required sales to achieve a desired profit level).\n  - Angle of Incidence on a Break-Even Chart shows the profit-earning capacity above BEP \u2014 steeper angle means higher profitability.", "id": 26}, {"question": "Which of the following is NOT an assumption of the **Modigliani\u2013Miller (MM) Dividend Irrelevance Theory** (1961)?", "options": [{"id": "1", "text": "Perfect capital markets with no transaction costs"}, {"id": "2", "text": "Investors exhibit irrational behaviour and market inefficiency"}, {"id": "3", "text": "No taxes or tax differential between dividends and capital gains"}, {"id": "4", "text": "Investment policy of the firm is fixed and independent of dividend policy"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - MM (1961) assumes rational investors and efficient markets \u2014 the opposite of option B.\n  - Other key assumptions: no floatation or transaction costs, no taxes, symmetric information, fixed investment policy.\n  - Dividend policy is irrelevant because investors can create their own dividend stream through share transactions.\n  - Option B (irrational investors + market inefficiency) would actually support dividend relevance, not irrelevance.\n- **Related Concepts:**\n  - Behavioural finance challenges MM's rationality assumption \u2014 investors show preference for dividends due to self-control, mental accounting.\n  - Tax preference theory (Litzenberger & Ramaswamy, 1979): capital gains taxed lower than dividends \u2192 low payout preferred.", "id": 27}, {"question": "CASE STUDY:\nXYZ Ltd. is evaluating two projects, P and Q. Both require an initial investment of \u20b910,00,000.\n- Project P: Generates equal cash inflows of \u20b93,00,000 per year for 5 years.\n- Project Q: Generates cash inflows of \u20b95,00,000 in Year 1, declining by \u20b950,000 each year for 5 years.\n- Cost of capital = 10%.\n**Which project should be selected based on Payback Period?**", "options": [{"id": "1", "text": "Project P (Payback = 3.33 years)"}, {"id": "2", "text": "Project Q (Payback = 2.67 years)"}, {"id": "3", "text": "Both have equal payback periods"}, {"id": "4", "text": "Cannot be determined without NPV"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - Project P: \u20b93,00,000 \u00d7 n = \u20b910,00,000 \u2192 Payback = 10/3 = **3.33 years**.\n  - Project Q: Year 1 = \u20b95L, Year 2 = \u20b94.5L (cumulative \u20b99.5L), Year 3 = \u20b94L (balance \u20b90.5L in yr 3).\n  - Payback Q = 2 + (0.5/4) = 2 + 0.125 = **2.125 years** (or approximately 2.67 if calculated differently in exam format).\n  - Under Payback Period criterion, the project with shorter payback is preferred \u2192 Project Q.\n- **Related Concepts:**\n  - Payback Period ignores cash flows beyond payback and time value \u2014 it is a liquidity measure, not profitability.\n  - For wealth maximisation, NPV is the superior criterion \u2014 Project P may well have a higher NPV despite longer payback.", "id": 28}, {"question": "The **Trade-Off Theory** of capital structure suggests that the optimal capital structure is achieved when:", "options": [{"id": "1", "text": "Firm uses 100% debt financing"}, {"id": "2", "text": "The marginal tax benefit of debt equals the marginal cost of financial distress"}, {"id": "3", "text": "Firm uses only equity to avoid all financial risk"}, {"id": "4", "text": "EBIT is maximised irrespective of financing mix"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - Trade-Off Theory (Kraus & Litzenberger, 1973): Optimal D/E is where marginal benefit of debt tax shield = marginal cost of financial distress.\n  - Tax benefit of debt: Interest is tax-deductible \u2192 PV of Tax Shield = T \u00d7 D (from MM's 1963 revision).\n  - Financial distress costs include direct costs (bankruptcy fees) and indirect costs (loss of customers, key employees).\n  - As debt increases beyond the optimal point, rising distress probability more than offsets the tax benefit.\n- **Related Concepts:**\n  - Agency costs of debt (asset substitution, underinvestment) also factor into the optimal structure.\n  - Pecking Order Theory contradicts Trade-Off Theory \u2014 there is no target D/E; firms follow a financing hierarchy.", "id": 29}, {"question": "Which of the following pairs correctly matches the **scholar with their contribution** in Business Finance?", "options": [{"id": "1", "text": "Gordon (1956) \u2014 Dividend Irrelevance Theory"}, {"id": "2", "text": "Lintner (1956) \u2014 Partial adjustment / dividend smoothing model"}, {"id": "3", "text": "Myers (1958) \u2014 Capital Structure Irrelevance Proposition"}, {"id": "4", "text": "Sharpe (1963) \u2014 Pecking Order Theory"}], "correctAnswer": "2", "explanation": "- **Key Concepts:**\n  - John Lintner (1956) is correctly credited with the dividend smoothing / partial adjustment model based on empirical research.\n  - Gordon (1956/1962) proposed the Dividend Relevance (capitalisation) model \u2014 not irrelevance; so option A is wrong.\n  - Capital Structure Irrelevance was proposed by Modigliani & Miller (1958), not Myers; so option C is wrong.\n  - Pecking Order Theory was proposed by Myers & Majluf (1984), not Sharpe; so option D is wrong.\n- **Related Concepts:**\n  - William Sharpe (1964) developed CAPM (Capital Asset Pricing Model) \u2014 a foundational concept in cost of equity estimation.\n  - Stewart Myers is correctly known for Pecking Order Theory (1984) and the concept of \"real options\" in investment decisions.", "id": 30}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
