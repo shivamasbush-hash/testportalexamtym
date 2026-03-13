@@ -716,7 +716,7 @@
         /* Status stat cards */
         .tracker-stats {
             display: grid;
-            grid-template-columns: repeat(5, 1fr);
+            grid-template-columns: repeat(6, 1fr);
             gap: 0.75rem; margin-bottom: 1.5rem;
         }
         .tstat-card {
@@ -728,7 +728,7 @@
         .tstat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
         .tstat-card.active { box-shadow: var(--shadow-lg); }
         .tstat-card .tn { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; display: block; }
-        .tstat-card .tl { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+        .tstat-card .tl { font-size: 0.7rem; color: var(--muted); font-weight: 600; line-height: 1.3; margin-top: 2px; }
         .tstat-not-started  { border-top-color: #94A3B8; }
         .tstat-not-started .tn  { color: #94A3B8; }
         .tstat-ongoing      { border-top-color: #3B82F6; }
@@ -854,6 +854,7 @@
 
         @media (max-width: 900px) {
             .tracker-stats { grid-template-columns: repeat(3, 1fr); }
+            .tracker-header { flex-direction: column; }
         }
         @media (max-width: 600px) {
             .tracker-stats { grid-template-columns: repeat(2, 1fr); }
@@ -1769,11 +1770,11 @@ let trackerStatusFilter = 'All';
 let saveTimers = {};
 
 const STATUS_CONFIG = {
-    'Not Started':   { cls: 'not-started',   icon: 'fa-circle',            color: '#94A3B8', label: 'Not Started'   },
-    'Ongoing':       { cls: 'ongoing',        icon: 'fa-spinner',           color: '#3B82F6', label: 'Ongoing'       },
-    'Completed':     { cls: 'completed',      icon: 'fa-circle-check',      color: '#10B981', label: 'Completed'     },
-    'Need Revision': { cls: 'need-revision',  icon: 'fa-rotate-left',       color: '#F59E0B', label: 'Need Revision' },
-    'Need Practice': { cls: 'need-practice',  icon: 'fa-dumbbell',          color: '#EF4444', label: 'Need Practice' }
+    'Not Started':   { cls: 'not-started',   icon: 'fa-minus-circle',      color: '#94A3B8', label: 'Not Started'   },
+    'Ongoing':       { cls: 'ongoing',        icon: 'fa-clock',             color: '#3B82F6', label: 'Ongoing'       },
+    'Completed':     { cls: 'completed',      icon: 'fa-check-circle',      color: '#10B981', label: 'Completed'     },
+    'Need Revision': { cls: 'need-revision',  icon: 'fa-exclamation-circle',color: '#F59E0B', label: 'Need Revision' },
+    'Need Practice': { cls: 'need-practice',  icon: 'fa-fire',              color: '#EF4444', label: 'Need Practice' }
 };
 
 function tkey(subject, unit) {
@@ -1910,21 +1911,26 @@ function renderTrackerStats() {
         </div>`;
 
     // Stat cards
+    const statusEmoji = {
+        'Not Started': '⬜', 'Ongoing': '🔵', 'Completed': '✅',
+        'Need Revision': '🟡', 'Need Practice': '🔴'
+    };
     wrap.innerHTML = Object.entries(counts).map(([st, cnt]) => {
         const cfg = STATUS_CONFIG[st];
+        const isActive = trackerStatusFilter === st;
         return `
-        <div class="tstat-card tstat-${cfg.cls} ${trackerStatusFilter === st ? 'active' : ''}"
+        <div class="tstat-card tstat-${cfg.cls} ${isActive ? 'active' : ''}"
              onclick="setTrackerStatusFilter('${st}', this)"
-             style="${trackerStatusFilter === st ? 'box-shadow:0 0 0 2px ' + cfg.color + '40' : ''}">
+             style="${isActive ? 'box-shadow:0 0 0 2px ' + cfg.color + ';' : ''}">
             <span class="tn">${cnt}</span>
-            <span class="tl">${st}</span>
+            <span class="tl">${statusEmoji[st]} ${st}</span>
         </div>`;
     }).join('') + `
         <div class="tstat-card ${trackerStatusFilter === 'All' ? 'active' : ''}"
              onclick="setTrackerStatusFilter('All', this)"
-             style="border-top-color:var(--primary);${trackerStatusFilter === 'All' ? 'box-shadow:0 0 0 2px var(--primary-light)' : ''}">
+             style="border-top-color:var(--primary);${trackerStatusFilter === 'All' ? 'box-shadow:0 0 0 2px var(--primary)' : ''}">
             <span class="tn" style="color:var(--primary)">${total}</span>
-            <span class="tl">All Units</span>
+            <span class="tl">📋 All Units</span>
         </div>`;
 }
 
