@@ -682,6 +682,184 @@
             .notes-topic-grid { grid-template-columns: 1fr; }
             .note-card-footer { flex-direction: column; }
         }
+
+        /* ══════════════════════════════
+           SUBJECT TRACKER
+        ══════════════════════════════ */
+        .tracker-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
+        }
+        .tracker-title {
+            font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800;
+            display: flex; align-items: center; gap: 10px; margin-bottom: 0.3rem;
+        }
+        .tracker-title i { color: var(--primary); }
+        .tracker-sub { font-size: 0.87rem; color: var(--muted); }
+
+        /* Overall progress ring */
+        .tracker-overall-wrap {
+            display: flex; align-items: center; gap: 12px;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 0.8rem 1.2rem;
+        }
+        .tracker-ring { position: relative; width: 54px; height: 54px; flex-shrink: 0; }
+        .tracker-ring svg { transform: rotate(-90deg); }
+        .tracker-ring-pct {
+            position: absolute; inset: 0; display: flex;
+            align-items: center; justify-content: center;
+            font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 800;
+        }
+        .tracker-ring-label { font-size: 0.82rem; color: var(--muted); }
+        .tracker-ring-label strong { display: block; font-family: 'Syne', sans-serif; font-size: 1rem; color: var(--text); }
+
+        /* Status stat cards */
+        .tracker-stats {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 0.75rem; margin-bottom: 1.5rem;
+        }
+        .tstat-card {
+            background: var(--card); border-radius: 12px;
+            border: 1px solid var(--border); padding: 0.9rem 0.8rem;
+            text-align: center; cursor: pointer; transition: all 0.2s;
+            border-top: 3px solid transparent;
+        }
+        .tstat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+        .tstat-card.active { box-shadow: var(--shadow-lg); }
+        .tstat-card .tn { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; display: block; }
+        .tstat-card .tl { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+        .tstat-not-started  { border-top-color: #94A3B8; }
+        .tstat-not-started .tn  { color: #94A3B8; }
+        .tstat-ongoing      { border-top-color: #3B82F6; }
+        .tstat-ongoing .tn      { color: #3B82F6; }
+        .tstat-completed    { border-top-color: #10B981; }
+        .tstat-completed .tn    { color: #10B981; }
+        .tstat-need-revision{ border-top-color: #F59E0B; }
+        .tstat-need-revision .tn{ color: #F59E0B; }
+        .tstat-need-practice{ border-top-color: #EF4444; }
+        .tstat-need-practice .tn{ color: #EF4444; }
+
+        /* Subject tabs */
+        .tracker-subj-tabs {
+            display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 1.4rem;
+        }
+
+        /* Subject block */
+        .tracker-subject-block { margin-bottom: 2rem; }
+        .tracker-subject-title {
+            font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800;
+            display: flex; align-items: center; gap: 10px;
+            padding-bottom: 0.7rem; margin-bottom: 1rem;
+            border-bottom: 2px solid var(--border);
+        }
+        .tracker-subject-title i { color: var(--primary); }
+        .tracker-subject-prog {
+            margin-left: auto; font-size: 0.78rem; font-weight: 600;
+            color: var(--muted); display: flex; align-items: center; gap: 8px;
+        }
+        .tracker-subj-bar {
+            width: 80px; height: 6px; background: var(--border);
+            border-radius: 99px; overflow: hidden;
+        }
+        .tracker-subj-bar-fill {
+            height: 100%; border-radius: 99px;
+            background: linear-gradient(90deg, var(--primary), #10B981);
+            transition: width 0.6s ease;
+        }
+
+        /* Unit cards grid */
+        .tracker-units-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+            gap: 1rem;
+        }
+
+        /* Unit card */
+        .unit-card {
+            background: var(--card); border-radius: 13px;
+            border: 1px solid var(--border); padding: 1.1rem;
+            display: flex; flex-direction: column; gap: 0.8rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            animation: cardIn 0.3s ease both; position: relative;
+            border-left: 4px solid var(--border);
+        }
+        .unit-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+        .unit-card.status-not-started   { border-left-color: #94A3B8; }
+        .unit-card.status-ongoing        { border-left-color: #3B82F6; }
+        .unit-card.status-completed      { border-left-color: #10B981; }
+        .unit-card.status-need-revision  { border-left-color: #F59E0B; }
+        .unit-card.status-need-practice  { border-left-color: #EF4444; }
+
+        .unit-card-top { display: flex; justify-content: space-between; align-items: flex-start; }
+        .unit-number {
+            width: 28px; height: 28px; border-radius: 8px;
+            background: var(--primary-light); color: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 0.75rem; font-weight: 800; flex-shrink: 0;
+        }
+        .unit-name {
+            font-family: 'Syne', sans-serif; font-size: 0.95rem;
+            font-weight: 700; line-height: 1.35; flex: 1; margin: 0 0.6rem;
+        }
+
+        /* Status badge */
+        .unit-status-badge {
+            font-size: 0.65rem; font-weight: 700; padding: 0.22rem 0.6rem;
+            border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px;
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .sb-not-started  { background: rgba(148,163,184,0.12); color: #94A3B8; border: 1px solid rgba(148,163,184,0.3); }
+        .sb-ongoing      { background: rgba(59,130,246,0.12);  color: #3B82F6; border: 1px solid rgba(59,130,246,0.3); }
+        .sb-completed    { background: rgba(16,185,129,0.12);  color: #10B981; border: 1px solid rgba(16,185,129,0.3); }
+        .sb-need-revision{ background: rgba(245,158,11,0.12);  color: #F59E0B; border: 1px solid rgba(245,158,11,0.3); }
+        .sb-need-practice{ background: rgba(239,68,68,0.12);   color: #EF4444; border: 1px solid rgba(239,68,68,0.3); }
+
+        /* Notes input */
+        .unit-notes-input {
+            width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px;
+            border: 1.5px solid var(--border); background: var(--bg);
+            color: var(--text); font-size: 0.82rem;
+            font-family: 'DM Sans', sans-serif; outline: none; resize: none;
+            transition: border-color 0.2s; height: 52px;
+        }
+        .unit-notes-input:focus { border-color: var(--primary); }
+        .unit-notes-input::placeholder { color: var(--muted); }
+
+        /* Status dropdown */
+        .unit-status-select {
+            width: 100%; padding: 0.6rem 0.8rem; border-radius: 9px;
+            border: 1.5px solid var(--border); background: var(--card);
+            color: var(--text); font-size: 0.85rem; font-weight: 600;
+            font-family: 'DM Sans', sans-serif; cursor: pointer; outline: none;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748B' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat; background-position: right 0.75rem center;
+            transition: border-color 0.2s;
+        }
+        .unit-status-select:focus { border-color: var(--primary); }
+
+        /* Updated time */
+        .unit-updated { font-size: 0.72rem; color: var(--muted); display: flex; align-items: center; gap: 4px; }
+
+        /* Saving indicator */
+        .unit-save-indicator {
+            font-size: 0.72rem; font-weight: 600;
+            display: flex; align-items: center; gap: 4px;
+            opacity: 0; transition: opacity 0.3s;
+        }
+        .unit-save-indicator.show { opacity: 1; }
+        .unit-save-indicator.saved { color: #10B981; }
+        .unit-save-indicator.saving { color: #F59E0B; }
+
+        @media (max-width: 900px) {
+            .tracker-stats { grid-template-columns: repeat(3, 1fr); }
+        }
+        @media (max-width: 600px) {
+            .tracker-stats { grid-template-columns: repeat(2, 1fr); }
+            .tracker-units-grid { grid-template-columns: 1fr; }
+            .tracker-subj-bar { display: none; }
+        }
     </style>
 </head>
 <body>
@@ -782,6 +960,14 @@
         </div>
 
         <div class="sidebar-section">
+            <div class="sidebar-label">📊 Tracker</div>
+            <a class="sidebar-item" onclick="switchSection('tracker', this)">
+                <i class="fa-solid fa-chart-gantt"></i>
+                Subject Tracker
+            </a>
+        </div>
+
+        <div class="sidebar-section">
             <div class="sidebar-label">My Progress</div>
             <a class="sidebar-item" onclick="switchSection('attempted', this)">
                 <i class="fa-solid fa-circle-check"></i>
@@ -871,6 +1057,20 @@
             </div>
             <div class="test-grid" id="testGrid"></div>
 
+        <!-- ══ TRACKER SECTION ══ -->
+        <div id="trackerSection" style="display:none">
+            <div class="tracker-header">
+                <div class="tracker-header-left">
+                    <h2 class="tracker-title"><i class="fa-solid fa-chart-gantt"></i> Subject Tracker</h2>
+                    <p class="tracker-sub">Track your preparation unit by unit</p>
+                </div>
+                <div class="tracker-header-right" id="trackerOverall"></div>
+            </div>
+            <div class="tracker-stats" id="trackerStats"></div>
+            <div class="tracker-subj-tabs" id="trackerSubjTabs"></div>
+            <div id="trackerGrid"></div>
+        </div>
+
         <!-- ══ NOTES SECTION ══ -->
         <div id="notesSection" style="display:none">
             <div class="controls">
@@ -924,6 +1124,7 @@
 // ═══════════════════════
 const SCRIPT = 'https://script.google.com/macros/s/AKfycbxOC7MOlZBbrRoXMOs4a3Hpr7uEZ-es4UShBcN55vWoG30CsOzM7X-3Dk_q0X1e7SvB/exec';
 const CSV    = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTp4gzDWBvB6kVTJOTjv89SwpUsgt5OVUU1ZsfYTOxiYft0GIEy6JaY7W-C12k86WDrzOProbGT-9Wo/pub?output=csv';
+const SYLLABUS_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTp4gzDWBvB6kVTJOTjv89SwpUsgt5OVUU1ZsfYTOxiYft0GIEy6JaY7W-C12k86WDrzOProbGT-9Wo/pub?gid=245865217&single=true&output=csv';
 const NOTES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTp4gzDWBvB6kVTJOTjv89SwpUsgt5OVUU1ZsfYTOxiYft0GIEy6JaY7W-C12k86WDrzOProbGT-9Wo/pub?gid=2081946736&single=true&output=csv';
 
 // ═══════════════════════
@@ -1003,6 +1204,14 @@ function switchSection(sec, el) {
         closeSidebar();
         loadNotesData();
         loadNotesCSV();
+        return;
+    }
+    // Tracker section
+    if (sec === 'tracker') {
+        showTrackerSection();
+        document.getElementById('topbarTitle').textContent = 'Subject Tracker';
+        closeSidebar();
+        if (!trackerLoaded) initTracker();
         return;
     }
     // Tests sections
@@ -1526,6 +1735,8 @@ function closePdfViewer() {
 
 // ── SHOW/HIDE SECTIONS ──
 function showNotesSection() {
+    const ts = document.getElementById('trackerSection');
+    if (ts) ts.style.display = 'none';
     document.getElementById('notesSection').style.display = 'block';
     document.querySelector('.controls') && (document.querySelector('.controls').style.display = 'none');
     document.getElementById('testGrid').style.display     = 'none';
@@ -1536,11 +1747,331 @@ function showNotesSection() {
 function showTestsSection() {
     const ns = document.getElementById('notesSection');
     if (ns) ns.style.display = 'none';
+    const ts = document.getElementById('trackerSection');
+    if (ts) ts.style.display = 'none';
     document.querySelector('.controls') && (document.querySelector('.controls').style.display = 'flex');
     document.getElementById('testGrid').style.display = '';
     document.querySelector('.hero') && (document.querySelector('.hero').style.display = 'block');
     const cb = document.getElementById('countdownBar');
     if (cb) cb.style.display = 'block';
+}
+
+
+// ═══════════════════════════════════════
+// SUBJECT TRACKER
+// ═══════════════════════════════════════
+let syllabusData   = [];   // [{ subject, unit }]
+let trackerData    = {};   // { 'subject|unit': { status, notes, updated } }
+let syllabusLoaded = false;
+let trackerLoaded  = false;
+let trackerSubjFilter = 'All';
+let trackerStatusFilter = 'All';
+let saveTimers = {};
+
+const STATUS_CONFIG = {
+    'Not Started':   { cls: 'not-started',   icon: 'fa-circle',            color: '#94A3B8', label: 'Not Started'   },
+    'Ongoing':       { cls: 'ongoing',        icon: 'fa-spinner',           color: '#3B82F6', label: 'Ongoing'       },
+    'Completed':     { cls: 'completed',      icon: 'fa-circle-check',      color: '#10B981', label: 'Completed'     },
+    'Need Revision': { cls: 'need-revision',  icon: 'fa-rotate-left',       color: '#F59E0B', label: 'Need Revision' },
+    'Need Practice': { cls: 'need-practice',  icon: 'fa-dumbbell',          color: '#EF4444', label: 'Need Practice' }
+};
+
+function tkey(subject, unit) {
+    return (subject + '|' + unit).replace(/\s+/g, '_').toLowerCase();
+}
+
+// ── LOAD SYLLABUS CSV ──
+function loadSyllabus(callback) {
+    if (syllabusLoaded) { if (callback) callback(); return; }
+    Papa.parse(SYLLABUS_CSV, {
+        download: true, header: false, skipEmptyLines: true,
+        complete(res) {
+            syllabusData = res.data.slice(1).map(c => {
+                if (c.length >= 2 && c[0].trim()) return { subject: c[0].trim(), unit: c[1].trim() };
+                return null;
+            }).filter(Boolean);
+            syllabusLoaded = true;
+            if (callback) callback();
+        },
+        error() { console.error('Syllabus load error'); }
+    });
+}
+
+// ── LOAD TRACKER FROM APPS SCRIPT ──
+function loadTrackerFromSheet() {
+    if (!user) return;
+    return fetch(SCRIPT, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'tracker_load', email: user.email })
+    })
+    .then(r => r.json())
+    .then(d => {
+        if (d.status === 'ok') {
+            trackerData = {};
+            (d.rows || []).forEach(r => {
+                const k = tkey(r.subject, r.unit);
+                trackerData[k] = { status: r.status, notes: r.notes, updated: r.updated };
+            });
+            // Also save to localStorage as cache
+            localStorage.setItem('et_tracker_' + user.email, JSON.stringify(trackerData));
+        }
+    })
+    .catch(() => {
+        // Fallback to localStorage
+        try {
+            const cached = localStorage.getItem('et_tracker_' + user.email);
+            if (cached) trackerData = JSON.parse(cached);
+        } catch {}
+    });
+}
+
+// ── SAVE SINGLE UNIT TO SHEET ──
+function saveUnitToSheet(subject, unit, status, notes) {
+    if (!user) return;
+    const k = tkey(subject, unit);
+    trackerData[k] = { status, notes, updated: new Date().toISOString() };
+    localStorage.setItem('et_tracker_' + user.email, JSON.stringify(trackerData));
+
+    fetch(SCRIPT, {
+        method: 'POST',
+        body: JSON.stringify({ action: 'tracker_save', email: user.email, subject, unit, status, notes })
+    }).catch(() => {});
+}
+
+// ── INIT TRACKER SECTION ──
+function initTracker() {
+    const grid = document.getElementById('trackerGrid');
+    if (!grid) return;
+    grid.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:1rem;display:block"></i>Loading tracker...</div>';
+
+    loadSyllabus(() => {
+        loadTrackerFromSheet().then(() => {
+            trackerLoaded = true;
+            renderTrackerSubjTabs();
+            renderTrackerStats();
+            renderTrackerGrid();
+        });
+    });
+}
+
+// ── SUBJECT TABS ──
+function renderTrackerSubjTabs() {
+    const wrap = document.getElementById('trackerSubjTabs');
+    if (!wrap) return;
+    const subjects = ['All', ...new Set(syllabusData.map(s => s.subject))];
+    wrap.innerHTML = subjects.map(s =>
+        `<button class="filt-btn ${s === trackerSubjFilter ? 'active' : ''}"
+                 onclick="setTrackerSubj('${s}', this)">${s}</button>`
+    ).join('');
+}
+
+function setTrackerSubj(subj, el) {
+    trackerSubjFilter = subj;
+    document.querySelectorAll('#trackerSubjTabs .filt-btn').forEach(x => x.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderTrackerGrid();
+}
+
+// ── STATS CARDS ──
+function renderTrackerStats() {
+    const wrap = document.getElementById('trackerStats');
+    const overall = document.getElementById('trackerOverall');
+    if (!wrap) return;
+
+    const counts = { 'Not Started': 0, 'Ongoing': 0, 'Completed': 0, 'Need Revision': 0, 'Need Practice': 0 };
+    syllabusData.forEach(({ subject, unit }) => {
+        const d = trackerData[tkey(subject, unit)];
+        const st = d?.status || 'Not Started';
+        if (counts[st] !== undefined) counts[st]++;
+    });
+
+    const total = syllabusData.length;
+    const done  = counts['Completed'];
+    const pct   = total > 0 ? Math.round(done / total * 100) : 0;
+    const circ  = 2 * Math.PI * 22;
+    const dash  = circ - (pct / 100) * circ;
+
+    // Overall ring
+    if (overall) overall.innerHTML = `
+        <div class="tracker-overall-wrap">
+            <div class="tracker-ring">
+                <svg width="54" height="54" viewBox="0 0 54 54">
+                    <circle cx="27" cy="27" r="22" fill="none" stroke="var(--border)" stroke-width="5"/>
+                    <circle cx="27" cy="27" r="22" fill="none" stroke="#10B981" stroke-width="5"
+                            stroke-dasharray="${circ}" stroke-dashoffset="${dash}"
+                            stroke-linecap="round" style="transition:stroke-dashoffset 0.8s ease"/>
+                </svg>
+                <div class="tracker-ring-pct" style="color:#10B981">${pct}%</div>
+            </div>
+            <div class="tracker-ring-label">
+                <strong>${done}/${total}</strong>
+                Units Completed
+            </div>
+        </div>`;
+
+    // Stat cards
+    wrap.innerHTML = Object.entries(counts).map(([st, cnt]) => {
+        const cfg = STATUS_CONFIG[st];
+        return `
+        <div class="tstat-card tstat-${cfg.cls} ${trackerStatusFilter === st ? 'active' : ''}"
+             onclick="setTrackerStatusFilter('${st}', this)"
+             style="${trackerStatusFilter === st ? 'box-shadow:0 0 0 2px ' + cfg.color + '40' : ''}">
+            <span class="tn">${cnt}</span>
+            <span class="tl">${st}</span>
+        </div>`;
+    }).join('') + `
+        <div class="tstat-card ${trackerStatusFilter === 'All' ? 'active' : ''}"
+             onclick="setTrackerStatusFilter('All', this)"
+             style="border-top-color:var(--primary);${trackerStatusFilter === 'All' ? 'box-shadow:0 0 0 2px var(--primary-light)' : ''}">
+            <span class="tn" style="color:var(--primary)">${total}</span>
+            <span class="tl">All Units</span>
+        </div>`;
+}
+
+function setTrackerStatusFilter(st, el) {
+    trackerStatusFilter = st;
+    renderTrackerStats();
+    renderTrackerGrid();
+}
+
+// ── MAIN GRID ──
+function renderTrackerGrid() {
+    const grid = document.getElementById('trackerGrid');
+    if (!grid) return;
+
+    let data = syllabusData.filter(s => {
+        const subjMatch   = trackerSubjFilter === 'All' || s.subject === trackerSubjFilter;
+        const td          = trackerData[tkey(s.subject, s.unit)];
+        const statusMatch = trackerStatusFilter === 'All' || (td?.status || 'Not Started') === trackerStatusFilter;
+        return subjMatch && statusMatch;
+    });
+
+    if (!data.length) {
+        grid.innerHTML = '<div class="notes-empty"><i class="fa-solid fa-check-double"></i><p>No units match this filter.</p></div>';
+        return;
+    }
+
+    // Group by subject
+    const bySubject = {};
+    data.forEach(s => {
+        if (!bySubject[s.subject]) bySubject[s.subject] = [];
+        bySubject[s.subject].push(s.unit);
+    });
+
+    let html = '';
+    Object.entries(bySubject).forEach(([subject, units]) => {
+        // Subject progress
+        const allUnits   = syllabusData.filter(s => s.subject === subject);
+        const doneUnits  = allUnits.filter(s => trackerData[tkey(s.subject, s.unit)]?.status === 'Completed').length;
+        const subjPct    = allUnits.length > 0 ? Math.round(doneUnits / allUnits.length * 100) : 0;
+
+        html += `
+        <div class="tracker-subject-block">
+            <div class="tracker-subject-title">
+                <i class="fa-solid fa-graduation-cap"></i>
+                ${subject}
+                <div class="tracker-subject-prog">
+                    <span>${doneUnits}/${allUnits.length} done</span>
+                    <div class="tracker-subj-bar">
+                        <div class="tracker-subj-bar-fill" style="width:${subjPct}%"></div>
+                    </div>
+                    <span>${subjPct}%</span>
+                </div>
+            </div>
+            <div class="tracker-units-grid">`;
+
+        units.forEach((unit, i) => {
+            const k   = tkey(subject, unit);
+            const d   = trackerData[k] || { status: 'Not Started', notes: '', updated: '' };
+            const st  = d.status || 'Not Started';
+            const cfg = STATUS_CONFIG[st];
+            const updStr = d.updated ? new Date(d.updated).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+
+            html += `
+            <div class="unit-card status-${cfg.cls}" id="ucard_${k}" style="animation-delay:${Math.min(i*0.04,0.3)}s">
+                <div class="unit-card-top">
+                    <div class="unit-number">${i + 1}</div>
+                    <div class="unit-name">${unit}</div>
+                    <span class="unit-status-badge sb-${cfg.cls}">
+                        <i class="fa-solid ${cfg.icon}" style="margin-right:3px"></i>${st}
+                    </span>
+                </div>
+
+                <select class="unit-status-select" onchange="onUnitStatusChange('${subject}','${unit}',this)">
+                    ${Object.keys(STATUS_CONFIG).map(s =>
+                        `<option value="${s}" ${s === st ? 'selected' : ''}>${STATUS_CONFIG[s].label}</option>`
+                    ).join('')}
+                </select>
+
+                <textarea class="unit-notes-input" placeholder="Add notes, page no., remarks..."
+                          onchange="onUnitNotesChange('${subject}','${unit}',this)"
+                          >${d.notes || ''}</textarea>
+
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                    ${updStr ? `<div class="unit-updated"><i class="fa-regular fa-clock"></i> ${updStr}</div>` : '<div></div>'}
+                    <div class="unit-save-indicator" id="ind_${k}">
+                        <i class="fa-solid fa-circle-check"></i> Saved
+                    </div>
+                </div>
+            </div>`;
+        });
+        html += `</div></div>`;
+    });
+
+    grid.innerHTML = html;
+}
+
+// ── CHANGE HANDLERS ──
+function onUnitStatusChange(subject, unit, sel) {
+    const notes = document.querySelector(`#ucard_${tkey(subject,unit)} .unit-notes-input`)?.value || '';
+    updateUnit(subject, unit, sel.value, notes);
+}
+
+function onUnitNotesChange(subject, unit, textarea) {
+    const k = tkey(subject, unit);
+    const status = document.querySelector(`#ucard_${k} .unit-status-select`)?.value || 'Not Started';
+    clearTimeout(saveTimers[k]);
+    saveTimers[k] = setTimeout(() => updateUnit(subject, unit, status, textarea.value), 800);
+}
+
+function updateUnit(subject, unit, status, notes) {
+    const k   = tkey(subject, unit);
+    const ind = document.getElementById('ind_' + k);
+    const card = document.getElementById('ucard_' + k);
+
+    // Show saving
+    if (ind) { ind.className = 'unit-save-indicator saving show'; ind.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...'; }
+
+    saveUnitToSheet(subject, unit, status, notes);
+
+    // Update card border color live
+    if (card) {
+        const cfg = STATUS_CONFIG[status];
+        card.className = `unit-card status-${cfg.cls}`;
+        const badge = card.querySelector('.unit-status-badge');
+        if (badge) {
+            badge.className = `unit-status-badge sb-${cfg.cls}`;
+            badge.innerHTML = `<i class="fa-solid ${cfg.icon}" style="margin-right:3px"></i>${status}`;
+        }
+    }
+
+    setTimeout(() => {
+        if (ind) { ind.className = 'unit-save-indicator saved show'; ind.innerHTML = '<i class="fa-solid fa-circle-check"></i> Saved'; }
+        renderTrackerStats();
+        setTimeout(() => { if (ind) ind.classList.remove('show'); }, 2000);
+    }, 600);
+}
+
+// ── SHOW/HIDE ──
+function showTrackerSection() {
+    document.getElementById('trackerSection').style.display = 'block';
+    const ns = document.getElementById('notesSection');
+    if (ns) ns.style.display = 'none';
+    document.querySelector('.controls') && (document.querySelector('.controls').style.display = 'none');
+    document.getElementById('testGrid').style.display = 'none';
+    document.querySelector('.hero') && (document.querySelector('.hero').style.display = 'none');
+    const cb = document.getElementById('countdownBar');
+    if (cb) cb.style.display = 'none';
 }
 
 </script>
