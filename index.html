@@ -1829,10 +1829,9 @@ function loadTrackerFromSheet() {
 // ── SAVE SINGLE UNIT TO SHEET ──
 function saveUnitToSheet(subject, unit, status, notes) {
     if (!user) return;
-    const k = tkey(subject, unit);
-    trackerData[k] = { status, notes, updated: new Date().toISOString() };
+    // Save to localStorage cache
     localStorage.setItem('et_tracker_' + user.email, JSON.stringify(trackerData));
-
+    // Sync to sheet
     fetch(SCRIPT, {
         method: 'POST',
         body: JSON.stringify({ action: 'tracker_save', email: user.email, subject, unit, status, notes })
@@ -1919,7 +1918,7 @@ function renderTrackerStats() {
 
 function renderTrackerOverall() {
     const overall = document.getElementById('trackerOverall');
-    if (!overall) return;
+    if (!overall || !syllabusData.length) return;
     const total = syllabusData.length;
     const done  = syllabusData.filter(({subject, unit}) => {
         const d = trackerData[tkey(subject, unit)];
@@ -1934,14 +1933,14 @@ function renderTrackerOverall() {
                 <svg width="54" height="54" viewBox="0 0 54 54">
                     <circle cx="27" cy="27" r="22" fill="none" stroke="var(--border)" stroke-width="5"/>
                     <circle cx="27" cy="27" r="22" fill="none" stroke="#10B981" stroke-width="5"
-                            stroke-dasharray="${circ}" stroke-dashoffset="${dash}"
+                            stroke-dasharray="${circ.toFixed(2)}" stroke-dashoffset="${dash.toFixed(2)}"
                             stroke-linecap="round" style="transition:stroke-dashoffset 0.8s ease"/>
                 </svg>
-                <div class="tracker-ring-pct" style="color:#10B981">${pct}%</div>
+                <div class="tracker-ring-pct" style="color:#10B981;font-size:0.65rem">${pct}%</div>
             </div>
             <div class="tracker-ring-label">
                 <strong>${done}/${total}</strong>
-                Units Completed
+                Units Done
             </div>
         </div>`;
 }
@@ -2053,33 +2052,47 @@ function onUnitNotesChange(subject, unit, textarea) {
 }
 
 function updateUnit(subject, unit, status, notes) {
-    const k   = tkey(subject, unit);
-    const ind = document.getElementById('ind_' + k);
+    const k    = tkey(subject, unit);
+    const ind  = document.getElementById('ind_' + k);
     const card = document.getElementById('ucard_' + k);
 
-    // Show saving
-    if (ind) { ind.className = 'unit-save-indicator saving show'; ind.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Saving...'; }
+    // 1. Update trackerData immediately
+    if (!trackerData[k]) trackerData[k] = {};
+    trackerData[k].status  = status;
+    trackerData[k].notes   = notes;
+    trackerData[k].updated = new Date().toISOString();
 
+    // 2. Save to sheet + localStorage
     saveUnitToSheet(subject, unit, status, notes);
 
-    // Update card border color live
+    // 3. Update card UI live (no full re-render needed)
     if (card) {
-        const cfg = STATUS_CONFIG[status];
-        card.className = `unit-card status-${cfg.cls}`;
+        const cfg = STATUS_CONFIG[status] || STATUS_CONFIG['Not Started'];
+        card.className = 'unit-card status-' + cfg.cls;
         const badge = card.querySelector('.unit-status-badge');
         if (badge) {
-            badge.className = `unit-status-badge sb-${cfg.cls}`;
-            badge.innerHTML = `<i class="fa-solid ${cfg.icon}" style="margin-right:3px"></i>${status}`;
+            badge.className = 'unit-status-badge sb-' + cfg.cls;
+            badge.textContent = status;
         }
     }
 
+    // 4. Show saving indicator
+    if (ind) {
+        ind.className = 'unit-save-indicator saving show';
+        ind.innerHTML = '<i class="fa-solid fa-clock"></i> Saving...';
+    }
+
+    // 5. Update stats + ring after data is set
+    renderTrackerStats();
+    renderTrackerOverall();
+
     setTimeout(() => {
-        if (ind) { ind.className = 'unit-save-indicator saved show'; ind.innerHTML = '<i class="fa-solid fa-circle-check"></i> Saved'; }
-        // Re-render stats + overall ring with fresh data
-        renderTrackerStats();
-        renderTrackerOverall();
-        setTimeout(() => { if (ind) ind.classList.remove('show'); }, 2500);
-    }, 500);
+        if (ind) {
+            ind.className = 'unit-save-indicator saved show';
+            ind.innerHTML = '<i class="fa-solid fa-check"></i> Saved!';
+        }
+        setTimeout(() => { if (ind) ind.classList.remove('show'); }, 2000);
+    }, 600);
 }
 
 // ── SHOW/HIDE ──
