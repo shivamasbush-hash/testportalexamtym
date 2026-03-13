@@ -1759,276 +1759,266 @@ function showTestsSection() {
 
 
 // ═══════════════════════════════════════
-// SUBJECT TRACKER
+// SUBJECT TRACKER — Clean Rewrite
 // ═══════════════════════════════════════
-let syllabusData   = [];   // [{ subject, unit }]
-let trackerData    = {};   // { 'subject|unit': { status, notes, updated } }
-let syllabusLoaded = false;
-let trackerLoaded  = false;
-let trackerSubjFilter = 'All';
-let trackerStatusFilter = 'All';
-let saveTimers = {};
+
+let syllabusData    = [];
+let trackerData     = {};   // { 'subject|||unit': { status, notes, updated } }
+let syllabusLoaded  = false;
+let trackerLoaded   = false;
+let trackerSubjFilter    = 'All';
+let trackerStatusFilter  = 'All';
 
 const STATUS_CONFIG = {
-    'Not Started':   { cls: 'not-started',   icon: 'fa-minus-circle',      color: '#94A3B8', label: 'Not Started'   },
-    'Ongoing':       { cls: 'ongoing',        icon: 'fa-clock',             color: '#3B82F6', label: 'Ongoing'       },
-    'Completed':     { cls: 'completed',      icon: 'fa-check-circle',      color: '#10B981', label: 'Completed'     },
-    'Need Revision': { cls: 'need-revision',  icon: 'fa-exclamation-circle',color: '#F59E0B', label: 'Need Revision' },
-    'Need Practice': { cls: 'need-practice',  icon: 'fa-fire',              color: '#EF4444', label: 'Need Practice' }
+    'Not Started':   { cls: 'not-started',   color: '#94A3B8', emoji: '⬜' },
+    'Ongoing':       { cls: 'ongoing',        color: '#3B82F6', emoji: '🔵' },
+    'Completed':     { cls: 'completed',      color: '#10B981', emoji: '✅' },
+    'Need Revision': { cls: 'need-revision',  color: '#F59E0B', emoji: '🟡' },
+    'Need Practice': { cls: 'need-practice',  color: '#EF4444', emoji: '🔴' }
 };
 
+// Simple key - no transformation issues
 function tkey(subject, unit) {
-    return (subject + '|' + unit).replace(/\s+/g, '_').toLowerCase();
+    return subject.trim() + '|||' + unit.trim();
 }
 
-// ── LOAD SYLLABUS CSV ──
-function loadSyllabus(callback) {
-    if (syllabusLoaded) { if (callback) callback(); return; }
+function getStatus(subject, unit) {
+    const d = trackerData[tkey(subject, unit)];
+    return (d && d.status) ? d.status : 'Not Started';
+}
+
+// ── LOAD SYLLABUS ──
+function loadSyllabus(cb) {
+    if (syllabusLoaded) { cb && cb(); return; }
     Papa.parse(SYLLABUS_CSV, {
         download: true, header: false, skipEmptyLines: true,
         complete(res) {
-            syllabusData = res.data.slice(1).map(c => {
-                if (c.length >= 2 && c[0].trim()) return { subject: c[0].trim(), unit: c[1].trim() };
-                return null;
-            }).filter(Boolean);
+            syllabusData = [];
+            res.data.slice(1).forEach(c => {
+                if (c[0] && c[0].trim() && c[1] && c[1].trim()) {
+                    syllabusData.push({ subject: c[0].trim(), unit: c[1].trim() });
+                }
+            });
             syllabusLoaded = true;
-            if (callback) callback();
+            cb && cb();
         },
-        error() { console.error('Syllabus load error'); }
+        error() { console.error('Syllabus load failed'); }
     });
 }
 
-// ── LOAD TRACKER FROM APPS SCRIPT ──
-function loadTrackerFromSheet() {
-    if (!user) return;
-    return fetch(SCRIPT, {
+// ── LOAD TRACKER FROM SHEET ──
+function loadTrackerFromSheet(cb) {
+    if (!user) { cb && cb(); return; }
+
+    // Load from localStorage first (instant)
+    try {
+        const cached = localStorage.getItem('et_tracker_' + user.email);
+        if (cached) trackerData = JSON.parse(cached);
+    } catch { trackerData = {}; }
+
+    // Then sync from sheet
+    fetch(SCRIPT, {
         method: 'POST',
         body: JSON.stringify({ action: 'tracker_load', email: user.email })
     })
     .then(r => r.json())
     .then(d => {
-        if (d.status === 'ok') {
+        if (d.status === 'ok' && d.rows && d.rows.length > 0) {
             trackerData = {};
-            (d.rows || []).forEach(r => {
-                const k = tkey(r.subject, r.unit);
-                trackerData[k] = { status: r.status, notes: r.notes, updated: r.updated };
+            d.rows.forEach(r => {
+                trackerData[tkey(r.subject, r.unit)] = {
+                    status: r.status || 'Not Started',
+                    notes:  r.notes  || '',
+                    updated: r.updated || ''
+                };
             });
-            // Also save to localStorage as cache
             localStorage.setItem('et_tracker_' + user.email, JSON.stringify(trackerData));
         }
+        cb && cb();
     })
-    .catch(() => {
-        // Fallback to localStorage
-        try {
-            const cached = localStorage.getItem('et_tracker_' + user.email);
-            if (cached) trackerData = JSON.parse(cached);
-        } catch {}
-    });
+    .catch(() => { cb && cb(); });
 }
 
-// ── SAVE SINGLE UNIT TO SHEET ──
-function saveUnitToSheet(subject, unit, status, notes) {
-    if (!user) return;
-    // Save to localStorage cache
-    localStorage.setItem('et_tracker_' + user.email, JSON.stringify(trackerData));
-    // Sync to sheet
-    fetch(SCRIPT, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'tracker_save', email: user.email, subject, unit, status, notes })
-    }).catch(() => {});
+// ── SAVE UNIT ──
+function saveUnit(subject, unit, status, notes) {
+    const k = tkey(subject, unit);
+    trackerData[k] = { status, notes, updated: new Date().toISOString() };
+    if (user) {
+        localStorage.setItem('et_tracker_' + user.email, JSON.stringify(trackerData));
+        fetch(SCRIPT, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'tracker_save', email: user.email, subject, unit, status, notes })
+        }).catch(() => {});
+    }
 }
 
-// ── INIT TRACKER SECTION ──
+// ── INIT ──
 function initTracker() {
     const grid = document.getElementById('trackerGrid');
     if (!grid) return;
-    grid.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:1rem;display:block"></i>Loading tracker...</div>';
+    grid.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;display:block;margin-bottom:1rem"></i>Loading tracker...</div>';
 
     loadSyllabus(() => {
-        loadTrackerFromSheet().then(() => {
+        loadTrackerFromSheet(() => {
             trackerLoaded = true;
-            renderTrackerSubjTabs();
-            renderTrackerStats();
-            renderTrackerOverall();
-            renderTrackerGrid();
+            renderTracker();
         });
     });
 }
 
-// ── SUBJECT TABS ──
-function renderTrackerSubjTabs() {
-    const wrap = document.getElementById('trackerSubjTabs');
-    if (!wrap) return;
-    const subjects = ['All', ...new Set(syllabusData.map(s => s.subject))];
-    wrap.innerHTML = subjects.map(s =>
-        `<button class="filt-btn ${s === trackerSubjFilter ? 'active' : ''}"
-                 onclick="setTrackerSubj('${s}', this)">${s}</button>`
-    ).join('');
+// ── MASTER RENDER — renders everything ──
+function renderTracker() {
+    if (!syllabusData.length) return;
+    renderTrackerRing();
+    renderTrackerStatCards();
+    renderTrackerSubjTabs();
+    renderTrackerUnits();
 }
 
-function setTrackerSubj(subj, el) {
-    trackerSubjFilter = subj;
-    document.querySelectorAll('#trackerSubjTabs .filt-btn').forEach(x => x.classList.remove('active'));
-    if (el) el.classList.add('active');
-    renderTrackerGrid();
+// ── RING ──
+function renderTrackerRing() {
+    const el = document.getElementById('trackerOverall');
+    if (!el) return;
+    const total = syllabusData.length;
+    const done  = syllabusData.filter(s => getStatus(s.subject, s.unit) === 'Completed').length;
+    const pct   = total > 0 ? Math.round(done / total * 100) : 0;
+    const C     = 2 * Math.PI * 22;
+    const off   = C - (pct / 100) * C;
+    el.innerHTML = `
+        <div class="tracker-overall-wrap">
+            <div class="tracker-ring">
+                <svg width="54" height="54" viewBox="0 0 54 54">
+                    <circle cx="27" cy="27" r="22" fill="none" stroke="var(--border)" stroke-width="5"/>
+                    <circle cx="27" cy="27" r="22" fill="none" stroke="#10B981" stroke-width="5"
+                        stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+                        stroke-linecap="round" style="transition:stroke-dashoffset 0.6s ease"/>
+                </svg>
+                <div class="tracker-ring-pct" style="color:#10B981;font-size:0.65rem;font-weight:800">${pct}%</div>
+            </div>
+            <div class="tracker-ring-label"><strong>${done}/${total}</strong> Units Done</div>
+        </div>`;
 }
 
-// ── STATS CARDS ──
-function renderTrackerStats() {
-    const wrap = document.getElementById('trackerStats');
-    const overall = document.getElementById('trackerOverall');
-    if (!wrap) return;
+// ── STAT CARDS ──
+function renderTrackerStatCards() {
+    const el = document.getElementById('trackerStats');
+    if (!el) return;
 
-    const counts = { 'Not Started': 0, 'Ongoing': 0, 'Completed': 0, 'Need Revision': 0, 'Need Practice': 0 };
-    syllabusData.forEach(({ subject, unit }) => {
-        const k  = tkey(subject, unit);
-        const d  = trackerData[k];
-        const st = (d && d.status) ? d.status : 'Not Started';
+    const counts = {};
+    Object.keys(STATUS_CONFIG).forEach(s => counts[s] = 0);
+
+    syllabusData.forEach(s => {
+        const st = getStatus(s.subject, s.unit);
         if (counts[st] !== undefined) counts[st]++;
-        else counts['Not Started']++;
     });
 
     const total = syllabusData.length;
-    // Overall ring
-    renderTrackerOverall();
 
-    // Stat cards
-    const statusEmoji = {
-        'Not Started': '⬜', 'Ongoing': '🔵', 'Completed': '✅',
-        'Need Revision': '🟡', 'Need Practice': '🔴'
-    };
-    wrap.innerHTML = Object.entries(counts).map(([st, cnt]) => {
-        const cfg = STATUS_CONFIG[st];
-        const isActive = trackerStatusFilter === st;
-        return `
-        <div class="tstat-card tstat-${cfg.cls} ${isActive ? 'active' : ''}"
-             onclick="setTrackerStatusFilter('${st}', this)"
-             style="${isActive ? 'box-shadow:0 0 0 2px ' + cfg.color + ';' : ''}">
-            <span class="tn">${cnt}</span>
-            <span class="tl">${statusEmoji[st]} ${st}</span>
-        </div>`;
+    el.innerHTML = Object.entries(STATUS_CONFIG).map(([st, cfg]) => {
+        const active = trackerStatusFilter === st;
+        return `<div class="tstat-card tstat-${cfg.cls} ${active ? 'active' : ''}"
+                     onclick="filterByStatus('${st}')"
+                     style="${active ? 'box-shadow:0 0 0 2px ' + cfg.color : ''}">
+                    <span class="tn">${counts[st]}</span>
+                    <span class="tl">${cfg.emoji} ${st}</span>
+                </div>`;
     }).join('') + `
         <div class="tstat-card ${trackerStatusFilter === 'All' ? 'active' : ''}"
-             onclick="setTrackerStatusFilter('All', this)"
+             onclick="filterByStatus('All')"
              style="border-top-color:var(--primary);${trackerStatusFilter === 'All' ? 'box-shadow:0 0 0 2px var(--primary)' : ''}">
             <span class="tn" style="color:var(--primary)">${total}</span>
             <span class="tl">📋 All Units</span>
         </div>`;
 }
 
-function renderTrackerOverall() {
-    const overall = document.getElementById('trackerOverall');
-    if (!overall || !syllabusData.length) return;
-    const total = syllabusData.length;
-    const done  = syllabusData.filter(({subject, unit}) => {
-        const d = trackerData[tkey(subject, unit)];
-        return d && d.status === 'Completed';
-    }).length;
-    const pct  = total > 0 ? Math.round(done / total * 100) : 0;
-    const circ = 2 * Math.PI * 22;
-    const dash = circ - (pct / 100) * circ;
-    overall.innerHTML = `
-        <div class="tracker-overall-wrap">
-            <div class="tracker-ring">
-                <svg width="54" height="54" viewBox="0 0 54 54">
-                    <circle cx="27" cy="27" r="22" fill="none" stroke="var(--border)" stroke-width="5"/>
-                    <circle cx="27" cy="27" r="22" fill="none" stroke="#10B981" stroke-width="5"
-                            stroke-dasharray="${circ.toFixed(2)}" stroke-dashoffset="${dash.toFixed(2)}"
-                            stroke-linecap="round" style="transition:stroke-dashoffset 0.8s ease"/>
-                </svg>
-                <div class="tracker-ring-pct" style="color:#10B981;font-size:0.65rem">${pct}%</div>
-            </div>
-            <div class="tracker-ring-label">
-                <strong>${done}/${total}</strong>
-                Units Done
-            </div>
-        </div>`;
-}
-
-function setTrackerStatusFilter(st, el) {
+function filterByStatus(st) {
     trackerStatusFilter = st;
-    renderTrackerStats();
-    renderTrackerGrid();
+    renderTrackerStatCards();
+    renderTrackerUnits();
 }
 
-// ── MAIN GRID ──
-function renderTrackerGrid() {
+// ── SUBJECT TABS ──
+function renderTrackerSubjTabs() {
+    const el = document.getElementById('trackerSubjTabs');
+    if (!el) return;
+    const subjects = ['All', ...new Set(syllabusData.map(s => s.subject))];
+    el.innerHTML = subjects.map(s =>
+        `<button class="filt-btn ${s === trackerSubjFilter ? 'active' : ''}"
+                 onclick="filterBySubj('${s.replace(/'/g,"\\'")}', this)">${s}</button>`
+    ).join('');
+}
+
+function filterBySubj(subj, el) {
+    trackerSubjFilter = subj;
+    document.querySelectorAll('#trackerSubjTabs .filt-btn').forEach(x => x.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderTrackerUnits();
+}
+
+// ── UNITS GRID ──
+function renderTrackerUnits() {
     const grid = document.getElementById('trackerGrid');
     if (!grid) return;
 
-    let data = syllabusData.filter(s => {
-        const subjMatch   = trackerSubjFilter === 'All' || s.subject === trackerSubjFilter;
-        const td          = trackerData[tkey(s.subject, s.unit)];
-        const statusMatch = trackerStatusFilter === 'All' || (td?.status || 'Not Started') === trackerStatusFilter;
-        return subjMatch && statusMatch;
+    // Filter syllabus
+    const filtered = syllabusData.filter(s => {
+        const subjOk   = trackerSubjFilter === 'All' || s.subject === trackerSubjFilter;
+        const statusOk = trackerStatusFilter === 'All' || getStatus(s.subject, s.unit) === trackerStatusFilter;
+        return subjOk && statusOk;
     });
 
-    if (!data.length) {
+    if (!filtered.length) {
         grid.innerHTML = '<div class="notes-empty"><i class="fa-solid fa-check-double"></i><p>No units match this filter.</p></div>';
         return;
     }
 
     // Group by subject
-    const bySubject = {};
-    data.forEach(s => {
-        if (!bySubject[s.subject]) bySubject[s.subject] = [];
-        bySubject[s.subject].push(s.unit);
+    const grouped = {};
+    filtered.forEach(s => {
+        if (!grouped[s.subject]) grouped[s.subject] = [];
+        grouped[s.subject].push(s.unit);
     });
 
     let html = '';
-    Object.entries(bySubject).forEach(([subject, units]) => {
-        // Subject progress
-        const allUnits   = syllabusData.filter(s => s.subject === subject);
-        const doneUnits  = allUnits.filter(s => trackerData[tkey(s.subject, s.unit)]?.status === 'Completed').length;
-        const subjPct    = allUnits.length > 0 ? Math.round(doneUnits / allUnits.length * 100) : 0;
+    Object.entries(grouped).forEach(([subject, units]) => {
+        const allSubjUnits = syllabusData.filter(s => s.subject === subject);
+        const doneCount    = allSubjUnits.filter(s => getStatus(s.subject, s.unit) === 'Completed').length;
+        const subjPct      = allSubjUnits.length > 0 ? Math.round(doneCount / allSubjUnits.length * 100) : 0;
 
-        html += `
-        <div class="tracker-subject-block">
+        html += `<div class="tracker-subject-block">
             <div class="tracker-subject-title">
-                <i class="fa-solid fa-graduation-cap"></i>
-                ${subject}
+                <i class="fa-solid fa-graduation-cap"></i> ${subject}
                 <div class="tracker-subject-prog">
-                    <span>${doneUnits}/${allUnits.length} done</span>
-                    <div class="tracker-subj-bar">
-                        <div class="tracker-subj-bar-fill" style="width:${subjPct}%"></div>
-                    </div>
+                    <span>${doneCount}/${allSubjUnits.length}</span>
+                    <div class="tracker-subj-bar"><div class="tracker-subj-bar-fill" style="width:${subjPct}%"></div></div>
                     <span>${subjPct}%</span>
                 </div>
             </div>
             <div class="tracker-units-grid">`;
 
         units.forEach((unit, i) => {
-            const k   = tkey(subject, unit);
-            const d   = trackerData[k] || { status: 'Not Started', notes: '', updated: '' };
-            const st  = d.status || 'Not Started';
-            const cfg = STATUS_CONFIG[st];
-            const updStr = d.updated ? new Date(d.updated).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+            const st      = getStatus(subject, unit);
+            const cfg     = STATUS_CONFIG[st];
+            const d       = trackerData[tkey(subject, unit)] || {};
+            const notes   = d.notes || '';
+            const updated = d.updated ? new Date(d.updated).toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }) : '';
+            const safeSubj = subject.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+            const safeUnit = unit.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
 
-            html += `
-            <div class="unit-card status-${cfg.cls}" id="ucard_${k}" style="animation-delay:${Math.min(i*0.04,0.3)}s">
+            html += `<div class="unit-card status-${cfg.cls}" id="uc_${i}_${encodeURIComponent(subject)}_${encodeURIComponent(unit)}" style="animation-delay:${Math.min(i*0.04,0.3)}s">
                 <div class="unit-card-top">
-                    <div class="unit-number">${i + 1}</div>
+                    <div class="unit-number">${syllabusData.findIndex(s=>s.subject===subject&&s.unit===unit)+1}</div>
                     <div class="unit-name">${unit}</div>
-                    <span class="unit-status-badge sb-${cfg.cls}">
-                        <i class="fa-solid ${cfg.icon}" style="margin-right:3px"></i>${st}
-                    </span>
+                    <span class="unit-status-badge sb-${cfg.cls}">${cfg.emoji} ${st}</span>
                 </div>
-
-                <select class="unit-status-select" onchange="onUnitStatusChange('${subject}','${unit}',this)">
-                    ${Object.keys(STATUS_CONFIG).map(s =>
-                        `<option value="${s}" ${s === st ? 'selected' : ''}>${STATUS_CONFIG[s].label}</option>`
-                    ).join('')}
+                <select class="unit-status-select" onchange="onStatusChange('${safeSubj}','${safeUnit}',this)">
+                    ${Object.keys(STATUS_CONFIG).map(s => `<option value="${s}" ${s===st?'selected':''}>${STATUS_CONFIG[s].emoji} ${s}</option>`).join('')}
                 </select>
-
                 <textarea class="unit-notes-input" placeholder="Add notes, page no., remarks..."
-                          onchange="onUnitNotesChange('${subject}','${unit}',this)"
-                          >${d.notes || ''}</textarea>
-
-                <div style="display:flex;justify-content:space-between;align-items:center">
-                    ${updStr ? `<div class="unit-updated"><i class="fa-regular fa-clock"></i> ${updStr}</div>` : '<div></div>'}
-                    <div class="unit-save-indicator" id="ind_${k}">
-                        <i class="fa-solid fa-circle-check"></i> Saved
-                    </div>
+                    oninput="onNotesInput('${safeSubj}','${safeUnit}',this)">${notes}</textarea>
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-top:2px">
+                    ${updated ? `<span class="unit-updated"><i class="fa-regular fa-clock"></i> ${updated}</span>` : '<span></span>'}
+                    <span class="unit-save-indicator" id="si_${encodeURIComponent(subject)}_${encodeURIComponent(unit)}"></span>
                 </div>
             </div>`;
         });
@@ -2039,60 +2029,52 @@ function renderTrackerGrid() {
 }
 
 // ── CHANGE HANDLERS ──
-function onUnitStatusChange(subject, unit, sel) {
-    const notes = document.querySelector(`#ucard_${tkey(subject,unit)} .unit-notes-input`)?.value || '';
-    updateUnit(subject, unit, sel.value, notes);
+function onStatusChange(subject, unit, sel) {
+    const notes = document.querySelector(`[oninput*="${encodeURIComponent(subject)}"]`)?.value || 
+                  trackerData[tkey(subject,unit)]?.notes || '';
+    applyUpdate(subject, unit, sel.value, notes);
 }
 
-function onUnitNotesChange(subject, unit, textarea) {
+let noteTimers = {};
+function onNotesInput(subject, unit, ta) {
     const k = tkey(subject, unit);
-    const status = document.querySelector(`#ucard_${k} .unit-status-select`)?.value || 'Not Started';
-    clearTimeout(saveTimers[k]);
-    saveTimers[k] = setTimeout(() => updateUnit(subject, unit, status, textarea.value), 800);
+    clearTimeout(noteTimers[k]);
+    noteTimers[k] = setTimeout(() => {
+        const status = trackerData[k]?.status || 'Not Started';
+        applyUpdate(subject, unit, status, ta.value);
+    }, 900);
 }
 
-function updateUnit(subject, unit, status, notes) {
-    const k    = tkey(subject, unit);
-    const ind  = document.getElementById('ind_' + k);
-    const card = document.getElementById('ucard_' + k);
+function applyUpdate(subject, unit, status, notes) {
+    // 1. Save data
+    saveUnit(subject, unit, status, notes);
 
-    // 1. Update trackerData immediately
-    if (!trackerData[k]) trackerData[k] = {};
-    trackerData[k].status  = status;
-    trackerData[k].notes   = notes;
-    trackerData[k].updated = new Date().toISOString();
-
-    // 2. Save to sheet + localStorage
-    saveUnitToSheet(subject, unit, status, notes);
-
-    // 3. Update card UI live (no full re-render needed)
+    // 2. Update card visuals immediately
+    const cfg = STATUS_CONFIG[status];
+    const cardId = `uc_${syllabusData.findIndex(s=>s.subject===subject&&s.unit===unit)}_${encodeURIComponent(subject)}_${encodeURIComponent(unit)}`;
+    const card = document.getElementById(cardId);
     if (card) {
-        const cfg = STATUS_CONFIG[status] || STATUS_CONFIG['Not Started'];
         card.className = 'unit-card status-' + cfg.cls;
         const badge = card.querySelector('.unit-status-badge');
-        if (badge) {
-            badge.className = 'unit-status-badge sb-' + cfg.cls;
-            badge.textContent = status;
-        }
+        if (badge) badge.innerHTML = cfg.emoji + ' ' + status;
+        badge && (badge.className = 'unit-status-badge sb-' + cfg.cls);
     }
 
-    // 4. Show saving indicator
-    if (ind) {
-        ind.className = 'unit-save-indicator saving show';
-        ind.innerHTML = '<i class="fa-solid fa-clock"></i> Saving...';
+    // 3. Show save indicator
+    const si = document.getElementById('si_' + encodeURIComponent(subject) + '_' + encodeURIComponent(unit));
+    if (si) {
+        si.className = 'unit-save-indicator saving show';
+        si.innerHTML = '<i class="fa-solid fa-clock"></i> Saving...';
+        setTimeout(() => {
+            si.className = 'unit-save-indicator saved show';
+            si.innerHTML = '<i class="fa-solid fa-check"></i> Saved!';
+            setTimeout(() => si.classList.remove('show'), 2000);
+        }, 700);
     }
 
-    // 5. Update stats + ring after data is set
-    renderTrackerStats();
-    renderTrackerOverall();
-
-    setTimeout(() => {
-        if (ind) {
-            ind.className = 'unit-save-indicator saved show';
-            ind.innerHTML = '<i class="fa-solid fa-check"></i> Saved!';
-        }
-        setTimeout(() => { if (ind) ind.classList.remove('show'); }, 2000);
-    }, 600);
+    // 4. Update stats + ring
+    renderTrackerStatCards();
+    renderTrackerRing();
 }
 
 // ── SHOW/HIDE ──
