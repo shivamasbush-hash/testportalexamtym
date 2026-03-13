@@ -870,6 +870,24 @@
                 <div class="filters" id="filterWrap"></div>
             </div>
             <div class="test-grid" id="testGrid"></div>
+
+        <!-- ══ NOTES SECTION ══ -->
+        <div id="notesSection" style="display:none">
+            <div class="controls">
+                <div class="ctrl-row">
+                    <div class="srch">
+                        <i class="fa-solid fa-search"></i>
+                        <input type="text" id="notesSrch" placeholder="Search notes, topics...">
+                    </div>
+                    <div class="notes-filter-pills" id="notesFilterWrap"></div>
+                    <label class="notes-toggle-label">
+                        <input type="checkbox" id="bookmarkFilter" onchange="renderNotes()">
+                        <i class="fa-solid fa-bookmark"></i> Bookmarked
+                    </label>
+                </div>
+            </div>
+            <div id="notesGrid"></div>
+        </div>
         </div>
     </div>
 </div>
@@ -978,26 +996,15 @@ function switchSection(sec, el) {
 
     // Notes sections
     if (sec === 'notes' || sec === 'notes_paper1' || sec === 'notes_commerce') {
-        const subjectMap = {
-            notes: 'All',
-            notes_paper1: 'UGC NET Paper 1',
-            notes_commerce: 'UGC NET Commerce'
-        };
+        const subjectMap = { notes: 'All', notes_paper1: 'UGC NET Paper 1', notes_commerce: 'UGC NET Commerce' };
+        notesCurSubject = subjectMap[sec] || 'All';
         document.getElementById('topbarTitle').textContent = sec === 'notes' ? 'All Notes' : subjectMap[sec] + ' Notes';
-        notesCurSubject = subjectMap[sec];
+        showNotesSection();
         closeSidebar();
         loadNotesData();
         loadNotesCSV();
-        // update filter pills after load
-        setTimeout(() => {
-            const pills = document.querySelectorAll('#notesFilterWrap .filt-btn');
-            pills.forEach(p => {
-                p.classList.toggle('active', p.textContent.trim() === notesCurSubject);
-            });
-        }, 600);
         return;
     }
-
     // Tests sections
     showTestsSection();
     document.getElementById('topbarTitle').textContent = SECTION_TITLES[sec] || 'Tests';
@@ -1315,6 +1322,227 @@ function toast(icon, msg) {
     clearTimeout(tTimer);
     tTimer = setTimeout(() => el.classList.remove('show'), 2600);
 }
+
+
+// ═══════════════════════════════════════
+// NOTES SECTION
+// ═══════════════════════════════════════
+
+
+let allNotes        = [];
+let notesLoaded     = false;
+let noteBookmarks   = {};
+let noteReadStatus  = {};
+let notesCurSubject = 'All';
+
+function loadNotesData() {
+    try { noteBookmarks  = JSON.parse(localStorage.getItem('et_note_bookmarks') || '{}'); } catch { noteBookmarks = {}; }
+    try { noteReadStatus = JSON.parse(localStorage.getItem('et_note_read')      || '{}'); } catch { noteReadStatus = {}; }
+}
+
+function saveNoteBookmarks() { localStorage.setItem('et_note_bookmarks', JSON.stringify(noteBookmarks)); }
+function saveNoteRead()      { localStorage.setItem('et_note_read',       JSON.stringify(noteReadStatus)); }
+
+function nid(n) { return (n.subject + '|' + n.topic + '|' + n.pdfName).replace(/\s+/g,'_').toLowerCase(); }
+
+function getDriveEmbedUrl(link) {
+    const m = link.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || link.match(/id=([a-zA-Z0-9_-]+)/);
+    return m ? 'https://drive.google.com/file/d/' + m[1] + '/preview' : link;
+}
+function getDriveDownloadUrl(link) {
+    const m = link.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || link.match(/id=([a-zA-Z0-9_-]+)/);
+    return m ? 'https://drive.google.com/uc?export=download&id=' + m[1] : link;
+}
+function getDriveDirectUrl(link) {
+    const m = link.match(/\/file\/d\/([a-zA-Z0-9_-]+)/) || link.match(/id=([a-zA-Z0-9_-]+)/);
+    return m ? 'https://drive.google.com/file/d/' + m[1] + '/view' : link;
+}
+
+function isNoteNew(d) {
+    if (!d) return false;
+    const dt = new Date(d);
+    return !isNaN(dt) && Date.now() - dt < 30*24*60*60*1000;
+}
+
+function loadNotesCSV() {
+    const grid = document.getElementById('notesGrid');
+    if (!grid) return;
+    if (notesLoaded) { renderNotes(); return; }
+    grid.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;margin-bottom:1rem;display:block"></i>Loading notes...</div>';
+    Papa.parse(NOTES_CSV, {
+        download: true, header: false, skipEmptyLines: true,
+        complete(res) {
+            allNotes = res.data.slice(1).map(c => {
+                if (c.length >= 5 && c[0].trim())
+                    return { subject: c[0].trim(), topic: c[1].trim(), pdfName: c[2].trim(), description: c[3].trim(), link: c[4].trim(), date: c[5]?.trim() || '' };
+                return null;
+            }).filter(Boolean);
+            notesLoaded = true;
+            makeNotesFilters();
+            renderNotes();
+        },
+        error() {
+            if (grid) grid.innerHTML = '<div class="notes-empty"><i class="fa-solid fa-triangle-exclamation"></i><p>Error loading notes. Please refresh.</p></div>';
+        }
+    });
+}
+
+function makeNotesFilters() {
+    const wrap = document.getElementById('notesFilterWrap');
+    if (!wrap) return;
+    const subjects = ['All', ...new Set(allNotes.map(n => n.subject))];
+    wrap.innerHTML = subjects.map(s =>
+        `<button class="filt-btn ${s === notesCurSubject ? 'active' : ''}" onclick="setNotesSubject('${s}', this)">${s}</button>`
+    ).join('');
+}
+
+function setNotesSubject(subj, el) {
+    notesCurSubject = subj;
+    document.querySelectorAll('#notesFilterWrap .filt-btn').forEach(x => x.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderNotes();
+}
+
+function renderNotes() {
+    const qEl   = document.getElementById('notesSrch');
+    const bmEl  = document.getElementById('bookmarkFilter');
+    const grid  = document.getElementById('notesGrid');
+    if (!grid) return;
+    const q      = (qEl?.value || '').toLowerCase();
+    const bmOnly = bmEl?.checked || false;
+
+    let filtered = allNotes.filter(n => {
+        const matchQ    = n.pdfName.toLowerCase().includes(q) || n.topic.toLowerCase().includes(q) || n.subject.toLowerCase().includes(q) || n.description.toLowerCase().includes(q);
+        const matchSubj = notesCurSubject === 'All' || n.subject === notesCurSubject;
+        const matchBm   = !bmOnly || noteBookmarks[nid(n)];
+        return matchQ && matchSubj && matchBm;
+    });
+
+    if (!filtered.length) {
+        grid.innerHTML = '<div class="notes-empty"><i class="fa-solid fa-book-open"></i><p>No notes found.</p></div>';
+        return;
+    }
+
+    // Group Subject → Topic
+    const bySubject = {};
+    filtered.forEach(n => {
+        if (!bySubject[n.subject]) bySubject[n.subject] = {};
+        if (!bySubject[n.subject][n.topic]) bySubject[n.subject][n.topic] = [];
+        bySubject[n.subject][n.topic].push(n);
+    });
+
+    let html = '';
+    Object.entries(bySubject).forEach(([subject, topics]) => {
+        const total = Object.values(topics).flat().length;
+        html += `<div class="notes-subject-heading"><i class="fa-solid fa-graduation-cap"></i>${subject}<span class="notes-subject-count">${total} PDF${total > 1 ? 's' : ''}</span></div>`;
+        Object.entries(topics).forEach(([topic, notes]) => {
+            html += `<div class="notes-topic-heading">${topic} <span style="color:var(--muted);font-size:0.75rem;font-weight:500;margin-left:6px">${notes.length} file${notes.length > 1 ? 's' : ''}</span></div>`;
+            html += `<div class="notes-topic-grid">`;
+            notes.forEach((n, i) => {
+                const id      = nid(n);
+                const isRead  = !!noteReadStatus[id];
+                const isBm    = !!noteBookmarks[id];
+                const isNew   = isNoteNew(n.date);
+                const embed   = getDriveEmbedUrl(n.link);
+                const dlUrl   = getDriveDownloadUrl(n.link);
+                const viewUrl = getDriveDirectUrl(n.link);
+                const dateStr = n.date ? new Date(n.date).toLocaleDateString('en-IN',{day:'numeric',month:'short',year:'numeric'}) : '';
+                html += `
+                <div class="note-card ${isRead?'is-read':''} ${isBm?'is-bookmarked':''}" style="animation-delay:${Math.min(i*0.05,0.3)}s">
+                    <div class="note-card-top">
+                        <div class="note-pdf-icon"><i class="fa-solid fa-file-pdf"></i></div>
+                        <div class="note-card-actions">
+                            <button class="note-action-btn ${isBm?'active-bookmark':''}" title="${isBm?'Remove Bookmark':'Bookmark'}" onclick="toggleNoteBookmark('${id}')">
+                                <i class="fa-${isBm?'solid':'regular'} fa-bookmark"></i>
+                            </button>
+                            <button class="note-action-btn ${isRead?'active-read':''}" title="${isRead?'Mark Unread':'Mark as Read'}" onclick="toggleNoteRead('${id}')">
+                                <i class="fa-solid fa-${isRead?'eye-slash':'eye'}"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="note-card-name">${n.pdfName}</div>
+                    ${n.description ? `<div class="note-card-desc">${n.description}</div>` : ''}
+                    <div class="note-status-row">
+                        ${isNew  ? '<span class="note-badge nb-new">New</span>' : ''}
+                        ${isRead ? '<span class="note-badge nb-read"><i class="fa-solid fa-check"></i> Read</span>' : ''}
+                        ${isBm   ? '<span class="note-badge nb-bookmark"><i class="fa-solid fa-bookmark"></i> Saved</span>' : ''}
+                    </div>
+                    <div class="note-card-meta">
+                        <span><i class="fa-solid fa-folder"></i> ${n.topic}</span>
+                        ${dateStr ? `<span><i class="fa-regular fa-calendar"></i> ${dateStr}</span>` : ''}
+                    </div>
+                    <div class="note-card-footer">
+                        <button class="note-view-btn" onclick="openPdfViewer('${embed}','${n.pdfName.replace(/'/g,"\\'")}','${dlUrl}','${viewUrl}','${id}')">
+                            <i class="fa-solid fa-eye"></i> View PDF
+                        </button>
+                        <a class="note-download-btn" href="${dlUrl}" target="_blank" title="Download">
+                            <i class="fa-solid fa-download"></i>
+                        </a>
+                    </div>
+                </div>`;
+            });
+            html += `</div>`;
+        });
+    });
+    grid.innerHTML = html;
+
+    // Attach search listener once
+    const srch = document.getElementById('notesSrch');
+    if (srch && !srch._hasListener) {
+        srch.addEventListener('input', renderNotes);
+        srch._hasListener = true;
+    }
+}
+
+function toggleNoteBookmark(id) {
+    noteBookmarks[id] = !noteBookmarks[id];
+    if (!noteBookmarks[id]) delete noteBookmarks[id];
+    saveNoteBookmarks(); renderNotes();
+    toast(noteBookmarks[id] ? '🔖' : '✅', noteBookmarks[id] ? 'Bookmarked!' : 'Bookmark removed');
+}
+function toggleNoteRead(id) {
+    noteReadStatus[id] = !noteReadStatus[id];
+    if (!noteReadStatus[id]) delete noteReadStatus[id];
+    saveNoteRead(); renderNotes();
+    toast(noteReadStatus[id] ? '👁️' : '↩️', noteReadStatus[id] ? 'Marked as read!' : 'Marked as unread');
+}
+
+// ── PDF VIEWER ──
+function openPdfViewer(embedUrl, title, dlUrl, viewUrl, noteId) {
+    document.getElementById('pdfTitle').textContent  = title;
+    document.getElementById('pdfFrame').src          = embedUrl;
+    document.getElementById('pdfDownloadBtn').href   = dlUrl;
+    document.getElementById('pdfOpenBtn').href       = viewUrl;
+    document.getElementById('pdfOverlay').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    if (!noteReadStatus[noteId]) { noteReadStatus[noteId] = true; saveNoteRead(); }
+}
+function closePdfViewer() {
+    document.getElementById('pdfOverlay').classList.remove('open');
+    document.getElementById('pdfFrame').src = '';
+    document.body.style.overflow = '';
+    renderNotes();
+}
+
+// ── SHOW/HIDE SECTIONS ──
+function showNotesSection() {
+    document.getElementById('notesSection').style.display = 'block';
+    document.querySelector('.controls') && (document.querySelector('.controls').style.display = 'none');
+    document.getElementById('testGrid').style.display     = 'none';
+    document.querySelector('.hero') && (document.querySelector('.hero').style.display = 'none');
+    const cb = document.getElementById('countdownBar');
+    if (cb) cb.style.display = 'none';
+}
+function showTestsSection() {
+    const ns = document.getElementById('notesSection');
+    if (ns) ns.style.display = 'none';
+    document.querySelector('.controls') && (document.querySelector('.controls').style.display = 'flex');
+    document.getElementById('testGrid').style.display = '';
+    document.querySelector('.hero') && (document.querySelector('.hero').style.display = 'block');
+    const cb = document.getElementById('countdownBar');
+    if (cb) cb.style.display = 'block';
+}
+
 </script>
 
 <!-- ══ EMAIL LOGIN MODAL ══ -->
