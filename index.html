@@ -380,6 +380,308 @@
             font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
         }
         .email-cancel-btn:hover { color: #64748B; }
+
+        /* ══ EXAM COUNTDOWN ══ */
+        .countdown-bar {
+            background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            padding: 0.75rem 2rem;
+            overflow-x: auto;
+        }
+        .countdown-inner {
+            display: flex; align-items: center; gap: 1rem;
+            flex-wrap: nowrap; min-width: max-content;
+        }
+        .countdown-label {
+            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+            letter-spacing: 1px; color: rgba(255,255,255,0.4);
+            white-space: nowrap; flex-shrink: 0;
+        }
+        .countdown-chips { display: flex; gap: 0.7rem; flex-wrap: nowrap; }
+        .cd-chip {
+            display: flex; align-items: center; gap: 10px;
+            background: rgba(255,255,255,0.06);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 0.5rem 1rem;
+            white-space: nowrap; flex-shrink: 0;
+            transition: background 0.2s;
+        }
+        .cd-chip:hover { background: rgba(255,255,255,0.1); }
+        .cd-chip-name {
+            font-size: 0.82rem; font-weight: 700; color: white;
+        }
+        .cd-chip-blocks { display: flex; gap: 5px; }
+        .cd-block {
+            background: rgba(255,255,255,0.1);
+            border-radius: 7px; padding: 0.28rem 0.5rem;
+            text-align: center; min-width: 38px;
+        }
+        .cd-block .n {
+            font-family: 'Syne', sans-serif;
+            font-size: 1rem; font-weight: 800; color: white;
+            display: block; line-height: 1;
+        }
+        .cd-block .u {
+            font-size: 0.55rem; color: rgba(255,255,255,0.45);
+            text-transform: uppercase; letter-spacing: 0.5px;
+        }
+        .cd-sep { color: rgba(255,255,255,0.2); font-size: 1rem; align-self: center; }
+        .cd-chip.urgent { border-color: rgba(239,68,68,0.5); }
+        .cd-chip.urgent .cd-block { background: rgba(239,68,68,0.15); }
+        .cd-chip.urgent .cd-block .n { color: #FCA5A5; }
+        .cd-chip.soon { border-color: rgba(245,158,11,0.5); }
+        .cd-chip.soon .cd-block { background: rgba(245,158,11,0.12); }
+        .cd-chip.soon .cd-block .n { color: #FCD34D; }
+        .cd-add-btn {
+            background: rgba(37,99,235,0.25); border: 1px dashed rgba(37,99,235,0.5);
+            color: rgba(255,255,255,0.5); border-radius: 12px;
+            padding: 0.5rem 0.9rem; font-size: 0.8rem; font-weight: 600;
+            cursor: pointer; white-space: nowrap; flex-shrink: 0;
+            font-family: 'DM Sans', sans-serif;
+            transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+        }
+        .cd-add-btn:hover { background: rgba(37,99,235,0.4); color: white; border-color: rgba(37,99,235,0.8); }
+
+        /* ══ EXAM MANAGER MODAL ══ */
+        .exam-modal {
+            background: var(--card); border-radius: 20px;
+            padding: 1.8rem; width: 90%; max-width: 480px;
+            box-shadow: 0 24px 60px rgba(0,0,0,0.3);
+            animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both;
+            max-height: 85vh; overflow-y: auto;
+        }
+        .exam-modal h3 {
+            font-family: 'Syne', sans-serif; font-size: 1.15rem;
+            font-weight: 800; margin-bottom: 1.2rem;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .exam-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1.2rem; }
+        .exam-row {
+            display: flex; align-items: center; gap: 10px;
+            background: var(--bg); border-radius: 11px; padding: 0.75rem 0.9rem;
+            border: 1px solid var(--border);
+        }
+        .exam-row-info { flex: 1; }
+        .exam-row-name { font-weight: 700; font-size: 0.88rem; }
+        .exam-row-date { font-size: 0.76rem; color: var(--muted); }
+        .exam-del-btn {
+            background: none; border: none; color: var(--muted);
+            cursor: pointer; font-size: 0.85rem; padding: 4px 7px;
+            border-radius: 7px; transition: all 0.2s;
+        }
+        .exam-del-btn:hover { background: rgba(239,68,68,0.1); color: var(--red); }
+        .exam-add-form {
+            background: var(--bg); border-radius: 12px;
+            padding: 1rem; border: 1px solid var(--border);
+            display: flex; flex-direction: column; gap: 10px;
+        }
+        .exam-add-form label { font-size: 0.78rem; font-weight: 700; color: var(--muted); }
+        .exam-add-form input {
+            width: 100%; padding: 0.72rem 0.9rem; border-radius: 9px;
+            border: 1.5px solid var(--border); background: var(--card);
+            color: var(--text); font-size: 0.9rem;
+            font-family: 'DM Sans', sans-serif; outline: none;
+            transition: border-color 0.2s;
+        }
+        .exam-add-form input:focus { border-color: var(--primary); }
+        .exam-save-btn {
+            background: var(--primary); color: white; border: none;
+            padding: 0.7rem; border-radius: 10px; font-weight: 700;
+            font-size: 0.9rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+            width: 100%; transition: background 0.2s;
+        }
+        .exam-save-btn:hover { background: var(--primary-hover); }
+        .exam-close-btn {
+            background: var(--bg); border: 1.5px solid var(--border);
+            color: var(--text); padding: 0.65rem; border-radius: 10px;
+            font-weight: 600; font-size: 0.87rem; cursor: pointer;
+            font-family: 'DM Sans', sans-serif; width: 100%;
+            margin-top: 8px;
+        }
+
+        @media (max-width: 600px) {
+            .countdown-bar { padding: 0.65rem 1rem; }
+        }
+
+        /* ══════════════════════════════
+           NOTES SECTION
+        ══════════════════════════════ */
+        /* Subject heading */
+        .notes-subject-heading {
+            font-family: 'Syne', sans-serif;
+            font-size: 1.2rem; font-weight: 800;
+            color: var(--text); margin: 1.8rem 0 1rem;
+            display: flex; align-items: center; gap: 10px;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid var(--border);
+        }
+        .notes-subject-heading i { color: var(--primary); font-size: 1rem; }
+        .notes-subject-count {
+            font-size: 0.72rem; font-weight: 600;
+            color: var(--muted); background: var(--bg);
+            border: 1px solid var(--border); border-radius: 20px;
+            padding: 0.18rem 0.6rem; margin-left: auto;
+        }
+
+        /* Topic heading */
+        .notes-topic-heading {
+            font-size: 0.88rem; font-weight: 700;
+            color: var(--primary); margin: 1.2rem 0 0.65rem;
+            display: flex; align-items: center; gap: 7px;
+        }
+        .notes-topic-heading::before {
+            content: ''; display: inline-block;
+            width: 3px; height: 14px;
+            background: var(--primary); border-radius: 3px;
+        }
+
+        /* Notes grid */
+        .notes-topic-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1rem; margin-bottom: 0.5rem;
+        }
+
+        /* Note card */
+        .note-card {
+            background: var(--card); border-radius: 14px;
+            border: 1px solid var(--border); box-shadow: var(--shadow);
+            padding: 1.1rem; display: flex; flex-direction: column;
+            gap: 0.7rem; transition: transform 0.2s, box-shadow 0.2s;
+            animation: cardIn 0.3s ease both; position: relative;
+            overflow: hidden;
+        }
+        .note-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
+        .note-card.is-read { border-left: 3px solid var(--green); }
+        .note-card.is-bookmarked { border-left: 3px solid var(--accent); }
+        .note-card.is-read.is-bookmarked { border-left: 3px solid var(--primary); }
+
+        /* Card header */
+        .note-card-top {
+            display: flex; justify-content: space-between; align-items: flex-start;
+        }
+        .note-pdf-icon {
+            width: 38px; height: 38px; border-radius: 9px;
+            background: rgba(239,68,68,0.1); color: #EF4444;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.1rem; flex-shrink: 0;
+        }
+        .note-card-actions { display: flex; gap: 6px; }
+        .note-action-btn {
+            background: var(--bg); border: 1.5px solid var(--border);
+            color: var(--muted); width: 32px; height: 32px; border-radius: 8px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; font-size: 0.8rem; transition: all 0.2s;
+        }
+        .note-action-btn:hover { border-color: var(--primary); color: var(--primary); }
+        .note-action-btn.active-bookmark { background: rgba(245,158,11,0.1); border-color: var(--accent); color: var(--accent); }
+        .note-action-btn.active-read     { background: rgba(16,185,129,0.1); border-color: var(--green); color: var(--green); }
+
+        /* Card body */
+        .note-card-name {
+            font-family: 'Syne', sans-serif; font-size: 0.98rem;
+            font-weight: 700; line-height: 1.35; color: var(--text);
+        }
+        .note-card-desc {
+            font-size: 0.8rem; color: var(--muted); line-height: 1.5;
+        }
+        .note-card-meta {
+            display: flex; gap: 0.7rem; font-size: 0.75rem;
+            color: var(--muted); flex-wrap: wrap;
+        }
+        .note-card-meta span { display: flex; align-items: center; gap: 4px; }
+
+        /* Status badges */
+        .note-status-row { display: flex; gap: 5px; flex-wrap: wrap; }
+        .note-badge {
+            font-size: 0.62rem; font-weight: 700; padding: 0.18rem 0.5rem;
+            border-radius: 20px; text-transform: uppercase; letter-spacing: 0.3px;
+        }
+        .nb-read     { background: rgba(16,185,129,0.12); color: var(--green); border: 1px solid rgba(16,185,129,0.3); }
+        .nb-bookmark { background: rgba(245,158,11,0.12); color: var(--accent); border: 1px solid rgba(245,158,11,0.3); }
+        .nb-new      { background: linear-gradient(135deg,#F59E0B,#EF4444); color: white; }
+
+        /* Card footer buttons */
+        .note-card-footer { display: flex; gap: 7px; margin-top: auto; }
+        .note-view-btn {
+            flex: 1; background: var(--primary); color: white;
+            border: none; padding: 0.65rem; border-radius: 9px;
+            font-weight: 700; font-size: 0.85rem; cursor: pointer;
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            transition: background 0.2s, transform 0.1s; text-decoration: none;
+        }
+        .note-view-btn:hover { background: var(--primary-hover); }
+        .note-view-btn:active { transform: scale(0.97); }
+        .note-download-btn {
+            background: var(--bg); border: 1.5px solid var(--border);
+            color: var(--text); padding: 0.65rem 0.85rem; border-radius: 9px;
+            font-size: 0.85rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; gap: 5px; font-weight: 600;
+            transition: all 0.2s; text-decoration: none;
+        }
+        .note-download-btn:hover { border-color: var(--green); color: var(--green); }
+
+        /* Bookmark filter toggle */
+        .notes-toggle-label {
+            display: flex; align-items: center; gap: 7px;
+            background: var(--card); border: 1.5px solid var(--border);
+            border-radius: 11px; padding: 0.68rem 1rem;
+            cursor: pointer; font-size: 0.85rem; font-weight: 600;
+            color: var(--muted); white-space: nowrap;
+            transition: all 0.2s; user-select: none;
+        }
+        .notes-toggle-label:has(input:checked) {
+            border-color: var(--accent); color: var(--accent);
+            background: rgba(245,158,11,0.07);
+        }
+        .notes-toggle-label input { display: none; }
+
+        /* Notes filter pills */
+        .notes-filter-pills { display: flex; gap: 7px; flex-wrap: wrap; flex: 1; }
+
+        /* PDF Viewer Modal */
+        .pdf-overlay {
+            display: none; position: fixed; inset: 0;
+            background: rgba(0,0,0,0.92); z-index: 900;
+            flex-direction: column;
+        }
+        .pdf-overlay.open { display: flex; }
+        .pdf-topbar {
+            background: #0F172A; padding: 0.75rem 1.2rem;
+            display: flex; align-items: center; gap: 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            flex-shrink: 0;
+        }
+        .pdf-topbar-title {
+            font-family: 'Syne', sans-serif; font-weight: 700;
+            color: white; font-size: 0.95rem; flex: 1;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .pdf-topbar-btn {
+            background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+            color: white; padding: 0.5rem 0.9rem; border-radius: 8px;
+            cursor: pointer; font-size: 0.82rem; font-weight: 600;
+            font-family: 'DM Sans', sans-serif;
+            display: flex; align-items: center; gap: 6px; white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .pdf-topbar-btn:hover { background: rgba(255,255,255,0.15); }
+        .pdf-topbar-btn.close-btn { background: rgba(239,68,68,0.2); border-color: rgba(239,68,68,0.3); }
+        .pdf-topbar-btn.close-btn:hover { background: rgba(239,68,68,0.35); }
+        .pdf-frame-wrap { flex: 1; display: flex; flex-direction: column; }
+        .pdf-frame-wrap iframe {
+            flex: 1; width: 100%; border: none;
+        }
+
+        /* Notes empty state */
+        .notes-empty { text-align: center; padding: 4rem 2rem; color: var(--muted); }
+        .notes-empty i { font-size: 2.5rem; opacity: 0.25; display: block; margin-bottom: 1rem; }
+
+        @media (max-width: 600px) {
+            .notes-topic-grid { grid-template-columns: 1fr; }
+            .note-card-footer { flex-direction: column; }
+        }
     </style>
 </head>
 <body>
@@ -464,6 +766,22 @@
         </div>
 
         <div class="sidebar-section">
+            <div class="sidebar-label">📚 Notes</div>
+            <a class="sidebar-item" onclick="switchSection('notes', this)">
+                <i class="fa-solid fa-book"></i>
+                All Notes
+            </a>
+            <a class="sidebar-item sub-item" onclick="switchSection('notes_paper1', this)">
+                <i class="fa-solid fa-angle-right"></i>
+                UGC NET Paper 1
+            </a>
+            <a class="sidebar-item sub-item" onclick="switchSection('notes_commerce', this)">
+                <i class="fa-solid fa-angle-right"></i>
+                UGC NET Commerce
+            </a>
+        </div>
+
+        <div class="sidebar-section">
             <div class="sidebar-label">My Progress</div>
             <a class="sidebar-item" onclick="switchSection('attempted', this)">
                 <i class="fa-solid fa-circle-check"></i>
@@ -496,6 +814,20 @@
                     <span id="pillTxt">My Progress</span>
                 </button>
                 <button class="theme-btn" id="themeBtn"><i class="fa-solid fa-moon"></i></button>
+            </div>
+        </div>
+
+
+        <!-- ══ EXAM COUNTDOWN BAR ══ -->
+        <div class="countdown-bar" id="countdownBar">
+            <div class="countdown-inner">
+                <span class="countdown-label"><i class="fa-solid fa-stopwatch" style="margin-right:5px"></i>Upcoming Exams</span>
+                <div class="countdown-chips" id="countdownChips">
+                    <!-- chips rendered by JS -->
+                </div>
+                <button class="cd-add-btn" onclick="openExamManager()">
+                    <i class="fa-solid fa-gear"></i> Manage
+                </button>
             </div>
         </div>
 
@@ -574,6 +906,7 @@
 // ═══════════════════════
 const SCRIPT = 'https://script.google.com/macros/s/AKfycbxOC7MOlZBbrRoXMOs4a3Hpr7uEZ-es4UShBcN55vWoG30CsOzM7X-3Dk_q0X1e7SvB/exec';
 const CSV    = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTp4gzDWBvB6kVTJOTjv89SwpUsgt5OVUU1ZsfYTOxiYft0GIEy6JaY7W-C12k86WDrzOProbGT-9Wo/pub?output=csv';
+const NOTES_CSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTp4gzDWBvB6kVTJOTjv89SwpUsgt5OVUU1ZsfYTOxiYft0GIEy6JaY7W-C12k86WDrzOProbGT-9Wo/pub?gid=2081946736&single=true&output=csv';
 
 // ═══════════════════════
 // STATE
@@ -642,6 +975,31 @@ function switchSection(sec, el) {
     curSection = sec;
     document.querySelectorAll('.sidebar-item').forEach(x => x.classList.remove('active'));
     el.classList.add('active');
+
+    // Notes sections
+    if (sec === 'notes' || sec === 'notes_paper1' || sec === 'notes_commerce') {
+        const subjectMap = {
+            notes: 'All',
+            notes_paper1: 'UGC NET Paper 1',
+            notes_commerce: 'UGC NET Commerce'
+        };
+        document.getElementById('topbarTitle').textContent = sec === 'notes' ? 'All Notes' : subjectMap[sec] + ' Notes';
+        notesCurSubject = subjectMap[sec];
+        closeSidebar();
+        loadNotesData();
+        loadNotesCSV();
+        // update filter pills after load
+        setTimeout(() => {
+            const pills = document.querySelectorAll('#notesFilterWrap .filt-btn');
+            pills.forEach(p => {
+                p.classList.toggle('active', p.textContent.trim() === notesCurSubject);
+            });
+        }, 600);
+        return;
+    }
+
+    // Tests sections
+    showTestsSection();
     document.getElementById('topbarTitle').textContent = SECTION_TITLES[sec] || 'Tests';
     closeSidebar();
     renderTests();
@@ -690,6 +1048,7 @@ function doLogin(u) {
     showSkeletons();
     loadCSV();
     loadProgress();
+    if (typeof loadNotesData === "function") loadNotesData();
 }
 
 function signOut() {
@@ -810,6 +1169,8 @@ function makeFilters() {
 }
 
 document.getElementById('srchInput').addEventListener('input', renderTests);
+const notesSrchEl = document.getElementById('notesSrch');
+if (notesSrchEl) notesSrchEl.addEventListener('input', renderNotes);
 document.getElementById('sortSel').addEventListener('change', renderTests);
 
 // ═══════════════════════
@@ -973,6 +1334,50 @@ function toast(icon, msg) {
             Continue
         </button>
         <button class="email-cancel-btn" onclick="closeEmailModal()">Cancel</button>
+    </div>
+</div>
+
+
+<!-- ══ EXAM MANAGER MODAL ══ -->
+<div class="overlay" id="examModalOverlay">
+    <div class="exam-modal">
+        <h3><i class="fa-solid fa-stopwatch" style="color:var(--primary)"></i> Exam Countdown Manager</h3>
+        <div class="exam-list" id="examList"></div>
+        <div class="exam-add-form">
+            <div>
+                <label>Exam Name</label>
+                <input type="text" id="examNameInput" placeholder="e.g. UGC NET June 2025">
+            </div>
+            <div>
+                <label>Exam Date</label>
+                <input type="date" id="examDateInput">
+            </div>
+            <button class="exam-save-btn" onclick="addExam()">
+                <i class="fa-solid fa-plus"></i> Add Exam
+            </button>
+        </div>
+        <button class="exam-close-btn" onclick="closeExamManager()">Done</button>
+    </div>
+</div>
+
+
+<!-- ══ PDF VIEWER MODAL ══ -->
+<div class="pdf-overlay" id="pdfOverlay">
+    <div class="pdf-topbar">
+        <i class="fa-solid fa-file-pdf" style="color:#EF4444;font-size:1.1rem"></i>
+        <span class="pdf-topbar-title" id="pdfTitle">Loading...</span>
+        <a class="pdf-topbar-btn" id="pdfDownloadBtn" href="#" download target="_blank">
+            <i class="fa-solid fa-download"></i> Download
+        </a>
+        <a class="pdf-topbar-btn" id="pdfOpenBtn" href="#" target="_blank">
+            <i class="fa-solid fa-arrow-up-right-from-square"></i> Open in Drive
+        </a>
+        <button class="pdf-topbar-btn close-btn" onclick="closePdfViewer()">
+            <i class="fa-solid fa-xmark"></i> Close
+        </button>
+    </div>
+    <div class="pdf-frame-wrap">
+        <iframe id="pdfFrame" src="" allowfullscreen></iframe>
     </div>
 </div>
 
