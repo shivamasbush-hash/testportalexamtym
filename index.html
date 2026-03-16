@@ -1843,32 +1843,48 @@ function loadSyllabus(cb) {
 }
 
 // ── LOAD TRACKER FROM SHEET ──
-function loadTrackerFromSheet(cb) {
+function loadTrackerFromSheet(cb) { syncTrackerFromSheet(cb); }
+
+function syncTrackerFromSheet(cb) {
     if (!user) { cb && cb(); return; }
 
-    // Load from localStorage first (instant)
+    // Step 1: Load localStorage cache instantly (for fast initial render)
     try {
         const cached = localStorage.getItem('et_tracker_' + user.email);
         if (cached) trackerData = JSON.parse(cached);
     } catch { trackerData = {}; }
 
-    // Then sync from sheet
+    // Step 2: ALWAYS fetch fresh from sheet (main sync)
     scriptFetch({ action: 'tracker_load', email: user.email })
     .then(d => {
-        if (d && d.status === 'ok' && d.rows && d.rows.length > 0) {
-            trackerData = {};
-            d.rows.forEach(r => {
-                trackerData[tkey(r.subject, r.unit)] = {
-                    status: r.status || 'Not Started',
-                    notes:  r.notes  || '',
-                    updated: r.updated || ''
-                };
-            });
-            localStorage.setItem('et_tracker_' + user.email, JSON.stringify(trackerData));
+        console.log('Tracker sync response:', d);
+        if (d && d.status === 'ok') {
+            if (d.rows && d.rows.length > 0) {
+                // Sheet has data — use it (overrides localStorage)
+                trackerData = {};
+                d.rows.forEach(r => {
+                    if (r.subject && r.unit) {
+                        trackerData[tkey(r.subject, r.unit)] = {
+                            status:  r.status  || 'Not Started',
+                            notes:   r.notes   || '',
+                            updated: r.updated || ''
+                        };
+                    }
+                });
+                // Save fresh data to localStorage
+                localStorage.setItem('et_tracker_' + user.email, JSON.stringify(trackerData));
+                console.log('Loaded', d.rows.length, 'units from sheet');
+            } else {
+                console.log('Sheet has no tracker data yet');
+            }
         }
         cb && cb();
     })
-    .catch(() => { cb && cb(); });
+    .catch(err => {
+        // Network failed — use localStorage cache silently
+        console.warn('Sheet sync failed, using cache:', err.message);
+        cb && cb();
+    });
 }
 
 // ── SAVE UNIT ──
@@ -1885,10 +1901,14 @@ function saveUnit(subject, unit, status, notes) {
 function initTracker() {
     const grid = document.getElementById('trackerGrid');
     if (!grid) return;
-    grid.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;display:block;margin-bottom:1rem"></i>Loading tracker...</div>';
 
+    // Always show loading + re-sync from sheet every time
+    grid.innerHTML = '<div style="text-align:center;padding:3rem;color:var(--muted)"><i class="fa-solid fa-spinner fa-spin" style="font-size:2rem;display:block;margin-bottom:1rem"></i>Syncing from cloud...</div>';
+
+    // Load syllabus (cached after first time)
     loadSyllabus(() => {
-        loadTrackerFromSheet(() => {
+        // Always re-fetch from sheet (never skip)
+        syncTrackerFromSheet(() => {
             trackerLoaded = true;
             renderTracker();
         });
@@ -2101,9 +2121,27 @@ function applyUpdate(subject, unit, status, notes) {
         }, 700);
     }
 
-    // 4. Update stats + ring
+    // 4. Update stats + ring + subject progress
     renderTrackerStatCards();
     renderTrackerRing();
+    // Update subject progress bar inline without full re-render
+    updateSubjectProgressBar(subject);
+}
+
+function updateSubjectProgressBar(subject) {
+    const allSubjUnits = syllabusData.filter(s => s.subject === subject);
+    const doneCount    = allSubjUnits.filter(s => getStatus(s.subject, s.unit) === 'Completed').length;
+    const subjPct      = allSubjUnits.length > 0 ? Math.round(doneCount / allSubjUnits.length * 100) : 0;
+    // Find and update all subject progress bars
+    document.querySelectorAll('.tracker-subject-prog').forEach(el => {
+        if (el.closest('.tracker-subject-block')?.querySelector('.tracker-subject-title')?.textContent.includes(subject)) {
+            const fill = el.querySelector('.tracker-subj-bar-fill');
+            const spans = el.querySelectorAll('span');
+            if (fill) fill.style.width = subjPct + '%';
+            if (spans[0]) spans[0].textContent = doneCount + '/' + allSubjUnits.length;
+            if (spans[1]) spans[1].textContent = subjPct + '%';
+        }
+    });
 }
 
 // ── SHOW/HIDE ──
