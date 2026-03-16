@@ -869,6 +869,284 @@
             .tracker-units-grid { grid-template-columns: 1fr; }
             .tracker-subj-bar { display: none; }
         }
+
+        /* ══════════════════════════════
+           STUDY PLANNER
+        ══════════════════════════════ */
+
+        /* Top row */
+        .planner-top-row {
+            display: grid;
+            grid-template-columns: auto auto 1fr;
+            gap: 1rem; margin-bottom: 1.2rem; align-items: stretch;
+        }
+
+        /* Date card */
+        .planner-date-card {
+            background: linear-gradient(135deg, #1E3A8A, #2563EB);
+            border-radius: 14px; padding: 1rem 1.4rem;
+            color: white; text-align: center; min-width: 90px;
+        }
+        .planner-date-day {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.2rem; font-weight: 800; line-height: 1;
+        }
+        .planner-date-full { font-size: 0.75rem; opacity: 0.8; margin-top: 4px; }
+
+        /* Streak card */
+        .streak-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 1rem 1.4rem;
+            display: flex; align-items: center; gap: 12px;
+            min-width: 130px;
+        }
+        .streak-fire { font-size: 2rem; }
+        .streak-count {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2rem; font-weight: 800; color: #F59E0B; line-height: 1;
+        }
+        .streak-label { font-size: 0.75rem; color: var(--muted); font-weight: 600; }
+
+        /* Mini stats */
+        .planner-stats-mini {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 1rem 1.5rem;
+            display: flex; align-items: center; gap: 0; flex: 1;
+        }
+        .psm-item { flex: 1; text-align: center; }
+        .psm-n {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.6rem; font-weight: 800; color: var(--primary);
+            display: block;
+        }
+        .psm-l { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+        .psm-div { width: 1px; background: var(--border); height: 40px; flex-shrink: 0; }
+
+        /* Weekly strip */
+        .week-strip {
+            display: grid; grid-template-columns: repeat(7, 1fr);
+            gap: 6px; margin-bottom: 1.4rem;
+        }
+        .week-day {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 10px; padding: 0.6rem 0.4rem;
+            text-align: center; transition: all 0.2s; cursor: pointer;
+        }
+        .week-day:hover { border-color: var(--primary); }
+        .week-day.today {
+            background: var(--primary); border-color: var(--primary); color: white;
+        }
+        .week-day.selected {
+            border-color: var(--primary); box-shadow: 0 0 0 2px var(--primary-light);
+        }
+        .week-day.has-tasks::after {
+            content: ''; display: block; width: 5px; height: 5px;
+            border-radius: 50%; background: var(--green);
+            margin: 3px auto 0;
+        }
+        .week-day.today.has-tasks::after { background: rgba(255,255,255,0.8); }
+        .wd-name { font-size: 0.65rem; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+        .week-day.today .wd-name { color: rgba(255,255,255,0.8); }
+        .wd-num {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem; font-weight: 800; margin-top: 2px;
+        }
+        .wd-done { font-size: 0.6rem; color: var(--muted); margin-top: 1px; }
+        .week-day.today .wd-done { color: rgba(255,255,255,0.7); }
+
+        /* Planner main layout */
+        .planner-main {
+            display: grid;
+            grid-template-columns: 1fr 320px;
+            gap: 1.2rem; align-items: start;
+        }
+
+        /* Add task box */
+        .add-task-box {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 1rem; margin-bottom: 1rem;
+        }
+        .add-task-inputs {
+            display: flex; gap: 8px; margin-bottom: 8px; flex-wrap: wrap;
+        }
+        .add-task-inputs input {
+            flex: 1; min-width: 180px; padding: 0.72rem 0.9rem;
+            border-radius: 9px; border: 1.5px solid var(--border);
+            background: var(--bg); color: var(--text);
+            font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none;
+            transition: border-color 0.2s;
+        }
+        .add-task-inputs input:focus { border-color: var(--primary); }
+        .add-task-inputs select {
+            padding: 0.72rem 0.8rem; border-radius: 9px;
+            border: 1.5px solid var(--border); background: var(--card);
+            color: var(--text); font-size: 0.82rem;
+            font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
+        }
+        .add-task-btn {
+            width: 100%; background: var(--primary); color: white;
+            border: none; padding: 0.72rem; border-radius: 9px;
+            font-weight: 700; font-size: 0.9rem; cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            display: flex; align-items: center; justify-content: center; gap: 7px;
+            transition: background 0.2s;
+        }
+        .add-task-btn:hover { background: var(--primary-hover); }
+
+        /* Task filter row */
+        .task-filter-row {
+            display: flex; gap: 6px; flex-wrap: wrap;
+            align-items: center; margin-bottom: 0.9rem;
+        }
+        .task-filt {
+            background: var(--card); border: 1.5px solid var(--border);
+            color: var(--muted); padding: 0.35rem 0.85rem;
+            border-radius: 20px; cursor: pointer; font-size: 0.78rem;
+            font-weight: 600; font-family: 'Inter', sans-serif;
+            transition: all 0.2s;
+        }
+        .task-filt:hover { border-color: var(--primary); color: var(--primary); }
+        .task-filt.active { background: var(--primary); color: white; border-color: var(--primary); }
+        .task-clear-btn {
+            margin-left: auto; font-size: 0.75rem; color: var(--muted);
+            cursor: pointer; font-weight: 600;
+            transition: color 0.2s;
+        }
+        .task-clear-btn:hover { color: var(--red); }
+
+        /* Task list */
+        .task-list { display: flex; flex-direction: column; gap: 7px; }
+        .task-item {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 11px; padding: 0.8rem 1rem;
+            display: flex; align-items: center; gap: 10px;
+            transition: all 0.2s; animation: cardIn 0.25s ease both;
+            border-left: 3px solid var(--border);
+        }
+        .task-item.priority-high   { border-left-color: #EF4444; }
+        .task-item.priority-normal { border-left-color: #F59E0B; }
+        .task-item.priority-low    { border-left-color: #10B981; }
+        .task-item.done { opacity: 0.55; }
+        .task-check {
+            width: 22px; height: 22px; border-radius: 50%;
+            border: 2px solid var(--border); cursor: pointer;
+            display: flex; align-items: center; justify-content: center;
+            flex-shrink: 0; transition: all 0.2s; font-size: 0.7rem;
+            background: none;
+        }
+        .task-check:hover { border-color: var(--green); color: var(--green); }
+        .task-check.checked { background: var(--green); border-color: var(--green); color: white; }
+        .task-body { flex: 1; }
+        .task-text {
+            font-size: 0.88rem; font-weight: 600; line-height: 1.3;
+            transition: all 0.2s;
+        }
+        .task-item.done .task-text { text-decoration: line-through; color: var(--muted); }
+        .task-meta-row {
+            display: flex; gap: 8px; align-items: center; margin-top: 3px; flex-wrap: wrap;
+        }
+        .task-subj-tag {
+            font-size: 0.68rem; font-weight: 700; color: var(--primary);
+            background: var(--primary-light); padding: 0.15rem 0.45rem;
+            border-radius: 5px;
+        }
+        .task-time { font-size: 0.68rem; color: var(--muted); }
+        .task-del {
+            background: none; border: none; color: var(--muted);
+            cursor: pointer; font-size: 0.78rem; padding: 4px 6px;
+            border-radius: 6px; transition: all 0.2s; flex-shrink: 0;
+        }
+        .task-del:hover { background: rgba(239,68,68,0.1); color: var(--red); }
+
+        /* Pomodoro card */
+        .pomodoro-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 16px; padding: 1.4rem;
+            text-align: center; position: sticky; top: 80px;
+        }
+        .pomo-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1rem; font-weight: 800; margin-bottom: 0.9rem;
+        }
+        .pomo-mode-tabs {
+            display: flex; gap: 4px; background: var(--bg);
+            border-radius: 9px; padding: 3px; margin-bottom: 1rem;
+        }
+        .pomo-tab {
+            flex: 1; background: none; border: none; color: var(--muted);
+            padding: 0.45rem 0.4rem; border-radius: 7px; cursor: pointer;
+            font-size: 0.75rem; font-weight: 700;
+            font-family: 'Inter', sans-serif; transition: all 0.2s;
+        }
+        .pomo-tab.active { background: var(--card); color: var(--text); box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+
+        /* Timer ring */
+        .pomo-ring-wrap {
+            position: relative; width: 160px; height: 160px;
+            margin: 0 auto 1rem;
+        }
+        .pomo-ring-svg { width: 100%; height: 100%; }
+        .pomo-time-display {
+            position: absolute; inset: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 2.2rem; font-weight: 800; letter-spacing: -1px;
+        }
+
+        /* Pomo controls */
+        .pomo-controls { display: flex; gap: 8px; justify-content: center; margin-bottom: 0.8rem; }
+        .pomo-btn {
+            background: var(--primary); color: white; border: none;
+            padding: 0.7rem 1.8rem; border-radius: 10px;
+            font-weight: 700; font-size: 0.9rem; cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            display: flex; align-items: center; gap: 7px;
+            transition: background 0.2s;
+        }
+        .pomo-btn:hover { background: var(--primary-hover); }
+        .pomo-btn.pomo-reset {
+            background: var(--bg); color: var(--text);
+            border: 1.5px solid var(--border); padding: 0.7rem 1rem;
+        }
+        .pomo-btn.pomo-reset:hover { border-color: var(--primary); color: var(--primary); }
+        .pomo-btn.running { background: #EF4444; }
+        .pomo-btn.running:hover { background: #DC2626; }
+
+        .pomo-sessions { font-size: 0.78rem; color: var(--muted); font-weight: 600; margin-bottom: 1rem; }
+
+        /* Duration inputs */
+        .pomo-durations {
+            display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+            border-top: 1px solid var(--border); padding-top: 0.9rem;
+        }
+        .pomo-durations label {
+            font-size: 0.72rem; font-weight: 600; color: var(--muted);
+            display: flex; align-items: center; gap: 4px;
+        }
+        .pomo-durations input {
+            width: 42px; padding: 0.3rem 0.4rem; border-radius: 6px;
+            border: 1.5px solid var(--border); background: var(--bg);
+            color: var(--text); font-size: 0.8rem; text-align: center;
+            font-family: 'Inter', sans-serif; outline: none;
+        }
+
+        /* Empty tasks */
+        .tasks-empty {
+            text-align: center; padding: 2.5rem 1rem; color: var(--muted);
+        }
+        .tasks-empty i { font-size: 2rem; opacity: 0.25; display: block; margin-bottom: 0.8rem; }
+
+        @media (max-width: 900px) {
+            .planner-main { grid-template-columns: 1fr; }
+            .planner-top-row { grid-template-columns: 1fr 1fr; }
+            .planner-stats-mini { grid-column: 1/-1; }
+            .pomodoro-card { position: static; }
+        }
+        @media (max-width: 600px) {
+            .planner-top-row { grid-template-columns: 1fr; }
+            .week-strip { gap: 4px; }
+            .wd-name { font-size: 0.58rem; }
+        }
     </style>
 </head>
 <body>
@@ -977,6 +1255,14 @@
         </div>
 
         <div class="sidebar-section">
+            <div class="sidebar-label">📅 Planner</div>
+            <a class="sidebar-item" onclick="switchSection('planner', this)">
+                <i class="fa-solid fa-calendar-days"></i>
+                Study Planner
+            </a>
+        </div>
+
+        <div class="sidebar-section">
             <div class="sidebar-label">My Progress</div>
             <a class="sidebar-item" onclick="switchSection('attempted', this)">
                 <i class="fa-solid fa-circle-check"></i>
@@ -1065,6 +1351,121 @@
                 <div class="filters" id="filterWrap"></div>
             </div>
             <div class="test-grid" id="testGrid"></div>
+
+        <!-- ══ PLANNER SECTION ══ -->
+        <div id="plannerSection" style="display:none">
+
+            <!-- TOP ROW: Streak + Today's Date -->
+            <div class="planner-top-row">
+                <div class="planner-date-card">
+                    <div class="planner-date-day" id="plannerDay"></div>
+                    <div class="planner-date-full" id="plannerDate"></div>
+                </div>
+                <div class="streak-card">
+                    <div class="streak-fire">🔥</div>
+                    <div class="streak-info">
+                        <div class="streak-count" id="streakCount">0</div>
+                        <div class="streak-label">Day Streak</div>
+                    </div>
+                </div>
+                <div class="planner-stats-mini">
+                    <div class="psm-item">
+                        <span class="psm-n" id="psmDone">0</span>
+                        <span class="psm-l">Done Today</span>
+                    </div>
+                    <div class="psm-div"></div>
+                    <div class="psm-item">
+                        <span class="psm-n" id="psmTotal">0</span>
+                        <span class="psm-l">Total Tasks</span>
+                    </div>
+                    <div class="psm-div"></div>
+                    <div class="psm-item">
+                        <span class="psm-n" id="psmPct">0%</span>
+                        <span class="psm-l">Complete</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- WEEKLY STRIP -->
+            <div class="week-strip" id="weekStrip"></div>
+
+            <!-- MAIN CONTENT: Tasks + Timer -->
+            <div class="planner-main">
+
+                <!-- LEFT: Tasks -->
+                <div class="planner-left">
+                    <!-- Add Task -->
+                    <div class="add-task-box">
+                        <div class="add-task-inputs">
+                            <input type="text" id="taskInput" placeholder="Add a task... (e.g. Revise Business Finance)" maxlength="100">
+                            <select id="taskSubject">
+                                <option value="">📚 Subject</option>
+                                <option value="UGC NET Commerce">Commerce</option>
+                                <option value="UGC NET Paper 1">Paper 1</option>
+                                <option value="General">General</option>
+                            </select>
+                            <select id="taskPriority">
+                                <option value="Normal">🟡 Normal</option>
+                                <option value="High">🔴 High</option>
+                                <option value="Low">🟢 Low</option>
+                            </select>
+                        </div>
+                        <button class="add-task-btn" onclick="addTask()">
+                            <i class="fa-solid fa-plus"></i> Add Task
+                        </button>
+                    </div>
+
+                    <!-- Task filters -->
+                    <div class="task-filter-row">
+                        <button class="task-filt active" onclick="setTaskFilter('all',this)">All</button>
+                        <button class="task-filt" onclick="setTaskFilter('pending',this)">⏳ Pending</button>
+                        <button class="task-filt" onclick="setTaskFilter('done',this)">✅ Done</button>
+                        <button class="task-filt" onclick="setTaskFilter('high',this)">🔴 High</button>
+                        <span class="task-clear-btn" onclick="clearDoneTasks()">Clear Done</span>
+                    </div>
+
+                    <!-- Task list -->
+                    <div class="task-list" id="taskList"></div>
+                </div>
+
+                <!-- RIGHT: Pomodoro Timer -->
+                <div class="planner-right">
+                    <div class="pomodoro-card">
+                        <div class="pomo-title">🍅 Pomodoro Timer</div>
+                        <div class="pomo-mode-tabs">
+                            <button class="pomo-tab active" onclick="setPomoMode('focus',this)">Focus</button>
+                            <button class="pomo-tab" onclick="setPomoMode('short',this)">Short Break</button>
+                            <button class="pomo-tab" onclick="setPomoMode('long',this)">Long Break</button>
+                        </div>
+                        <div class="pomo-ring-wrap">
+                            <svg class="pomo-ring-svg" viewBox="0 0 200 200">
+                                <circle cx="100" cy="100" r="88" fill="none" stroke="var(--border)" stroke-width="10"/>
+                                <circle cx="100" cy="100" r="88" fill="none" stroke="var(--primary)" stroke-width="10"
+                                    stroke-dasharray="553" stroke-dashoffset="0" stroke-linecap="round"
+                                    id="pomoRingFill" style="transition:stroke-dashoffset 1s linear;transform:rotate(-90deg);transform-origin:center"/>
+                            </svg>
+                            <div class="pomo-time-display" id="pomoDisplay">25:00</div>
+                        </div>
+                        <div class="pomo-controls">
+                            <button class="pomo-btn" onclick="togglePomo()" id="pomoBtn">
+                                <i class="fa-solid fa-play"></i> Start
+                            </button>
+                            <button class="pomo-btn pomo-reset" onclick="resetPomo()">
+                                <i class="fa-solid fa-rotate-left"></i>
+                            </button>
+                        </div>
+                        <div class="pomo-sessions">
+                            <span id="pomoSessionCount">0</span> sessions today
+                        </div>
+                        <div class="pomo-durations">
+                            <label>Focus <input type="number" id="focusDur" value="25" min="1" max="60" onchange="updatePomoDurations()"> min</label>
+                            <label>Short <input type="number" id="shortDur" value="5" min="1" max="30" onchange="updatePomoDurations()"> min</label>
+                            <label>Long <input type="number" id="longDur" value="15" min="1" max="60" onchange="updatePomoDurations()"> min</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!-- ══ TRACKER SECTION ══ -->
         <div id="trackerSection" style="display:none">
@@ -1219,6 +1620,14 @@ function switchSection(sec, el) {
         closeSidebar();
         loadNotesData();
         loadNotesCSV();
+        return;
+    }
+    // Planner section
+    if (sec === 'planner') {
+        showPlannerSection();
+        document.getElementById('topbarTitle').textContent = 'Study Planner';
+        closeSidebar();
+        initPlanner();
         return;
     }
     // Tracker section
@@ -1763,6 +2172,8 @@ function showTestsSection() {
     if (ns) ns.style.display = 'none';
     const ts = document.getElementById('trackerSection');
     if (ts) ts.style.display = 'none';
+    const ps = document.getElementById('plannerSection');
+    if (ps) ps.style.display = 'none';
     document.querySelector('.controls') && (document.querySelector('.controls').style.display = 'flex');
     document.getElementById('testGrid').style.display = '';
     document.querySelector('.hero') && (document.querySelector('.hero').style.display = 'block');
@@ -2202,6 +2613,391 @@ function scriptFetch(payload) {
             .then(r => r.json());
     });
 }
+
+// ═══════════════════════════════════════
+// STUDY PLANNER
+// ═══════════════════════════════════════
+
+// ── STATE ──
+let plannerTasks    = {};   // { 'YYYY-MM-DD': [{ id, text, subject, priority, done, createdAt }] }
+let plannerStreak   = 0;
+let selectedDate    = todayStr();
+let taskFilter      = 'all';
+let pomoMode        = 'focus';
+let pomoRunning     = false;
+let pomoInterval    = null;
+let pomoSecsLeft    = 25 * 60;
+let pomoTotalSecs   = 25 * 60;
+let pomoSessions    = 0;
+let pomoDurations   = { focus: 25, short: 5, long: 15 };
+
+function todayStr() {
+    return new Date().toISOString().split('T')[0];
+}
+
+function dateStr(d) {
+    return d.toISOString().split('T')[0];
+}
+
+// ── INIT PLANNER ──
+function initPlanner() {
+    loadPlannerLocal();
+    syncPlannerFromSheet(() => {
+        renderPlannerDate();
+        renderWeekStrip();
+        renderTaskList();
+        renderPlannerStats();
+        calcStreak();
+        initPomodoro();
+    });
+}
+
+// ── LOCAL STORAGE ──
+function loadPlannerLocal() {
+    try {
+        const saved = localStorage.getItem('et_planner_' + (user?.email || 'guest'));
+        if (saved) plannerTasks = JSON.parse(saved);
+    } catch { plannerTasks = {}; }
+    try {
+        pomoSessions = parseInt(localStorage.getItem('et_pomo_sessions_' + todayStr()) || '0');
+        document.getElementById('pomoSessionCount') && (document.getElementById('pomoSessionCount').textContent = pomoSessions);
+    } catch {}
+    try {
+        const pd = localStorage.getItem('et_pomo_durations');
+        if (pd) pomoDurations = JSON.parse(pd);
+    } catch {}
+}
+
+function savePlannerLocal() {
+    localStorage.setItem('et_planner_' + (user?.email || 'guest'), JSON.stringify(plannerTasks));
+}
+
+// ── SHEET SYNC ──
+function syncPlannerFromSheet(cb) {
+    if (!user) { cb && cb(); return; }
+    scriptFetch({ action: 'planner_load', email: user.email })
+    .then(d => {
+        if (d && d.status === 'ok' && d.tasks) {
+            plannerTasks = d.tasks;
+            savePlannerLocal();
+        }
+        cb && cb();
+    })
+    .catch(() => { cb && cb(); });
+}
+
+function savePlannerToSheet() {
+    if (!user) return;
+    savePlannerLocal();
+    scriptFetch({ action: 'planner_save', email: user.email, tasks: plannerTasks }).catch(() => {});
+}
+
+// ── DATE HELPERS ──
+function renderPlannerDate() {
+    const now  = new Date();
+    const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    const el1 = document.getElementById('plannerDay');
+    const el2 = document.getElementById('plannerDate');
+    if (el1) el1.textContent = now.getDate();
+    if (el2) el2.textContent = days[now.getDay()] + ', ' + months[now.getMonth()] + ' ' + now.getFullYear();
+}
+
+// ── WEEK STRIP ──
+function renderWeekStrip() {
+    const strip = document.getElementById('weekStrip');
+    if (!strip) return;
+    const today  = new Date();
+    const days   = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+    let html = '';
+    for (let i = -3; i <= 3; i++) {
+        const d    = new Date(today); d.setDate(today.getDate() + i);
+        const ds   = dateStr(d);
+        const tasks = plannerTasks[ds] || [];
+        const done  = tasks.filter(t => t.done).length;
+        const isToday    = ds === todayStr();
+        const isSelected = ds === selectedDate;
+        html += `
+        <div class="week-day ${isToday ? 'today' : ''} ${isSelected && !isToday ? 'selected' : ''} ${tasks.length > 0 ? 'has-tasks' : ''}"
+             onclick="selectDate('${ds}')">
+            <div class="wd-name">${days[d.getDay()]}</div>
+            <div class="wd-num">${d.getDate()}</div>
+            <div class="wd-done">${tasks.length > 0 ? done + '/' + tasks.length : ''}</div>
+        </div>`;
+    }
+    strip.innerHTML = html;
+}
+
+function selectDate(ds) {
+    selectedDate = ds;
+    renderWeekStrip();
+    renderTaskList();
+    renderPlannerStats();
+}
+
+// ── TASKS ──
+function addTask() {
+    const input    = document.getElementById('taskInput');
+    const subj     = document.getElementById('taskSubject');
+    const priority = document.getElementById('taskPriority');
+    const text     = input?.value.trim();
+    if (!text) { input?.focus(); return; }
+
+    if (!plannerTasks[selectedDate]) plannerTasks[selectedDate] = [];
+    plannerTasks[selectedDate].push({
+        id:        Date.now(),
+        text,
+        subject:   subj?.value   || '',
+        priority:  priority?.value || 'Normal',
+        done:      false,
+        createdAt: new Date().toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })
+    });
+
+    if (input)    input.value    = '';
+    if (subj)     subj.value     = '';
+    if (priority) priority.value = 'Normal';
+
+    savePlannerToSheet();
+    renderTaskList();
+    renderPlannerStats();
+    renderWeekStrip();
+    calcStreak();
+    toast('✅', 'Task added!');
+}
+
+function toggleTask(id) {
+    const tasks = plannerTasks[selectedDate] || [];
+    const t = tasks.find(t => t.id === id);
+    if (t) t.done = !t.done;
+    savePlannerToSheet();
+    renderTaskList();
+    renderPlannerStats();
+    calcStreak();
+}
+
+function deleteTask(id) {
+    if (!plannerTasks[selectedDate]) return;
+    plannerTasks[selectedDate] = plannerTasks[selectedDate].filter(t => t.id !== id);
+    savePlannerToSheet();
+    renderTaskList();
+    renderPlannerStats();
+    renderWeekStrip();
+}
+
+function clearDoneTasks() {
+    if (!plannerTasks[selectedDate]) return;
+    plannerTasks[selectedDate] = plannerTasks[selectedDate].filter(t => !t.done);
+    savePlannerToSheet();
+    renderTaskList();
+    renderPlannerStats();
+    renderWeekStrip();
+    toast('🧹', 'Done tasks cleared!');
+}
+
+function setTaskFilter(f, el) {
+    taskFilter = f;
+    document.querySelectorAll('.task-filt').forEach(x => x.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderTaskList();
+}
+
+function renderTaskList() {
+    const el = document.getElementById('taskList');
+    if (!el) return;
+    let tasks = plannerTasks[selectedDate] || [];
+
+    if (taskFilter === 'pending') tasks = tasks.filter(t => !t.done);
+    if (taskFilter === 'done')    tasks = tasks.filter(t =>  t.done);
+    if (taskFilter === 'high')    tasks = tasks.filter(t => t.priority === 'High');
+
+    if (!tasks.length) {
+        el.innerHTML = `<div class="tasks-empty">
+            <i class="fa-solid fa-clipboard-list"></i>
+            <p>${selectedDate === todayStr() ? 'No tasks for today. Add one above!' : 'No tasks for this day.'}</p>
+        </div>`;
+        return;
+    }
+
+    // Sort: undone first, then by priority
+    const pOrder = { High: 0, Normal: 1, Low: 2 };
+    tasks = [...tasks].sort((a, b) => {
+        if (a.done !== b.done) return a.done ? 1 : -1;
+        return (pOrder[a.priority] || 1) - (pOrder[b.priority] || 1);
+    });
+
+    el.innerHTML = tasks.map(t => `
+        <div class="task-item priority-${t.priority.toLowerCase()} ${t.done ? 'done' : ''}">
+            <button class="task-check ${t.done ? 'checked' : ''}" onclick="toggleTask(${t.id})">
+                ${t.done ? '<i class="fa-solid fa-check"></i>' : ''}
+            </button>
+            <div class="task-body">
+                <div class="task-text">${t.text}</div>
+                <div class="task-meta-row">
+                    ${t.subject ? `<span class="task-subj-tag">${t.subject}</span>` : ''}
+                    <span class="task-time">${t.createdAt}</span>
+                    <span style="font-size:0.68rem;color:var(--muted)">${
+                        t.priority === 'High' ? '🔴' : t.priority === 'Low' ? '🟢' : '🟡'
+                    } ${t.priority}</span>
+                </div>
+            </div>
+            <button class="task-del" onclick="deleteTask(${t.id})" title="Delete">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>`).join('');
+}
+
+function renderPlannerStats() {
+    const tasks = plannerTasks[selectedDate] || [];
+    const done  = tasks.filter(t => t.done).length;
+    const total = tasks.length;
+    const pct   = total > 0 ? Math.round(done / total * 100) : 0;
+    const el1 = document.getElementById('psmDone');
+    const el2 = document.getElementById('psmTotal');
+    const el3 = document.getElementById('psmPct');
+    if (el1) el1.textContent = done;
+    if (el2) el2.textContent = total;
+    if (el3) el3.textContent = pct + '%';
+}
+
+// ── STREAK ──
+function calcStreak() {
+    let streak = 0;
+    const today = new Date();
+    for (let i = 0; i < 365; i++) {
+        const d  = new Date(today); d.setDate(today.getDate() - i);
+        const ds = dateStr(d);
+        const tasks = plannerTasks[ds] || [];
+        const hasDone = tasks.some(t => t.done);
+        if (hasDone) streak++;
+        else if (i > 0) break;
+    }
+    plannerStreak = streak;
+    const el = document.getElementById('streakCount');
+    if (el) el.textContent = streak;
+    localStorage.setItem('et_streak_' + (user?.email || 'guest'), streak);
+}
+
+// ── POMODORO ──
+function initPomodoro() {
+    const fd = document.getElementById('focusDur');
+    const sd = document.getElementById('shortDur');
+    const ld = document.getElementById('longDur');
+    if (fd) fd.value = pomoDurations.focus;
+    if (sd) sd.value = pomoDurations.short;
+    if (ld) ld.value = pomoDurations.long;
+    pomoSecsLeft  = pomoDurations.focus * 60;
+    pomoTotalSecs = pomoDurations.focus * 60;
+    const sc = document.getElementById('pomoSessionCount');
+    if (sc) sc.textContent = pomoSessions;
+    updatePomoDisplay();
+}
+
+function setPomoMode(mode, el) {
+    if (pomoRunning) resetPomo();
+    pomoMode = mode;
+    document.querySelectorAll('.pomo-tab').forEach(x => x.classList.remove('active'));
+    if (el) el.classList.add('active');
+    const dur = mode === 'focus' ? pomoDurations.focus : mode === 'short' ? pomoDurations.short : pomoDurations.long;
+    pomoSecsLeft  = dur * 60;
+    pomoTotalSecs = dur * 60;
+    updatePomoDisplay();
+    updatePomoRing();
+    // Change ring color by mode
+    const ring = document.getElementById('pomoRingFill');
+    if (ring) ring.style.stroke = mode === 'focus' ? 'var(--primary)' : mode === 'short' ? '#10B981' : '#F59E0B';
+}
+
+function togglePomo() {
+    if (pomoRunning) pausePomo(); else startPomo();
+}
+
+function startPomo() {
+    pomoRunning = true;
+    const btn = document.getElementById('pomoBtn');
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-pause"></i> Pause'; btn.classList.add('running'); }
+    pomoInterval = setInterval(() => {
+        pomoSecsLeft--;
+        updatePomoDisplay();
+        updatePomoRing();
+        if (pomoSecsLeft <= 0) {
+            clearInterval(pomoInterval);
+            pomoRunning = false;
+            if (pomoMode === 'focus') {
+                pomoSessions++;
+                localStorage.setItem('et_pomo_sessions_' + todayStr(), pomoSessions);
+                const sc = document.getElementById('pomoSessionCount');
+                if (sc) sc.textContent = pomoSessions;
+                toast('🍅', 'Focus session complete! Take a break.');
+            } else {
+                toast('⚡', 'Break over! Time to focus.');
+            }
+            resetPomo();
+        }
+    }, 1000);
+}
+
+function pausePomo() {
+    clearInterval(pomoInterval);
+    pomoRunning = false;
+    const btn = document.getElementById('pomoBtn');
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-play"></i> Resume'; btn.classList.remove('running'); }
+}
+
+function resetPomo() {
+    clearInterval(pomoInterval);
+    pomoRunning = false;
+    const dur = pomoMode === 'focus' ? pomoDurations.focus : pomoMode === 'short' ? pomoDurations.short : pomoDurations.long;
+    pomoSecsLeft  = dur * 60;
+    pomoTotalSecs = dur * 60;
+    const btn = document.getElementById('pomoBtn');
+    if (btn) { btn.innerHTML = '<i class="fa-solid fa-play"></i> Start'; btn.classList.remove('running'); }
+    updatePomoDisplay();
+    updatePomoRing();
+}
+
+function updatePomoDisplay() {
+    const m   = Math.floor(pomoSecsLeft / 60).toString().padStart(2, '0');
+    const s   = (pomoSecsLeft % 60).toString().padStart(2, '0');
+    const el  = document.getElementById('pomoDisplay');
+    if (el) el.textContent = m + ':' + s;
+    // Update page title when running
+    if (pomoRunning) document.title = m + ':' + s + ' — Examtym';
+    else document.title = 'Examtym | Test Portal';
+}
+
+function updatePomoRing() {
+    const ring = document.getElementById('pomoRingFill');
+    if (!ring) return;
+    const total = 2 * Math.PI * 88; // r=88
+    const pct   = pomoSecsLeft / pomoTotalSecs;
+    ring.style.strokeDashoffset = (total * (1 - pct)).toFixed(2);
+}
+
+function updatePomoDurations() {
+    pomoDurations.focus = parseInt(document.getElementById('focusDur')?.value || 25);
+    pomoDurations.short = parseInt(document.getElementById('shortDur')?.value || 5);
+    pomoDurations.long  = parseInt(document.getElementById('longDur')?.value  || 15);
+    localStorage.setItem('et_pomo_durations', JSON.stringify(pomoDurations));
+    if (!pomoRunning) setPomoMode(pomoMode, null);
+}
+
+// Enter key to add task
+document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.activeElement?.id === 'taskInput') addTask();
+});
+
+// ── SHOW/HIDE ──
+function showPlannerSection() {
+    document.getElementById('plannerSection').style.display = 'block';
+    ['notesSection','trackerSection'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.style.display = 'none';
+    });
+    document.querySelector('.controls') && (document.querySelector('.controls').style.display = 'none');
+    document.getElementById('testGrid').style.display  = 'none';
+    document.querySelector('.hero')    && (document.querySelector('.hero').style.display    = 'none');
+    const cb = document.getElementById('countdownBar'); if (cb) cb.style.display = 'none';
+}
+
 </script>
 
 <!-- ══ EMAIL LOGIN MODAL ══ -->
