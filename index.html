@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Examtym | Test Portal</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
     <style>
         :root {
@@ -37,7 +37,15 @@
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background: var(--bg); color: var(--text); 
+            min-height: 100vh; 
+            font-size: 15px;
+            line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
 
         /* ══ LOGIN ══ */
         #loginScreen {
@@ -62,7 +70,7 @@
         .google-btn {
             width: 100%; background: white; color: #1a1a1a; border: none;
             padding: 0.9rem 1.5rem; border-radius: 13px; font-size: 0.98rem;
-            font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer;
+            font-weight: 600; font-family: 'Inter', sans-serif; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 12px;
             transition: transform 0.15s, box-shadow 0.15s; box-shadow: 0 4px 20px rgba(0,0,0,0.3);
         }
@@ -162,7 +170,7 @@
             display: none; background: none; border: none; color: var(--text);
             font-size: 1.2rem; cursor: pointer; padding: 4px 8px;
         }
-        .topbar-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; }
+        .topbar-title { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 700; }
         .topbar-right { display: flex; align-items: center; gap: 10px; }
 
         .prog-pill {
@@ -170,7 +178,7 @@
             border: none; padding: 0.42rem 0.9rem; border-radius: 20px;
             font-size: 0.82rem; font-weight: 600; cursor: pointer;
             display: flex; align-items: center; gap: 6px;
-            font-family: 'DM Sans', sans-serif; transition: background 0.2s;
+            font-family: 'Inter', sans-serif; transition: background 0.2s;
         }
         .prog-pill:hover { background: rgba(37,99,235,0.18); }
         .theme-btn {
@@ -191,11 +199,11 @@
             background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23fff' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/svg%3E");
         }
         .hero-inner { position: relative; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1.2rem; }
-        .hero h1 { font-family: 'Syne', sans-serif; font-size: 1.9rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.3rem; animation: fadeUp 0.5s ease both; }
+        .hero h1 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.9rem; font-weight: 800; letter-spacing: -0.5px; margin-bottom: 0.3rem; animation: fadeUp 0.5s ease both; }
         .hero p { font-size: 0.95rem; opacity: 0.82; animation: fadeUp 0.5s 0.1s ease both; }
         .hero-stats { display: flex; gap: 0.9rem; animation: fadeUp 0.5s 0.15s ease both; }
         .hstat { background: rgba(255,255,255,0.13); border: 1px solid rgba(255,255,255,0.2); border-radius: 13px; padding: 0.85rem 1.1rem; text-align: center; min-width: 72px; }
-        .hstat .n { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; display: block; }
+        .hstat .n { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; display: block; }
         .hstat .l { font-size: 0.7rem; opacity: 0.75; }
 
         @keyframes fadeUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
@@ -208,15 +216,15 @@
         .ctrl-row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
         .srch { position: relative; flex: 1; min-width: 200px; max-width: 380px; }
         .srch i { position: absolute; left: 1rem; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.85rem; }
-        .srch input { width: 100%; padding: 0.78rem 1rem 0.78rem 2.5rem; border-radius: 11px; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-size: 0.9rem; font-family: 'DM Sans', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+        .srch input { width: 100%; padding: 0.78rem 1rem 0.78rem 2.5rem; border-radius: 11px; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-size: 0.9rem; font-family: 'Inter', sans-serif; outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
         .srch input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
-        .sort-sel { padding: 0.78rem 2rem 0.78rem 1rem; border-radius: 11px; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-size: 0.87rem; font-family: 'DM Sans', sans-serif; font-weight: 500; cursor: pointer; outline: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748B' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; }
+        .sort-sel { padding: 0.78rem 2rem 0.78rem 1rem; border-radius: 11px; border: 1.5px solid var(--border); background: var(--card); color: var(--text); font-size: 0.87rem; font-family: 'Inter', sans-serif; font-weight: 500; cursor: pointer; outline: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748B' d='M6 8L0 0h12z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; }
         .view-tog { display: flex; background: var(--card); border: 1.5px solid var(--border); border-radius: 11px; overflow: hidden; }
         .vbtn { background: none; border: none; color: var(--muted); padding: 0.75rem 0.9rem; cursor: pointer; font-size: 0.88rem; transition: background 0.2s, color 0.2s; }
         .vbtn.active { background: var(--primary); color: white; }
         .res-count { margin-left: auto; font-size: 0.82rem; color: var(--muted); font-weight: 500; white-space: nowrap; }
         .filters { display: flex; gap: 8px; flex-wrap: wrap; }
-        .filt-btn { background: var(--card); border: 1.5px solid var(--border); color: var(--muted); padding: 0.42rem 1rem; border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 0.81rem; font-family: 'DM Sans', sans-serif; transition: all 0.2s; white-space: nowrap; }
+        .filt-btn { background: var(--card); border: 1.5px solid var(--border); color: var(--muted); padding: 0.42rem 1rem; border-radius: 25px; cursor: pointer; font-weight: 600; font-size: 0.81rem; font-family: 'Inter', sans-serif; transition: all 0.2s; white-space: nowrap; }
         .filt-btn:hover { border-color: var(--primary); color: var(--primary); }
         .filt-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
 
@@ -248,12 +256,12 @@
         .badge { font-size: 0.63rem; font-weight: 700; padding: 0.2rem 0.5rem; border-radius: 20px; text-transform: uppercase; letter-spacing: 0.4px; }
         .badge-new { background: linear-gradient(135deg, #F59E0B, #EF4444); color: white; }
         .badge-done { background: rgba(16,185,129,0.12); color: #10B981; border: 1px solid rgba(16,185,129,0.28); }
-        .card h3 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; line-height: 1.4; margin-bottom: 0.6rem; letter-spacing: -0.2px; }
+        .card h3 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; font-weight: 700; line-height: 1.4; margin-bottom: 0.6rem; letter-spacing: -0.2px; }
         .meta { display: flex; gap: 0.85rem; color: var(--muted); font-size: 0.78rem; margin-bottom: 0.85rem; flex-wrap: wrap; }
         .meta span { display: flex; align-items: center; gap: 4px; }
         .attempt-info { font-size: 0.75rem; color: #10B981; font-weight: 600; display: flex; align-items: center; gap: 5px; margin-bottom: 0.85rem; background: rgba(16,185,129,0.07); padding: 0.35rem 0.6rem; border-radius: 7px; }
         .card-footer { margin-top: auto; display: flex; gap: 8px; }
-        .btn { flex: 1; background: var(--primary); color: white; text-align: center; padding: 0.68rem; border-radius: 9px; text-decoration: none; font-weight: 700; font-size: 0.87rem; display: flex; justify-content: center; align-items: center; gap: 6px; transition: background 0.2s, transform 0.1s; font-family: 'DM Sans', sans-serif; border: none; cursor: pointer; }
+        .btn { flex: 1; background: var(--primary); color: white; text-align: center; padding: 0.68rem; border-radius: 9px; text-decoration: none; font-weight: 700; font-size: 0.87rem; display: flex; justify-content: center; align-items: center; gap: 6px; transition: background 0.2s, transform 0.1s; font-family: 'Inter', sans-serif; border: none; cursor: pointer; }
         .btn:hover { background: var(--primary-hover); }
         .btn:active { transform: scale(0.97); }
         .btn.reattempt { background: #10B981; }
@@ -269,11 +277,11 @@
         .modal { background: var(--card); border-radius: 18px; padding: 1.8rem; width: 90%; max-width: 480px; box-shadow: 0 24px 60px rgba(0,0,0,0.25); animation: modalIn 0.3s cubic-bezier(0.34,1.56,0.64,1) both; max-height: 88vh; overflow-y: auto; }
         @keyframes modalIn { from { transform: scale(0.85); opacity: 0; } to { transform: scale(1); opacity: 1; } }
         .modal-hdr { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.4rem; }
-        .modal-hdr h2 { font-family: 'Syne', sans-serif; font-size: 1.15rem; font-weight: 800; }
+        .modal-hdr h2 { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.15rem; font-weight: 800; }
         .modal-close { background: var(--bg); border: none; color: var(--muted); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
         .stat-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 0.75rem; margin-bottom: 1.3rem; }
         .stat-box { background: var(--bg); border-radius: 11px; padding: 0.85rem; text-align: center; }
-        .stat-box .n { font-family: 'Syne', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--primary); display: block; }
+        .stat-box .n { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--primary); display: block; }
         .stat-box .l { font-size: 0.72rem; color: var(--muted); }
         .prog-wrap { margin-bottom: 1.3rem; }
         .prog-lbl { display: flex; justify-content: space-between; font-size: 0.83rem; font-weight: 600; margin-bottom: 0.5rem; }
@@ -285,9 +293,9 @@
         .att-item:last-child { border-bottom: none; }
         .att-item .ts { color: var(--muted); font-size: 0.72rem; white-space: nowrap; margin-left: 8px; }
         .modal-acts { display: flex; gap: 8px; }
-        .btn-out { flex:1; background: none; border: 1.5px solid var(--border); color: var(--text); padding: 0.65rem; border-radius: 9px; font-weight: 600; font-size: 0.86rem; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; transition: border-color 0.2s; }
+        .btn-out { flex:1; background: none; border: 1.5px solid var(--border); color: var(--text); padding: 0.65rem; border-radius: 9px; font-weight: 600; font-size: 0.86rem; cursor: pointer; font-family: 'Inter', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px; transition: border-color 0.2s; }
         .btn-out:hover { border-color: var(--primary); color: var(--primary); }
-        .btn-danger { flex:1; background: none; border: 1.5px solid #FCA5A5; color: var(--red); padding: 0.65rem; border-radius: 9px; font-weight: 600; font-size: 0.86rem; cursor: pointer; font-family: 'DM Sans', sans-serif; }
+        .btn-danger { flex:1; background: none; border: 1.5px solid #FCA5A5; color: var(--red); padding: 0.65rem; border-radius: 9px; font-weight: 600; font-size: 0.86rem; cursor: pointer; font-family: 'Inter', sans-serif; }
         .btn-danger:hover { background: rgba(239,68,68,0.07); }
 
         /* ══ SYNC + TOAST ══ */
@@ -342,7 +350,7 @@
         [data-theme="dark"] .email-modal { background: #1E293B; }
         .email-modal-logo { height: 40px; margin-bottom: 1.2rem; }
         .email-modal h3 {
-            font-family: 'Syne', sans-serif; font-size: 1.2rem;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.2rem;
             font-weight: 800; color: #0F172A; margin-bottom: 0.4rem;
         }
         [data-theme="dark"] .email-modal h3 { color: #F1F5F9; }
@@ -356,7 +364,7 @@
             width: 100%; padding: 0.85rem 1rem 0.85rem 2.6rem;
             border-radius: 12px; border: 1.5px solid #E2E8F0;
             background: #F8FAFC; color: #0F172A;
-            font-size: 0.95rem; font-family: 'DM Sans', sans-serif;
+            font-size: 0.95rem; font-family: 'Inter', sans-serif;
             outline: none; transition: border-color 0.2s, box-shadow 0.2s;
         }
         [data-theme="dark"] #emailInput { background: #0F172A; color: #F1F5F9; border-color: #1E293B; }
@@ -369,7 +377,7 @@
             width: 100%; background: #2563EB; color: white;
             border: none; padding: 0.88rem; border-radius: 12px;
             font-size: 0.95rem; font-weight: 700;
-            font-family: 'DM Sans', sans-serif; cursor: pointer;
+            font-family: 'Inter', sans-serif; cursor: pointer;
             display: flex; align-items: center; justify-content: center; gap: 8px;
             transition: background 0.2s, transform 0.1s; margin-bottom: 0.8rem;
         }
@@ -377,7 +385,7 @@
         .email-submit-btn:active { transform: scale(0.98); }
         .email-cancel-btn {
             background: none; border: none; color: #94A3B8;
-            font-size: 0.82rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+            font-size: 0.82rem; cursor: pointer; font-family: 'Inter', sans-serif;
         }
         .email-cancel-btn:hover { color: #64748B; }
 
@@ -417,7 +425,7 @@
             text-align: center; min-width: 38px;
         }
         .cd-block .n {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1rem; font-weight: 800; color: white;
             display: block; line-height: 1;
         }
@@ -437,7 +445,7 @@
             color: rgba(255,255,255,0.5); border-radius: 12px;
             padding: 0.5rem 0.9rem; font-size: 0.8rem; font-weight: 600;
             cursor: pointer; white-space: nowrap; flex-shrink: 0;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             transition: all 0.2s; display: flex; align-items: center; gap: 6px;
         }
         .cd-add-btn:hover { background: rgba(37,99,235,0.4); color: white; border-color: rgba(37,99,235,0.8); }
@@ -451,7 +459,7 @@
             max-height: 85vh; overflow-y: auto;
         }
         .exam-modal h3 {
-            font-family: 'Syne', sans-serif; font-size: 1.15rem;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.15rem;
             font-weight: 800; margin-bottom: 1.2rem;
             display: flex; align-items: center; gap: 8px;
         }
@@ -480,14 +488,14 @@
             width: 100%; padding: 0.72rem 0.9rem; border-radius: 9px;
             border: 1.5px solid var(--border); background: var(--card);
             color: var(--text); font-size: 0.9rem;
-            font-family: 'DM Sans', sans-serif; outline: none;
+            font-family: 'Inter', sans-serif; outline: none;
             transition: border-color 0.2s;
         }
         .exam-add-form input:focus { border-color: var(--primary); }
         .exam-save-btn {
             background: var(--primary); color: white; border: none;
             padding: 0.7rem; border-radius: 10px; font-weight: 700;
-            font-size: 0.9rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+            font-size: 0.9rem; cursor: pointer; font-family: 'Inter', sans-serif;
             width: 100%; transition: background 0.2s;
         }
         .exam-save-btn:hover { background: var(--primary-hover); }
@@ -495,7 +503,7 @@
             background: var(--bg); border: 1.5px solid var(--border);
             color: var(--text); padding: 0.65rem; border-radius: 10px;
             font-weight: 600; font-size: 0.87rem; cursor: pointer;
-            font-family: 'DM Sans', sans-serif; width: 100%;
+            font-family: 'Inter', sans-serif; width: 100%;
             margin-top: 8px;
         }
 
@@ -508,7 +516,7 @@
         ══════════════════════════════ */
         /* Subject heading */
         .notes-subject-heading {
-            font-family: 'Syne', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
             font-size: 1.2rem; font-weight: 800;
             color: var(--text); margin: 1.8rem 0 1rem;
             display: flex; align-items: center; gap: 10px;
@@ -579,7 +587,7 @@
 
         /* Card body */
         .note-card-name {
-            font-family: 'Syne', sans-serif; font-size: 0.98rem;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.98rem;
             font-weight: 700; line-height: 1.35; color: var(--text);
         }
         .note-card-desc {
@@ -607,7 +615,7 @@
             flex: 1; background: var(--primary); color: white;
             border: none; padding: 0.65rem; border-radius: 9px;
             font-weight: 700; font-size: 0.85rem; cursor: pointer;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             display: flex; align-items: center; justify-content: center; gap: 6px;
             transition: background 0.2s, transform 0.1s; text-decoration: none;
         }
@@ -616,7 +624,7 @@
         .note-download-btn {
             background: var(--bg); border: 1.5px solid var(--border);
             color: var(--text); padding: 0.65rem 0.85rem; border-radius: 9px;
-            font-size: 0.85rem; cursor: pointer; font-family: 'DM Sans', sans-serif;
+            font-size: 0.85rem; cursor: pointer; font-family: 'Inter', sans-serif;
             display: flex; align-items: center; gap: 5px; font-weight: 600;
             transition: all 0.2s; text-decoration: none;
         }
@@ -654,7 +662,7 @@
             flex-shrink: 0;
         }
         .pdf-topbar-title {
-            font-family: 'Syne', sans-serif; font-weight: 700;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700;
             color: white; font-size: 0.95rem; flex: 1;
             white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
@@ -662,7 +670,7 @@
             background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
             color: white; padding: 0.5rem 0.9rem; border-radius: 8px;
             cursor: pointer; font-size: 0.82rem; font-weight: 600;
-            font-family: 'DM Sans', sans-serif;
+            font-family: 'Inter', sans-serif;
             display: flex; align-items: center; gap: 6px; white-space: nowrap;
             transition: background 0.2s;
         }
@@ -691,7 +699,7 @@
             margin-bottom: 1.5rem; flex-wrap: wrap; gap: 1rem;
         }
         .tracker-title {
-            font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 800;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.4rem; font-weight: 800;
             display: flex; align-items: center; gap: 10px; margin-bottom: 0.3rem;
         }
         .tracker-title i { color: var(--primary); }
@@ -708,10 +716,10 @@
         .tracker-ring-pct {
             position: absolute; inset: 0; display: flex;
             align-items: center; justify-content: center;
-            font-family: 'Syne', sans-serif; font-size: 0.72rem; font-weight: 800;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.72rem; font-weight: 800;
         }
         .tracker-ring-label { font-size: 0.82rem; color: var(--muted); }
-        .tracker-ring-label strong { display: block; font-family: 'Syne', sans-serif; font-size: 1rem; color: var(--text); }
+        .tracker-ring-label strong { display: block; font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1rem; color: var(--text); }
 
         /* Status stat cards */
         .tracker-stats {
@@ -727,7 +735,7 @@
         }
         .tstat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
         .tstat-card.active { box-shadow: var(--shadow-lg); }
-        .tstat-card .tn { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; display: block; }
+        .tstat-card .tn { font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.6rem; font-weight: 800; display: block; }
         .tstat-card .tl { font-size: 0.7rem; color: var(--muted); font-weight: 600; line-height: 1.3; margin-top: 2px; }
         .tstat-not-started  { border-top-color: #94A3B8; }
         .tstat-not-started .tn  { color: #94A3B8; }
@@ -748,7 +756,7 @@
         /* Subject block */
         .tracker-subject-block { margin-bottom: 2rem; }
         .tracker-subject-title {
-            font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 1.1rem; font-weight: 800;
             display: flex; align-items: center; gap: 10px;
             padding-bottom: 0.7rem; margin-bottom: 1rem;
             border-bottom: 2px solid var(--border);
@@ -799,7 +807,7 @@
             font-size: 0.75rem; font-weight: 800; flex-shrink: 0;
         }
         .unit-name {
-            font-family: 'Syne', sans-serif; font-size: 0.95rem;
+            font-family: 'Plus Jakarta Sans', sans-serif; font-size: 0.95rem;
             font-weight: 700; line-height: 1.35; flex: 1; margin: 0 0.6rem;
         }
 
@@ -820,7 +828,7 @@
             width: 100%; padding: 0.55rem 0.75rem; border-radius: 8px;
             border: 1.5px solid var(--border); background: var(--bg);
             color: var(--text); font-size: 0.82rem;
-            font-family: 'DM Sans', sans-serif; outline: none; resize: none;
+            font-family: 'Inter', sans-serif; outline: none; resize: none;
             transition: border-color 0.2s; height: 52px;
         }
         .unit-notes-input:focus { border-color: var(--primary); }
@@ -831,7 +839,7 @@
             width: 100%; padding: 0.6rem 0.8rem; border-radius: 9px;
             border: 1.5px solid var(--border); background: var(--card);
             color: var(--text); font-size: 0.85rem; font-weight: 600;
-            font-family: 'DM Sans', sans-serif; cursor: pointer; outline: none;
+            font-family: 'Inter', sans-serif; cursor: pointer; outline: none;
             appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748B' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
             background-repeat: no-repeat; background-position: right 0.75rem center;
@@ -1790,19 +1798,42 @@ function getStatus(subject, unit) {
 // ── LOAD SYLLABUS ──
 function loadSyllabus(cb) {
     if (syllabusLoaded) { cb && cb(); return; }
+    
+    const grid = document.getElementById('trackerGrid');
+    
     Papa.parse(SYLLABUS_CSV, {
         download: true, header: false, skipEmptyLines: true,
         complete(res) {
             syllabusData = [];
-            res.data.slice(1).forEach(c => {
-                if (c[0] && c[0].trim() && c[1] && c[1].trim()) {
+            // Try with header row skip first
+            const rows = res.data.length > 1 ? res.data.slice(1) : res.data;
+            rows.forEach(c => {
+                if (c && c[0] && c[0].trim() && c[1] && c[1].trim()) {
                     syllabusData.push({ subject: c[0].trim(), unit: c[1].trim() });
                 }
             });
+            if (syllabusData.length === 0) {
+                if (grid) grid.innerHTML = '<div class="notes-empty"><i class="fa-solid fa-triangle-exclamation" style="color:#EF4444"></i><p>SYLLABUS sheet mein data nahi mila.<br>Check karo ki SYLLABUS tab mein Subject aur Unit columns hain.</p></div>';
+                return;
+            }
             syllabusLoaded = true;
             cb && cb();
         },
-        error() { console.error('Syllabus load failed'); }
+        error(err) {
+            console.error('Syllabus load failed:', err);
+            if (grid) grid.innerHTML = `<div class="notes-empty">
+                <i class="fa-solid fa-triangle-exclamation" style="color:#EF4444;font-size:2rem;display:block;margin-bottom:1rem"></i>
+                <p><strong>SYLLABUS sheet load nahi hua.</strong></p>
+                <p style="font-size:0.82rem;margin-top:0.5rem">Yeh karo:<br>
+                1. Google Sheet → File → Share → Publish to web<br>
+                2. SYLLABUS tab select karo<br>
+                3. CSV format select karo<br>
+                4. Publish karo → Link copy karo</p>
+                <button onclick="syllabusLoaded=false;initTracker()" style="margin-top:1rem;padding:0.6rem 1.2rem;background:var(--primary);color:white;border:none;border-radius:9px;cursor:pointer;font-weight:700">
+                    🔄 Retry
+                </button>
+            </div>`;
+        }
     });
 }
 
