@@ -1073,7 +1073,13 @@
                     <h2 class="tracker-title"><i class="fa-solid fa-chart-gantt"></i> Subject Tracker</h2>
                     <p class="tracker-sub">Track your preparation unit by unit</p>
                 </div>
-                <div class="tracker-header-right" id="trackerOverall"></div>
+                <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+                    <div class="tracker-header-right" id="trackerOverall"></div>
+                    <button id="syncTestBtn" onclick="testTrackerSync()" 
+                        style="background:var(--primary);color:white;border:none;padding:0.5rem 0.9rem;border-radius:9px;font-size:0.78rem;font-weight:700;cursor:pointer;font-family:'Inter',sans-serif;white-space:nowrap">
+                        🔌 Test Sync
+                    </button>
+                </div>
             </div>
             <div class="tracker-stats" id="trackerStats"></div>
             <div class="tracker-subj-tabs" id="trackerSubjTabs"></div>
@@ -1298,11 +1304,10 @@ function setSyncing(on) { document.getElementById('sdot').classList.toggle('sync
 function loadProgress() {
     if (!user) return;
     setSyncing(true);
-    fetch(SCRIPT, { method: 'POST', body: JSON.stringify({ action: 'load', email: user.email }) })
-        .then(r => r.json())
+    scriptFetch({ action: 'load', email: user.email })
         .then(d => {
             attempted = {};
-            if (d.status === 'ok') (d.tests || []).forEach(id => { attempted[id] = true; });
+            if (d && d.status === 'ok') (d.tests || []).forEach(id => { attempted[id] = true; });
             setSyncing(false); updateUI(); renderTests();
         })
         .catch(() => {
@@ -1314,7 +1319,7 @@ function loadProgress() {
 function syncAction(testId, action) {
     if (!user) return;
     setSyncing(true);
-    fetch(SCRIPT, { method: 'POST', body: JSON.stringify({ action, email: user.email, testId }) })
+    scriptFetch({ action, email: user.email, testId })
         .then(() => setSyncing(false)).catch(() => setSyncing(false));
     localStorage.setItem('et_prog_' + user.email, JSON.stringify(attempted));
 }
@@ -1848,13 +1853,9 @@ function loadTrackerFromSheet(cb) {
     } catch { trackerData = {}; }
 
     // Then sync from sheet
-    fetch(SCRIPT, {
-        method: 'POST',
-        body: JSON.stringify({ action: 'tracker_load', email: user.email })
-    })
-    .then(r => r.json())
+    scriptFetch({ action: 'tracker_load', email: user.email })
     .then(d => {
-        if (d.status === 'ok' && d.rows && d.rows.length > 0) {
+        if (d && d.status === 'ok' && d.rows && d.rows.length > 0) {
             trackerData = {};
             d.rows.forEach(r => {
                 trackerData[tkey(r.subject, r.unit)] = {
@@ -1876,10 +1877,7 @@ function saveUnit(subject, unit, status, notes) {
     trackerData[k] = { status, notes, updated: new Date().toISOString() };
     if (user) {
         localStorage.setItem('et_tracker_' + user.email, JSON.stringify(trackerData));
-        fetch(SCRIPT, {
-            method: 'POST',
-            body: JSON.stringify({ action: 'tracker_save', email: user.email, subject, unit, status, notes })
-        }).catch(() => {});
+        scriptFetch({ action: 'tracker_save', email: user.email, subject, unit, status, notes }).catch(() => {});
     }
 }
 
@@ -2120,6 +2118,52 @@ function showTrackerSection() {
     if (cb) cb.style.display = 'none';
 }
 
+
+// ── DEBUG SYNC TEST ──
+function testTrackerSync() {
+    const btn = document.getElementById('syncTestBtn');
+    if (btn) { btn.textContent = '⏳ Testing...'; btn.disabled = true; }
+    
+    console.log('Testing tracker sync...');
+    console.log('SCRIPT URL:', SCRIPT);
+    console.log('User:', user?.email);
+    
+    scriptFetch({ action: 'tracker_save', email: user?.email || 'test@test.com', subject: 'TEST', unit: 'TEST_UNIT', status: 'Ongoing', notes: 'debug test' })
+    .then(d => {
+        console.log('Response:', d);
+        if (btn) { btn.textContent = '✅ ' + JSON.stringify(d); btn.style.background = '#10B981'; btn.disabled = false; }
+        toast('✅', 'Sync working!');
+    })
+    .catch(err => {
+        console.error('Sync error:', err);
+        if (btn) { btn.textContent = '❌ ' + err.message; btn.style.background = '#EF4444'; btn.disabled = false; }
+        toast('❌', 'Sync failed - check console');
+    });
+}
+
+
+// ═══════════════════════════════════════
+// UNIVERSAL SCRIPT FETCH — CORS safe
+// ═══════════════════════════════════════
+function scriptFetch(payload) {
+    // Method 1: Try normal fetch with text/plain (avoids CORS preflight)
+    return fetch(SCRIPT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(payload)
+    })
+    .then(r => {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.json();
+    })
+    .catch(err => {
+        // Method 2: Fallback - use URL params GET request
+        console.warn('POST failed, trying GET fallback:', err.message);
+        const params = new URLSearchParams({ data: JSON.stringify(payload) });
+        return fetch(SCRIPT + '?' + params.toString())
+            .then(r => r.json());
+    });
+}
 </script>
 
 <!-- ══ EMAIL LOGIN MODAL ══ -->
