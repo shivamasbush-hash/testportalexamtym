@@ -391,66 +391,109 @@
 
         /* ══ EXAM COUNTDOWN ══ */
         .countdown-bar {
-            background: linear-gradient(135deg, #0F172A 0%, #1E3A8A 100%);
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            padding: 0.75rem 2rem;
-            overflow-x: auto;
+            background: linear-gradient(135deg, #0A0F1E 0%, #0F2356 50%, #0A0F1E 100%);
+            border-bottom: 1px solid rgba(255,255,255,0.06);
+            padding: 0 2rem;
+            overflow: hidden;
+            position: relative;
+        }
+        .countdown-bar::before {
+            content:'';position:absolute;inset:0;
+            background: radial-gradient(ellipse at 20% 50%, rgba(37,99,235,0.15) 0%, transparent 60%),
+                        radial-gradient(ellipse at 80% 50%, rgba(16,185,129,0.1) 0%, transparent 60%);
+            pointer-events:none;
         }
         .countdown-inner {
-            display: flex; align-items: center; gap: 1rem;
-            flex-wrap: nowrap; min-width: max-content;
+            display: flex; align-items: center; gap: 0.8rem;
+            flex-wrap: nowrap; overflow-x: auto; padding: 0.65rem 0;
+            scrollbar-width: none;
         }
+        .countdown-inner::-webkit-scrollbar { display:none; }
         .countdown-label {
-            font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
-            letter-spacing: 1px; color: rgba(255,255,255,0.4);
-            white-space: nowrap; flex-shrink: 0;
+            font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: 1.5px; color: rgba(255,255,255,0.35);
+            white-space: nowrap; flex-shrink: 0; display:flex;align-items:center;gap:5px;
         }
-        .countdown-chips { display: flex; gap: 0.7rem; flex-wrap: nowrap; }
+        .countdown-divider {
+            width:1px;height:24px;background:rgba(255,255,255,0.1);flex-shrink:0;
+        }
+        .countdown-chips { display: flex; gap: 0.6rem; flex-wrap: nowrap; }
+
+        /* Chip */
         .cd-chip {
             display: flex; align-items: center; gap: 10px;
-            background: rgba(255,255,255,0.06);
-            border: 1px solid rgba(255,255,255,0.1);
-            border-radius: 12px; padding: 0.5rem 1rem;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 10px; padding: 0.45rem 0.9rem;
             white-space: nowrap; flex-shrink: 0;
-            transition: background 0.2s;
+            transition: background 0.2s, border-color 0.2s;
+            position:relative; overflow:hidden;
         }
-        .cd-chip:hover { background: rgba(255,255,255,0.1); }
+        .cd-chip::before {
+            content:''; position:absolute; inset:0;
+            background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0.03) 100%);
+        }
+        .cd-chip:hover { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); }
         .cd-chip-name {
-            font-size: 0.82rem; font-weight: 700; color: white;
+            font-size: 0.78rem; font-weight: 700; color: white;
         }
-        .cd-chip-blocks { display: flex; gap: 5px; }
+        .cd-chip-blocks { display: flex; gap: 4px; align-items: center; }
         .cd-block {
-            background: rgba(255,255,255,0.1);
-            border-radius: 7px; padding: 0.28rem 0.5rem;
-            text-align: center; min-width: 38px;
+            background: rgba(255,255,255,0.08); border-radius: 6px;
+            padding: 0.22rem 0.45rem; text-align: center; min-width: 34px;
         }
         .cd-block .n {
             font-family: 'Plus Jakarta Sans', sans-serif;
-            font-size: 1rem; font-weight: 800; color: white;
-            display: block; line-height: 1;
+            font-size: 0.88rem; font-weight: 800; color: white;
+            display: block; line-height: 1; font-variant-numeric: tabular-nums;
         }
         .cd-block .u {
-            font-size: 0.55rem; color: rgba(255,255,255,0.45);
+            font-size: 0.48rem; color: rgba(255,255,255,0.4);
             text-transform: uppercase; letter-spacing: 0.5px;
         }
-        .cd-sep { color: rgba(255,255,255,0.2); font-size: 1rem; align-self: center; }
-        .cd-chip.urgent { border-color: rgba(239,68,68,0.5); }
+        .cd-sep { color: rgba(255,255,255,0.25); font-size: 0.85rem; font-weight:700; }
+
+        /* Urgency colors */
+        .cd-chip.urgent {
+            border-color: rgba(239,68,68,0.4);
+            background: rgba(239,68,68,0.08);
+        }
         .cd-chip.urgent .cd-block { background: rgba(239,68,68,0.15); }
         .cd-chip.urgent .cd-block .n { color: #FCA5A5; }
-        .cd-chip.soon { border-color: rgba(245,158,11,0.5); }
+        .cd-chip.urgent .cd-chip-name { color: #FCA5A5; }
+
+        .cd-chip.soon {
+            border-color: rgba(245,158,11,0.4);
+            background: rgba(245,158,11,0.06);
+        }
         .cd-chip.soon .cd-block { background: rgba(245,158,11,0.12); }
         .cd-chip.soon .cd-block .n { color: #FCD34D; }
-        .cd-add-btn {
-            background: rgba(37,99,235,0.25); border: 1px dashed rgba(37,99,235,0.5);
-            color: rgba(255,255,255,0.5); border-radius: 12px;
-            padding: 0.5rem 0.9rem; font-size: 0.8rem; font-weight: 600;
+        .cd-chip.soon .cd-chip-name { color: #FCD34D; }
+
+        .cd-chip.normal .cd-block .n { color: #93C5FD; }
+        .cd-chip.normal .cd-chip-name { color: #93C5FD; }
+
+        /* Manage button */
+        .cd-manage-btn {
+            background: rgba(37,99,235,0.2);
+            border: 1px solid rgba(37,99,235,0.4);
+            color: rgba(255,255,255,0.7); border-radius: 8px;
+            padding: 0.38rem 0.8rem; font-size: 0.72rem; font-weight: 700;
             cursor: pointer; white-space: nowrap; flex-shrink: 0;
             font-family: 'Inter', sans-serif;
-            transition: all 0.2s; display: flex; align-items: center; gap: 6px;
+            transition: all 0.2s;
+            display: flex; align-items: center; gap: 5px;
         }
-        .cd-add-btn:hover { background: rgba(37,99,235,0.4); color: white; border-color: rgba(37,99,235,0.8); }
+        .cd-manage-btn:hover {
+            background: rgba(37,99,235,0.4); color: white;
+            border-color: rgba(37,99,235,0.7);
+        }
+        .cd-no-exams {
+            color: rgba(255,255,255,0.25); font-size: 0.75rem;
+            font-style: italic; white-space: nowrap;
+        }
 
-        /* ══ EXAM MANAGER MODAL ══ */
+/* ══ EXAM MANAGER MODAL ══ */
         .exam-modal {
             background: var(--card); border-radius: 20px;
             padding: 1.8rem; width: 90%; max-width: 480px;
@@ -1147,6 +1190,103 @@
             .week-strip { gap: 4px; }
             .wd-name { font-size: 0.58rem; }
         }
+
+        /* ══════════════════════════════
+           ANALYTICS
+        ══════════════════════════════ */
+        .analytics-header { margin-bottom: 1.4rem; }
+
+        .analytics-summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 0.9rem; margin-bottom: 1.4rem;
+        }
+        .asum-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 13px; padding: 1rem; text-align: center;
+            border-top: 3px solid var(--primary);
+        }
+        .asum-card .an {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 1.7rem; font-weight: 800; display: block;
+            color: var(--primary);
+        }
+        .asum-card .al { font-size: 0.72rem; color: var(--muted); font-weight: 600; }
+
+        /* Graph */
+        .analytics-graph-wrap {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 14px; padding: 1.2rem; margin-bottom: 0.5rem;
+        }
+        .analytics-graph-title {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.95rem; font-weight: 700; margin-bottom: 1rem;
+        }
+        .analytics-graph {
+            display: flex; align-items: flex-end; gap: 6px;
+            height: 140px; overflow-x: auto; padding-bottom: 4px;
+        }
+        .graph-bar-wrap {
+            display: flex; flex-direction: column; align-items: center;
+            gap: 4px; flex-shrink: 0; min-width: 42px;
+        }
+        .graph-bar-pct {
+            font-size: 0.62rem; font-weight: 700; color: var(--text);
+        }
+        .graph-bar {
+            width: 32px; border-radius: 6px 6px 0 0;
+            transition: height 0.6s ease; cursor: pointer;
+            position: relative;
+        }
+        .graph-bar:hover { opacity: 0.8; }
+        .graph-bar-label {
+            font-size: 0.6rem; color: var(--muted); text-align: center;
+            max-width: 42px; overflow: hidden; text-overflow: ellipsis;
+            white-space: nowrap; font-weight: 600;
+        }
+        .graph-empty {
+            width: 100%; text-align: center; color: var(--muted);
+            font-size: 0.85rem; padding: 2rem;
+            display: flex; align-items: center; justify-content: center;
+        }
+
+        /* Score cards */
+        .score-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: 13px; padding: 1rem 1.2rem;
+            display: flex; align-items: center; gap: 1rem;
+            margin-bottom: 8px; transition: all 0.2s;
+            animation: cardIn 0.3s ease both;
+        }
+        .score-card:hover { transform: translateX(3px); box-shadow: var(--shadow); }
+        .score-pct-badge {
+            width: 52px; height: 52px; border-radius: 50%; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-size: 0.9rem; font-weight: 800; border: 3px solid;
+        }
+        .score-card-body { flex: 1; }
+        .score-card-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 3px; }
+        .score-card-meta {
+            display: flex; gap: 10px; font-size: 0.75rem; color: var(--muted);
+            flex-wrap: wrap; align-items: center;
+        }
+        .score-card-meta span { display: flex; align-items: center; gap: 3px; }
+        .score-card-remarks {
+            font-size: 0.75rem; color: var(--muted); font-style: italic;
+            margin-top: 3px;
+        }
+        .score-edit-btn {
+            background: var(--bg); border: 1.5px solid var(--border);
+            color: var(--muted); padding: 0.4rem 0.7rem; border-radius: 8px;
+            cursor: pointer; font-size: 0.78rem; font-weight: 600;
+            font-family: 'Inter', sans-serif; transition: all 0.2s; flex-shrink: 0;
+        }
+        .score-edit-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+        @media (max-width: 700px) {
+            .analytics-summary { grid-template-columns: repeat(2,1fr); }
+        }
     </style>
 </head>
 <body>
@@ -1263,6 +1403,14 @@
         </div>
 
         <div class="sidebar-section">
+            <div class="sidebar-label">📈 Analytics</div>
+            <a class="sidebar-item" onclick="switchSection('analytics', this)">
+                <i class="fa-solid fa-chart-line"></i>
+                Score Analytics
+            </a>
+        </div>
+
+        <div class="sidebar-section">
             <div class="sidebar-label">My Progress</div>
             <a class="sidebar-item" onclick="switchSection('attempted', this)">
                 <i class="fa-solid fa-circle-check"></i>
@@ -1302,12 +1450,16 @@
         <!-- ══ EXAM COUNTDOWN BAR ══ -->
         <div class="countdown-bar" id="countdownBar">
             <div class="countdown-inner">
-                <span class="countdown-label"><i class="fa-solid fa-stopwatch" style="margin-right:5px"></i>Upcoming Exams</span>
+                <span class="countdown-label">
+                    <i class="fa-solid fa-clock"></i> EXAMS
+                </span>
+                <div class="countdown-divider"></div>
                 <div class="countdown-chips" id="countdownChips">
-                    <!-- chips rendered by JS -->
+                    <span class="cd-no-exams">No exams added yet</span>
                 </div>
-                <button class="cd-add-btn" onclick="openExamManager()">
-                    <i class="fa-solid fa-gear"></i> Manage
+                <div class="countdown-divider"></div>
+                <button class="cd-manage-btn" onclick="openExamManager()">
+                    <i class="fa-solid fa-sliders"></i> Manage
                 </button>
             </div>
         </div>
@@ -1351,6 +1503,32 @@
                 <div class="filters" id="filterWrap"></div>
             </div>
             <div class="test-grid" id="testGrid"></div>
+
+        <!-- ══ ANALYTICS SECTION ══ -->
+        <div id="analyticsSection" style="display:none">
+            <div class="analytics-header">
+                <h2 class="tracker-title"><i class="fa-solid fa-chart-line"></i> Score Analytics</h2>
+                <p class="tracker-sub">Track your performance across all tests</p>
+            </div>
+            <!-- Summary cards -->
+            <div class="analytics-summary" id="analyticsSummary"></div>
+            <!-- Filters -->
+            <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.2rem;align-items:center">
+                <div class="notes-filter-pills" id="analyticsSubjFilter"></div>
+                <select id="analyticsSort" onchange="renderAnalytics()" style="padding:0.5rem 0.8rem;border-radius:9px;border:1.5px solid var(--border);background:var(--card);color:var(--text);font-size:0.82rem;font-family:'Inter',sans-serif;outline:none">
+                    <option value="recent">Recent First</option>
+                    <option value="best">Best Score</option>
+                    <option value="worst">Needs Work</option>
+                </select>
+            </div>
+            <!-- Graph -->
+            <div class="analytics-graph-wrap" id="analyticsGraphWrap">
+                <div class="analytics-graph-title">📊 Score Trend</div>
+                <div class="analytics-graph" id="analyticsGraph"></div>
+            </div>
+            <!-- Test score list -->
+            <div id="analyticsTestList" style="margin-top:1.4rem"></div>
+        </div>
 
         <!-- ══ PLANNER SECTION ══ -->
         <div id="plannerSection" style="display:none">
@@ -1613,13 +1791,21 @@ function switchSection(sec, el) {
 
     // Notes sections
     if (sec === 'notes' || sec === 'notes_paper1' || sec === 'notes_commerce') {
-        const subjectMap = { notes: 'All', notes_paper1: 'UGC NET Paper 1', notes_commerce: 'UGC NET Commerce' };
+        const subjectMap = { notes: 'All', notes_paper1: 'UGC NET PAPER 1', notes_commerce: 'UGC NET Commerce' };
         notesCurSubject = subjectMap[sec] || 'All';
         document.getElementById('topbarTitle').textContent = sec === 'notes' ? 'All Notes' : subjectMap[sec] + ' Notes';
         showNotesSection();
         closeSidebar();
         loadNotesData();
         loadNotesCSV();
+        return;
+    }
+    // Analytics section
+    if (sec === 'analytics') {
+        showAnalyticsSection();
+        document.getElementById('topbarTitle').textContent = 'Score Analytics';
+        closeSidebar();
+        initAnalytics();
         return;
     }
     // Planner section
@@ -1689,6 +1875,7 @@ function doLogin(u) {
     loadCSV();
     loadProgress();
     if (typeof loadNotesData === "function") loadNotesData();
+    if (typeof loadScoreData === "function") loadScoreData();
 }
 
 function signOut() {
@@ -1893,7 +2080,8 @@ function renderTests() {
                 ${done && ts ? `<div class="attempt-info"><i class="fa-solid fa-circle-check"></i> Last attempted ${fmtDate(ts)}</div>` : ''}
             </div>
             <div class="card-footer">
-                <a href="${t.link}" class="btn ${done ? 'reattempt' : ''}" target="_blank">
+                <a href="${t.link}" class="btn ${done ? 'reattempt' : ''}" target="_blank"
+                   onclick="onStartTest('${id}', this.dataset.title, '${t.q}')" data-title="${t.title.replace(/"/g,'&quot;')}">
                     ${done ? '<i class="fa-solid fa-rotate-left"></i> Re-attempt' : 'Start Test <i class="fa-solid fa-arrow-right"></i>'}
                 </a>
                 <button class="mark-btn ${done ? 'done' : ''}" title="${done ? 'Unmark' : 'Mark as done'}" onclick="toggleDone('${id}')">
@@ -2045,7 +2233,7 @@ function renderNotes() {
 
     let filtered = allNotes.filter(n => {
         const matchQ    = n.pdfName.toLowerCase().includes(q) || n.topic.toLowerCase().includes(q) || n.subject.toLowerCase().includes(q) || n.description.toLowerCase().includes(q);
-        const matchSubj = notesCurSubject === 'All' || n.subject === notesCurSubject;
+        const matchSubj = notesCurSubject === 'All' || n.subject.toLowerCase() === notesCurSubject.toLowerCase();
         const matchBm   = !bmOnly || noteBookmarks[nid(n)];
         return matchQ && matchSubj && matchBm;
     });
@@ -2174,6 +2362,8 @@ function showTestsSection() {
     if (ts) ts.style.display = 'none';
     const ps = document.getElementById('plannerSection');
     if (ps) ps.style.display = 'none';
+    const as = document.getElementById('analyticsSection');
+    if (as) as.style.display = 'none';
     document.querySelector('.controls') && (document.querySelector('.controls').style.display = 'flex');
     document.getElementById('testGrid').style.display = '';
     document.querySelector('.hero') && (document.querySelector('.hero').style.display = 'block');
@@ -2998,6 +3188,463 @@ function showPlannerSection() {
     const cb = document.getElementById('countdownBar'); if (cb) cb.style.display = 'none';
 }
 
+
+// ═══════════════════════════════════════
+// SCORE RECORDING + ANALYTICS
+// ═══════════════════════════════════════
+
+let scoreData       = {};  // { testId: [{ correct, total, pct, remarks, date, time, title, subject, tag }] }
+let currentScoreId  = null;
+let currentScoreTitle = '';
+let currentScoreTotalQ = 0;
+let analyticsSubjFilter = 'All';
+
+// ── LOAD/SAVE ──
+function loadScoreData() {
+    try {
+        const s = localStorage.getItem('et_scores_' + (user?.email || ''));
+        if (s) scoreData = JSON.parse(s);
+    } catch { scoreData = {}; }
+}
+
+function saveScoreData() {
+    localStorage.setItem('et_scores_' + (user?.email || ''), JSON.stringify(scoreData));
+    if (user) {
+        scriptFetch({ action: 'scores_save', email: user.email, scores: scoreData }).catch(() => {});
+    }
+}
+
+function syncScoresFromSheet(cb) {
+    if (!user) { cb && cb(); return; }
+    try {
+        const s = localStorage.getItem('et_scores_' + user.email);
+        if (s) scoreData = JSON.parse(s);
+    } catch {}
+    scriptFetch({ action: 'scores_load', email: user.email })
+    .then(d => {
+        if (d && d.status === 'ok' && d.scores) {
+            scoreData = d.scores;
+            localStorage.setItem('et_scores_' + user.email, JSON.stringify(scoreData));
+        }
+        cb && cb();
+    })
+    .catch(() => { cb && cb(); });
+}
+
+// ── ON START TEST ──
+function onStartTest(testId, titleEl, totalQ) {
+    const title = typeof titleEl === 'string' ? titleEl : (titleEl?.dataset?.title || '');
+    // Mark attempted
+    if (!attempted[testId]) {
+        attempted[testId] = new Date().toISOString();
+        syncAction(testId, 'save');
+        updateUI();
+    }
+    currentScoreId     = testId;
+    currentScoreTitle  = title;
+    currentScoreTotalQ = parseInt(totalQ) || 0;
+    // Show score modal after short delay
+    setTimeout(() => openScoreModal(testId, title, totalQ), 600);
+}
+
+// ── SCORE MODAL ──
+function openScoreModal(testId, title, totalQ) {
+    currentScoreId     = testId;
+    currentScoreTitle  = title;
+    currentScoreTotalQ = parseInt(totalQ) || 0;
+
+    const nameEl = document.getElementById('scoreModalTestName');
+    if (nameEl) nameEl.textContent = '📝 ' + title;
+
+    const totalEl = document.getElementById('scoreTotal');
+    if (totalEl && totalQ) totalEl.value = totalQ;
+
+    const correctEl = document.getElementById('scoreCorrect');
+    if (correctEl) correctEl.value = '';
+
+    const remarksEl = document.getElementById('scoreRemarks');
+    if (remarksEl) remarksEl.value = '';
+
+    const preview = document.getElementById('scorePreview');
+    if (preview) preview.style.display = 'none';
+
+    document.getElementById('scoreModalOverlay').classList.add('open');
+    setTimeout(() => correctEl?.focus(), 100);
+}
+
+function closeScoreModal() {
+    document.getElementById('scoreModalOverlay').classList.remove('open');
+    currentScoreId = null;
+}
+
+function skipScore() {
+    closeScoreModal();
+    toast('↩️', 'Score not recorded');
+}
+
+function updateScorePreview() {
+    const correct = parseInt(document.getElementById('scoreCorrect')?.value || 0);
+    const total   = parseInt(document.getElementById('scoreTotal')?.value   || 0);
+    const preview = document.getElementById('scorePreview');
+    const pctEl   = document.getElementById('scorePct');
+    const gradeEl = document.getElementById('scoreGrade');
+
+    if (!preview || !pctEl || !gradeEl) return;
+    if (correct > 0 && total > 0) {
+        const pct = Math.round(correct / total * 100);
+        preview.style.display = 'block';
+        pctEl.textContent = pct + '%';
+        pctEl.style.color = pct >= 80 ? '#10B981' : pct >= 60 ? '#3B82F6' : pct >= 40 ? '#F59E0B' : '#EF4444';
+
+        let grade = '', emoji = '';
+        if (pct >= 90)      { grade = 'Excellent! 🏆'; }
+        else if (pct >= 80) { grade = 'Very Good! ⭐'; }
+        else if (pct >= 70) { grade = 'Good 👍'; }
+        else if (pct >= 60) { grade = 'Average 📚'; }
+        else if (pct >= 40) { grade = 'Needs Work 💪'; }
+        else                { grade = 'Revise Again 🔄'; }
+        gradeEl.textContent = grade;
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+function saveScore() {
+    const correct  = parseInt(document.getElementById('scoreCorrect')?.value);
+    const total    = parseInt(document.getElementById('scoreTotal')?.value);
+    const remarks  = document.getElementById('scoreRemarks')?.value.trim() || '';
+
+    if (!correct || !total) { toast('⚠️', 'Enter correct and total questions!'); return; }
+    if (correct > total)    { toast('⚠️', 'Correct cannot be more than total!'); return; }
+    if (!currentScoreId)    { closeScoreModal(); return; }
+
+    const pct = Math.round(correct / total * 100);
+    const now = new Date();
+
+    // Find test details
+    const test = allTests.find(t => tid(t) === currentScoreId);
+
+    if (!scoreData[currentScoreId]) scoreData[currentScoreId] = [];
+    scoreData[currentScoreId].push({
+        correct, total, pct, remarks,
+        date:    now.toLocaleDateString('en-IN', { day:'numeric', month:'short', year:'numeric' }),
+        time:    now.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' }),
+        ts:      now.toISOString(),
+        title:   currentScoreTitle,
+        subject: test?.subject || '',
+        tag:     test?.tag     || ''
+    });
+
+    saveScoreData();
+    closeScoreModal();
+    renderTests(); // refresh cards to show score
+    toast('🎯', pct + '% — Score saved!');
+}
+
+// ── ANALYTICS SECTION ──
+function initAnalytics() {
+    syncScoresFromSheet(() => {
+        makeAnalyticsSubjFilter();
+        renderAnalytics();
+    });
+}
+
+function makeAnalyticsSubjFilter() {
+    const wrap = document.getElementById('analyticsSubjFilter');
+    if (!wrap) return;
+    const subjects = ['All', ...new Set(Object.values(scoreData).flat().map(s => s.subject).filter(Boolean))];
+    wrap.innerHTML = subjects.map(s =>
+        `<button class="filt-btn ${s === analyticsSubjFilter ? 'active' : ''}"
+                 onclick="setAnalyticsSubj('${s.replace(/'/g,"\\'")}', this)">${s}</button>`
+    ).join('');
+}
+
+function setAnalyticsSubj(subj, el) {
+    analyticsSubjFilter = subj;
+    document.querySelectorAll('#analyticsSubjFilter .filt-btn').forEach(x => x.classList.remove('active'));
+    if (el) el.classList.add('active');
+    renderAnalytics();
+}
+
+function renderAnalytics() {
+    // Flatten all scores
+    let allScores = Object.entries(scoreData).flatMap(([testId, attempts]) =>
+        attempts.map(a => ({ ...a, testId }))
+    );
+
+    // Subject filter
+    if (analyticsSubjFilter !== 'All') {
+        allScores = allScores.filter(s => s.subject === analyticsSubjFilter);
+    }
+
+    // Sort
+    const sort = document.getElementById('analyticsSort')?.value || 'recent';
+    if (sort === 'recent') allScores.sort((a,b) => new Date(b.ts) - new Date(a.ts));
+    if (sort === 'best')   allScores.sort((a,b) => b.pct - a.pct);
+    if (sort === 'worst')  allScores.sort((a,b) => a.pct - b.pct);
+
+    renderAnalyticsSummary(allScores);
+    renderScoreGraph(allScores);
+    renderScoreList(allScores);
+}
+
+function renderAnalyticsSummary(scores) {
+    const el = document.getElementById('analyticsSummary');
+    if (!el) return;
+
+    const total    = scores.length;
+    const avg      = total > 0 ? Math.round(scores.reduce((s,x) => s+x.pct, 0) / total) : 0;
+    const best     = total > 0 ? Math.max(...scores.map(s => s.pct)) : 0;
+    const tests    = new Set(scores.map(s => s.testId)).size;
+
+    const colorFor = p => p >= 80 ? '#10B981' : p >= 60 ? '#3B82F6' : p >= 40 ? '#F59E0B' : '#EF4444';
+
+    el.innerHTML = `
+        <div class="asum-card" style="border-top-color:#3B82F6">
+            <span class="an" style="color:#3B82F6">${total}</span>
+            <span class="al">Total Attempts</span>
+        </div>
+        <div class="asum-card" style="border-top-color:${colorFor(avg)}">
+            <span class="an" style="color:${colorFor(avg)}">${avg}%</span>
+            <span class="al">Avg Score</span>
+        </div>
+        <div class="asum-card" style="border-top-color:#10B981">
+            <span class="an" style="color:#10B981">${best}%</span>
+            <span class="al">Best Score</span>
+        </div>
+        <div class="asum-card" style="border-top-color:#8B5CF6">
+            <span class="an" style="color:#8B5CF6">${tests}</span>
+            <span class="al">Tests Attempted</span>
+        </div>`;
+}
+
+function renderScoreGraph(scores) {
+    const el = document.getElementById('analyticsGraph');
+    if (!el) return;
+
+    // Show last 15 attempts
+    const recent = [...scores].sort((a,b) => new Date(a.ts)-new Date(b.ts)).slice(-15);
+
+    if (!recent.length) {
+        el.innerHTML = '<div class="graph-empty">No scores yet — complete a test to see your graph!</div>';
+        return;
+    }
+
+    const max = 100;
+    el.innerHTML = recent.map((s,i) => {
+        const h     = Math.max(8, Math.round(s.pct / max * 120));
+        const color = s.pct >= 80 ? '#10B981' : s.pct >= 60 ? '#3B82F6' : s.pct >= 40 ? '#F59E0B' : '#EF4444';
+        const short = s.title.length > 8 ? s.title.substring(0,8) + '…' : s.title;
+        return `
+        <div class="graph-bar-wrap" title="${s.title} — ${s.pct}% (${s.date})">
+            <div class="graph-bar-pct">${s.pct}%</div>
+            <div class="graph-bar" style="height:${h}px;background:${color};opacity:0.85"></div>
+            <div class="graph-bar-label">${short}</div>
+        </div>`;
+    }).join('');
+}
+
+function renderScoreList(scores) {
+    const el = document.getElementById('analyticsTestList');
+    if (!el) return;
+
+    if (!scores.length) {
+        el.innerHTML = '<div class="notes-empty"><i class="fa-solid fa-chart-bar"></i><p>No scores recorded yet.<br>Start a test and record your score!</p></div>';
+        return;
+    }
+
+    el.innerHTML = scores.map((s,i) => {
+        const color = s.pct >= 80 ? '#10B981' : s.pct >= 60 ? '#3B82F6' : s.pct >= 40 ? '#F59E0B' : '#EF4444';
+        return `
+        <div class="score-card" style="animation-delay:${Math.min(i*0.04,0.3)}s">
+            <div class="score-pct-badge" style="color:${color};border-color:${color};background:${color}18">
+                ${s.pct}%
+            </div>
+            <div class="score-card-body">
+                <div class="score-card-title">${s.title}</div>
+                <div class="score-card-meta">
+                    ${s.subject ? `<span><i class="fa-solid fa-bookmark"></i> ${s.subject}</span>` : ''}
+                    <span><i class="fa-solid fa-check"></i> ${s.correct}/${s.total}</span>
+                    <span><i class="fa-regular fa-calendar"></i> ${s.date}</span>
+                    <span><i class="fa-regular fa-clock"></i> ${s.time}</span>
+                </div>
+                ${s.remarks ? `<div class="score-card-remarks">"${s.remarks}"</div>` : ''}
+            </div>
+        </div>`;
+    }).join('');
+}
+
+// ── SHOW/HIDE ──
+function showAnalyticsSection() {
+    document.getElementById('analyticsSection').style.display = 'block';
+    ['notesSection','trackerSection','plannerSection'].forEach(id => {
+        const el = document.getElementById(id); if (el) el.style.display = 'none';
+    });
+    document.querySelector('.controls') && (document.querySelector('.controls').style.display = 'none');
+    document.getElementById('testGrid').style.display = 'none';
+    document.querySelector('.hero')    && (document.querySelector('.hero').style.display = 'none');
+    const cb = document.getElementById('countdownBar'); if (cb) cb.style.display = 'none';
+}
+
+// Close score modal on backdrop
+document.getElementById('scoreModalOverlay')?.addEventListener('click', e => {
+    if (e.target.id === 'scoreModalOverlay') closeScoreModal();
+});
+
+
+// ═══════════════════════════════════════
+// EXAM COUNTDOWN — Complete
+// ═══════════════════════════════════════
+let exams = [];
+let countdownTick = null;
+
+function loadExams() {
+    try { exams = JSON.parse(localStorage.getItem('et_exams') || '[]'); } 
+    catch { exams = []; }
+    renderCountdown();
+    startCountdownTick();
+}
+
+function saveExams() {
+    localStorage.setItem('et_exams', JSON.stringify(exams));
+}
+
+function openExamManager() {
+    document.getElementById('examModalOverlay').classList.add('open');
+    renderExamList();
+}
+
+function closeExamManager() {
+    document.getElementById('examModalOverlay').classList.remove('open');
+}
+
+function addExam() {
+    const nameEl = document.getElementById('examNameInput');
+    const dateEl = document.getElementById('examDateInput');
+    const name   = nameEl?.value.trim();
+    const date   = dateEl?.value;
+    if (!name || !date) { toast('⚠️', 'Enter exam name and date!'); return; }
+    if (new Date(date) < new Date()) { toast('⚠️', 'Select a future date!'); return; }
+    exams.push({ id: Date.now(), name, date });
+    exams.sort((a,b) => new Date(a.date) - new Date(b.date));
+    saveExams();
+    if (nameEl) nameEl.value = '';
+    if (dateEl) dateEl.value = '';
+    renderExamList();
+    renderCountdown();
+    toast('✅', 'Exam added!');
+}
+
+function deleteExam(id) {
+    exams = exams.filter(e => e.id !== id);
+    saveExams();
+    renderExamList();
+    renderCountdown();
+}
+
+function renderExamList() {
+    const el = document.getElementById('examList');
+    if (!el) return;
+    if (!exams.length) {
+        el.innerHTML = '<div style="text-align:center;color:var(--muted);font-size:0.85rem;padding:1rem 0">No exams added yet</div>';
+        return;
+    }
+    el.innerHTML = exams.map(e => {
+        const days    = Math.ceil((new Date(e.date) - new Date()) / 86400000);
+        const daysStr = days > 0 ? `${days} days left` : days === 0 ? '🔥 Today!' : '✅ Passed';
+        const dateStr = new Date(e.date).toLocaleDateString('en-IN', { day:'numeric', month:'long', year:'numeric' });
+        return `
+        <div class="exam-row">
+            <div class="exam-row-info">
+                <div class="exam-row-name">${e.name}</div>
+                <div class="exam-row-date">${dateStr} &nbsp;·&nbsp; <strong>${daysStr}</strong></div>
+            </div>
+            <button class="exam-del-btn" onclick="deleteExam(${e.id})">
+                <i class="fa-solid fa-trash"></i>
+            </button>
+        </div>`;
+    }).join('');
+}
+
+function renderCountdown() {
+    const container = document.getElementById('countdownChips');
+    if (!container) return;
+
+    const now     = new Date();
+    const future  = exams.filter(e => new Date(e.date) >= now);
+
+    if (!future.length) {
+        container.innerHTML = '<span class="cd-no-exams">No upcoming exams — click Manage to add</span>';
+        return;
+    }
+
+    container.innerHTML = future.map(e => {
+        const diff  = new Date(e.date) - now;
+        const days  = Math.floor(diff / 86400000);
+        const hrs   = Math.floor((diff % 86400000) / 3600000);
+        const mins  = Math.floor((diff % 3600000)  / 60000);
+        const secs  = Math.floor((diff % 60000)    / 1000);
+
+        const chipCls = days < 7 ? 'cd-chip urgent' : days < 30 ? 'cd-chip soon' : 'cd-chip normal';
+
+        return `
+        <div class="${chipCls}">
+            <span class="cd-chip-name">🎯 ${e.name}</span>
+            <div class="cd-chip-blocks">
+                <div class="cd-block">
+                    <span class="n" id="cdd_${e.id}">${String(days).padStart(2,'0')}</span>
+                    <span class="u">Days</span>
+                </div>
+                <span class="cd-sep">:</span>
+                <div class="cd-block">
+                    <span class="n" id="cdh_${e.id}">${String(hrs).padStart(2,'0')}</span>
+                    <span class="u">Hrs</span>
+                </div>
+                <span class="cd-sep">:</span>
+                <div class="cd-block">
+                    <span class="n" id="cdm_${e.id}">${String(mins).padStart(2,'0')}</span>
+                    <span class="u">Min</span>
+                </div>
+                <span class="cd-sep">:</span>
+                <div class="cd-block">
+                    <span class="n" id="cds_${e.id}">${String(secs).padStart(2,'0')}</span>
+                    <span class="u">Sec</span>
+                </div>
+            </div>
+        </div>`;
+    }).join('');
+}
+
+function startCountdownTick() {
+    if (countdownTick) clearInterval(countdownTick);
+    countdownTick = setInterval(() => {
+        const now = new Date();
+        exams.filter(e => new Date(e.date) >= now).forEach(e => {
+            const diff = new Date(e.date) - now;
+            const days = Math.floor(diff / 86400000);
+            const hrs  = Math.floor((diff % 86400000) / 3600000);
+            const mins = Math.floor((diff % 3600000)  / 60000);
+            const secs = Math.floor((diff % 60000)    / 1000);
+            const d = document.getElementById('cdd_' + e.id);
+            const h = document.getElementById('cdh_' + e.id);
+            const m = document.getElementById('cdm_' + e.id);
+            const s = document.getElementById('cds_' + e.id);
+            if (d) d.textContent = String(days).padStart(2,'0');
+            if (h) h.textContent = String(hrs).padStart(2,'0');
+            if (m) m.textContent = String(mins).padStart(2,'0');
+            if (s) s.textContent = String(secs).padStart(2,'0');
+        });
+    }, 1000);
+}
+
+// Close exam modal on backdrop
+document.getElementById('examModalOverlay')?.addEventListener('click', e => {
+    if (e.target.id === 'examModalOverlay') closeExamManager();
+});
+
+// Load exams on start
+loadExams();
+
 </script>
 
 <!-- ══ EMAIL LOGIN MODAL ══ -->
@@ -3061,6 +3708,49 @@ function showPlannerSection() {
     </div>
     <div class="pdf-frame-wrap">
         <iframe id="pdfFrame" src="" allowfullscreen></iframe>
+    </div>
+</div>
+
+
+<!-- ══ SCORE ENTRY MODAL ══ -->
+<div class="overlay" id="scoreModalOverlay">
+    <div class="modal" style="max-width:420px">
+        <div class="modal-hdr">
+            <h2><i class="fa-solid fa-star" style="color:#F59E0B;margin-right:8px"></i>Record Score</h2>
+            <button class="modal-close" onclick="closeScoreModal()"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="scoreModalTestName" style="font-size:0.9rem;font-weight:600;color:var(--muted);margin-bottom:1.2rem;padding:0.7rem;background:var(--bg);border-radius:10px;border:1px solid var(--border)"></div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1rem">
+            <div>
+                <label style="font-size:0.78rem;font-weight:700;color:var(--muted);display:block;margin-bottom:5px">✅ Correct</label>
+                <input type="number" id="scoreCorrect" min="0" placeholder="e.g. 45"
+                    style="width:100%;padding:0.75rem;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:1.1rem;font-weight:700;font-family:'Inter',sans-serif;outline:none;text-align:center"
+                    oninput="updateScorePreview()">
+            </div>
+            <div>
+                <label style="font-size:0.78rem;font-weight:700;color:var(--muted);display:block;margin-bottom:5px">📝 Total Qs</label>
+                <input type="number" id="scoreTotal" min="0" placeholder="e.g. 50"
+                    style="width:100%;padding:0.75rem;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:1.1rem;font-weight:700;font-family:'Inter',sans-serif;outline:none;text-align:center"
+                    oninput="updateScorePreview()">
+            </div>
+        </div>
+        <div id="scorePreview" style="display:none;text-align:center;padding:1rem;background:var(--bg);border-radius:12px;margin-bottom:1rem;border:1px solid var(--border)">
+            <div style="font-family:'Plus Jakarta Sans',sans-serif;font-size:2rem;font-weight:800" id="scorePct">0%</div>
+            <div style="font-size:0.8rem;color:var(--muted)" id="scoreGrade">-</div>
+        </div>
+        <div style="margin-bottom:1rem">
+            <label style="font-size:0.78rem;font-weight:700;color:var(--muted);display:block;margin-bottom:5px">💬 Remarks (optional)</label>
+            <input type="text" id="scoreRemarks" placeholder="e.g. Need to revise Unit 3..."
+                style="width:100%;padding:0.72rem 0.9rem;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:0.9rem;font-family:'Inter',sans-serif;outline:none">
+        </div>
+        <div style="display:flex;gap:8px">
+            <button onclick="saveScore()" style="flex:1;background:var(--primary);color:white;border:none;padding:0.78rem;border-radius:10px;font-weight:700;font-size:0.95rem;cursor:pointer;font-family:'Inter',sans-serif">
+                <i class="fa-solid fa-floppy-disk"></i> Save Score
+            </button>
+            <button onclick="skipScore()" style="background:var(--bg);border:1.5px solid var(--border);color:var(--muted);padding:0.78rem 1rem;border-radius:10px;font-weight:600;font-size:0.9rem;cursor:pointer;font-family:'Inter',sans-serif">
+                Skip
+            </button>
+        </div>
     </div>
 </div>
 
