@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>DEC 2025 LEGAL ASPECTS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "DEC 2025 LEGAL ASPECTS", "organization": "ExamTym", "durationMinutes": 20, "totalMarks": 20.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Assertion (A): A gentleman died leaving a young widow. The relatives of the deceased threatened the widow to adopt a boy otherwise they would not allow her to remove the dead body of her husband for cremation. The widow adopted the boy. Reason (R): The widow subsequently cancelled the adoption. The court held her consent was not free due to coercion.", "options": [{"id": "1", "text": "Both (A) and (R) are correct and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are correct but (R) is not the correct explanation of (A)"}, {"id": "3", "text": "(A) is correct but (R) is not correct"}, {"id": "4", "text": "(A) is not correct but (R) is correct"}], "correctAnswer": "1", "explanation": "Key Concepts:\n- **Assertion (A) is CORRECT**: The widow's consent was obtained under threat of withholding the dead body \u2014 a classic case of Coercion under Section 15 of the Indian Contract Act, 1872.\n- **Reason (R) is CORRECT and correctly explains (A)**: Threatening to commit an act forbidden by law (wrongfully withholding a dead body) = Coercion \u2014 court correctly held consent was not free, making the contract voidable at widow's option.\n- Coercion (Sec 15 ICA): Committing or threatening to commit any act forbidden by IPC, or unlawfully detaining/threatening to detain any property, to cause any person to enter into an agreement.\n- A contract induced by coercion is **voidable at the option of the aggrieved party** \u2014 the widow validly cancelled the adoption.\n**Related Concepts:**\n- Coercion vs Undue Influence (Sec 16): Coercion = physical compulsion/threat of criminal act; Undue Influence = moral/mental pressure using a position of dominance \u2014 both make contracts voidable.\n- Ranganayakamma v. Alwar Setti (1889): Classic coercion case involving widow \u2014 the foundation of this very PYQ question; threat to withhold dead body = coercion.", "id": 1}, {"question": "Arrange the following on the basis of their Sections of the Indian Contract Act, 1872 in ascending order:\nA. Agreement in restraint of Marriage\nB. Agreement made without consideration\nC. Agreement with unlawful objects or consideration\nD. Agreement in restraint of Trade\nE. Agreement by way of wager", "options": [{"id": "1", "text": "C, B, A, D, E"}, {"id": "2", "text": "C, A, D, B, E"}, {"id": "3", "text": "A, B, C, E, D"}, {"id": "4", "text": "D, B, A, C, E"}], "correctAnswer": "1", "explanation": "Key Concepts:\n- Correct section mapping: C \u2192 **Sec 23** | B \u2192 **Sec 25** | A \u2192 **Sec 26** | D \u2192 **Sec 27** | E \u2192 **Sec 30**.\n- Ascending: 23(C) < 25(B) < 26(A) < 27(D) < 30(E) \u2192 **C, B, A, D, E** \u2713\n- All these agreements are **void** (not merely voidable) \u2014 absolutely unenforceable from the beginning.\n- Exception to Sec 27: Agreement restraining a person from carrying on a business upon the sale of goodwill IS valid \u2014 classic exam trap.\n**Related Concepts:**\n- Void vs Voidable: Void = no legal effect ab initio (unlawful object \u2192 void); Voidable = valid until avoided by aggrieved party (coercion/undue influence \u2192 voidable).\n- Section 28 ICA: Agreement restricting legal proceedings is void \u2014 often confused with Sec 27 restraint of trade in matching questions.", "id": 2}, {"question": "Arrange the following Acts in ascending order as per their year of enactment:\nA. RTI (Right to Information Act)\nB. Competition Act\nC. Information Technology Act\nD. Negotiable Instrument Act\nE. Indian Contract Act", "options": [{"id": "1", "text": "E, D, C, B, A"}, {"id": "2", "text": "A, B, C, D, E"}, {"id": "3", "text": "A, B, E, D, C"}, {"id": "4", "text": "E, D, C, A, B"}], "correctAnswer": "1", "explanation": "Key Concepts:\n- Year mapping: E \u2192 **1872** | D \u2192 **1881** | C \u2192 **2000** | B \u2192 **2002** | A \u2192 **2005**.\n- Ascending: 1872(E) < 1881(D) < 2000(C) < 2002(B) < 2005(A) \u2192 **E, D, C, B, A** \u2713\n- Negotiable Instruments Act 1881 governs bills of exchange, promissory notes and cheques \u2014 Section 138 (cheque dishonour) is the most litigated provision.\n- IT Act 2000 = India's first cyber law; amended in 2008 to include cybercrimes and data protection.\n**Related Concepts:**\n- Competition Act 2002 replaced MRTP Act 1969 \u2014 established CCI to prevent anti-competitive practices and regulate mergers.\n- RTI Act 2005: Citizens' right to access information from public authorities within 30 days; Central/State Information Commissions as appellate bodies.", "id": 3}, {"question": "What are the GST rates applicable after 22nd September 2025?\nA. 5%\nB. 12%\nC. 18%\nD. 28%\nE. 40%", "options": [{"id": "1", "text": "A, B, C and D Only"}, {"id": "2", "text": "B, C, D and E Only"}, {"id": "3", "text": "A, C and E Only"}, {"id": "4", "text": "B, C and E Only"}], "correctAnswer": "1", "explanation": "Key Concepts:\n- The **four GST rate slabs** applicable are: **5%, 12%, 18%, and 28%** \u2014 Options A, B, C, D only.\n- **40% (E) does NOT exist** in the GST rate structure \u2014 it is the incorrect distractor.\n- GST Rate Structure: 0% (exempt \u2014 fresh food, healthcare) | 5% (essential items) | 12% (standard goods) | 18% (most goods/services) | 28% (luxury/sin goods + cess).\n- 28% applies to: luxury cars, aerated drinks, tobacco, gambling, casinos \u2014 with additional compensation cess on top.\n**Related Concepts:**\n- GST Compensation Cess: Levied over and above 28% on specified luxury/sin goods \u2014 originally to compensate states for revenue loss post-GST introduction.\n- Input Tax Credit (ITC): Registered businesses claim credit for GST paid on inputs against GST liability on outputs \u2014 eliminates cascading tax effect.", "id": 4}, {"question": "Match List-I (Legal Concepts) with List-II (Relevant Laws):\nList-I:\nA. Doctrine of Caveat Emptor\nB. Bailment and Pledge\nC. Holder in due Course\nD. DPIN\nI. Special Contract\nII. Limited Liability Partnership\nIII. Sales of Goods Act\nIV. Negotiable Instrument", "options": [{"id": "1", "text": "A-IV, B-I, C-II, D-III"}, {"id": "2", "text": "A-I, B-II, C-IV, D-III"}, {"id": "3", "text": "A-II, B-I, C-III, D-IV"}, {"id": "4", "text": "A-III, B-I, C-IV, D-II"}], "correctAnswer": "4", "explanation": "Key Concepts:\n- **A \u2192 III (Sales of Goods Act 1930)**: Caveat Emptor = \"Let the buyer beware\" \u2014 buyer must examine goods before purchase; seller not liable for discoverable defects.\n- **B \u2192 I (Special Contract/ICA 1872)**: Bailment (Sec 148) and Pledge (Sec 172) are Special Contracts \u2014 Bailment = delivery for a purpose; Pledge = bailment as security for a debt.\n- **C \u2192 IV (Negotiable Instruments Act 1881)**: Holder in Due Course (Sec 9) = obtains instrument for value, before maturity, in good faith, without notice of defect.\n- **D \u2192 II (LLP Act 2008)**: DPIN = Designated Partner Identification Number \u2014 unique ID for designated partners of an LLP.\n**Related Concepts:**\n- Holder vs Holder in Due Course: Holder = entitled to possess and receive payment; HiDC = additional protections, can sue all prior parties even if instrument is defective.\n- Pledge vs Hypothecation: Pledge requires actual delivery of goods; Hypothecation = security without delivery \u2014 critical distinction in banking and secured lending.", "id": 5}, {"question": "Read the following passage and answer the question. An application was sent to Registrar of Companies to obtain the certificate of incorporation on 30 June 2024. One of the promoters, Raj, made the allotment of shares of the company on 28 June 2024. He also made a contract to buy a certain machinery from Pooja by representing himself as an agent of the company on 20 June 2024. Raj also signed the Memorandum of Association (MOA) of the company on behalf of all seven members to obtain the certificate of incorporation. Inspite of all these, the certificate of incorporation was issued in respect of ABC company but wrongly dated as 25 June 2024. After sometimes, it is also found that two of the members out of seven members named in MOA were minors. He also entered into a contract after the incorporation of company to buy a building from Prakash for Rs. 1,00,00,000 but before obtaining the certificate of commencement of business. The allotment of shares was challenged as it was done before sending the application to the Registrar of Companies. Choose the correct answer:", "options": [{"id": "1", "text": "The allotment of shares is void as the certificate of incorporation is not valid"}, {"id": "2", "text": "The allotment of shares is valid as it is made after obtaining the certificate of incorporation"}, {"id": "3", "text": "The allotment of shares is void as application to obtain certificate was sent on 30th June"}, {"id": "4", "text": "The allotment of shares is void as the certificate was obtained by forged document"}], "correctAnswer": "2", "explanation": "Key Concepts:\n- Certificate of Incorporation is **conclusive evidence** under Section 9, Companies Act 2013 \u2014 once issued, it is irrefutable proof of company's valid existence.\n- The certificate (even if wrongly dated as 25 June) was ultimately issued \u2014 allotment made on 28 June is treated as valid AFTER the certificate date of 25 June.\n- The wrong dating does NOT invalidate the certificate \u2014 its conclusiveness protects third parties who rely on it.\n- Application irregularities (sent 30 June, certificate dated 25 June) cannot challenge the allotment once certificate is issued.\n**Related Concepts:**\n- Section 9, Companies Act 2013: Certificate of Incorporation is conclusive evidence \u2014 formation cannot be challenged on any procedural ground after issuance.\n- Promoter's duties before incorporation: Must disclose all material facts to registrar; fraudulent concealment may be criminal \u2014 but the certificate's conclusiveness still protects third parties.", "id": 6}, {"question": "Read the following passage and answer the question. An application was sent to Registrar of Companies to obtain the certificate of incorporation on 30 June 2024. One of the promoters, Raj, made the allotment of shares of the company on 28 June 2024. He also made a contract to buy a certain machinery from Pooja by representing himself as an agent of the company on 20 June 2024. Raj also signed the Memorandum of Association (MOA) of the company on behalf of all seven members to obtain the certificate of incorporation. Inspite of all these, the certificate of incorporation was issued in respect of ABC company but wrongly dated as 25 June 2024. After sometimes, it is also found that two of the members out of seven members named in MOA were minors. He also entered into a contract after the incorporation of company to buy a building from Prakash for Rs. 1,00,00,000 but before obtaining the certificate of commencement of business. The contract made with Pooja on 20 June 2024 will be called:", "options": [{"id": "1", "text": "Pre-incorporation Contract"}, {"id": "2", "text": "Provisional Contract"}, {"id": "3", "text": "Preliminary Contract"}, {"id": "4", "text": "Standard Contract"}], "correctAnswer": "1", "explanation": "Key Concepts:\n- Contract with Pooja was made on **20 June 2024** \u2014 BEFORE even the application was sent (30 June) and BEFORE the certificate of incorporation (25 June) \u2192 clearly a **Pre-incorporation Contract**.\n- The company did not exist on 20 June \u2014 Raj cannot act as \"agent\" of a non-existent company; therefore the company is NOT bound.\n- Pre-incorporation contracts are personally binding on the **promoter (Raj)** \u2014 he cannot escape liability by saying he acted as company's agent.\n- Company can only enter a NEW contract (novation) with same terms after incorporation \u2014 it cannot ratify a pre-incorporation contract.\n**Related Concepts:**\n- Kelner v Baxter (1866): Classic case \u2014 promoters who signed a contract on behalf of a non-existent company were personally liable; company after incorporation could not ratify the contract.\n- Ratification vs Novation: Ratification requires the principal to exist at the time of the original contract \u2014 since company did not exist, ratification is impossible; only novation (new contract) is possible.", "id": 7}, {"question": "Read the following passage and answer the question. An application was sent to Registrar of Companies to obtain the certificate of incorporation on 30 June 2024. One of the promoters, Raj, made the allotment of shares of the company on 28 June 2024. He also made a contract to buy a certain machinery from Pooja by representing himself as an agent of the company on 20 June 2024. Raj also signed the Memorandum of Association (MOA) of the company on behalf of all seven members to obtain the certificate of incorporation. Inspite of all these, the certificate of incorporation was issued in respect of ABC company but wrongly dated as 25 June 2024. After sometimes, it is also found that two of the members out of seven members named in MOA were minors. He also entered into a contract after the incorporation of company to buy a building from Prakash for Rs. 1,00,00,000 but before obtaining the certificate of commencement of business. The contract to buy a building from Prakash for \u20b91,00,00,000 will be called:", "options": [{"id": "1", "text": "Pre-incorporation Contract"}, {"id": "2", "text": "Provisional Contract"}, {"id": "3", "text": "Preliminary Contract"}, {"id": "4", "text": "Void Contract"}], "correctAnswer": "2", "explanation": "Key Concepts:\n- Building contract was made AFTER incorporation BUT BEFORE the **Certificate of Commencement of Business** \u2192 this is a **Provisional Contract**.\n- Under Section 11, Companies Act 2013, a public company cannot commence business without a Certificate of Commencement of Business.\n- Contracts entered after incorporation but before commencement certificate = **Provisional Contracts** \u2014 they become binding only when company obtains the commencement certificate and ratifies them.\n- This is NOT void \u2014 it is conditionally valid (provisional and binding on ratification).\n**Related Concepts:**\n- Certificate of Commencement of Business (Sec 11): Required for public companies \u2014 company must file declaration that minimum subscription is received, directors paid share value, etc.\n- Private companies are EXEMPT from Certificate of Commencement of Business requirement \u2014 they can transact business immediately after incorporation.", "id": 8}, {"question": "Read the following passage and answer the question. An application was sent to Registrar of Companies to obtain the certificate of incorporation on 30 June 2024. One of the promoters, Raj, made the allotment of shares of the company on 28 June 2024. He also made a contract to buy a certain machinery from Pooja by representing himself as an agent of the company on 20 June 2024. Raj also signed the Memorandum of Association (MOA) of the company on behalf of all seven members to obtain the certificate of incorporation. Inspite of all these, the certificate of incorporation was issued in respect of ABC company but wrongly dated as 25 June 2024. After sometimes, it is also found that two of the members out of seven members named in MOA were minors. He also entered into a contract after the incorporation of company to buy a building from Prakash for Rs. 1,00,00,000 but before obtaining the certificate of commencement of business. The certificate of incorporation of ABC is:", "options": [{"id": "1", "text": "Void as it is obtained by forged document"}, {"id": "2", "text": "Void as it is obtained by including minor promoters"}, {"id": "3", "text": "Valid, even if irregular, cannot be cancelled"}, {"id": "4", "text": "Valid, but from 30th June 2024 and not from 25th June"}], "correctAnswer": "3", "explanation": "Key Concepts:\n- Certificate of Incorporation is **conclusive** under Section 9, Companies Act 2013 \u2014 **valid, even if irregular, and CANNOT be cancelled** on any ground including presence of minor promoters.\n- Two minors in MOA = an irregularity \u2014 but this does NOT invalidate the certificate of incorporation once it is issued.\n- Wrong dating (25 June vs actual 30 June) is also an irregularity \u2014 still does not invalidate the certificate.\n- Option 4 is factually correct about the actual date, but the LAW says certificate's conclusiveness makes it valid as issued \u2014 courts will not cancel it on this ground.\n**Related Concepts:**\n- Minors as Members: Minor cannot be a member; shares held by minor are voidable at minor's option \u2014 but this affects MEMBERSHIP, not the company's legal existence or validity of the certificate.\n- Lifting the Corporate Veil: Rare exception where courts look behind conclusiveness \u2014 only in cases of proven fraud or statutory mandate; mere irregularity is NOT sufficient.", "id": 9}, {"question": "Read the following passage and answer the question. An application was sent to Registrar of Companies to obtain the certificate of incorporation on 30 June 2024. One of the promoters, Raj, made the allotment of shares of the company on 28 June 2024. He also made a contract to buy a certain machinery from Pooja by representing himself as an agent of the company on 20 June 2024. Raj also signed the Memorandum of Association (MOA) of the company on behalf of all seven members to obtain the certificate of incorporation. Inspite of all these, the certificate of incorporation was issued in respect of ABC company but wrongly dated as 25 June 2024. After sometimes, it is also found that two of the members out of seven members named in MOA were minors. He also entered into a contract after the incorporation of company to buy a building from Prakash for Rs. 1,00,00,000 but before obtaining the certificate of commencement of business. Which of the following is correct?", "options": [{"id": "1", "text": "Pooja can claim payment of machinery from the company as Raj acted on behalf of the company"}, {"id": "2", "text": "Pooja can claim the payment from Raj, who will be personally liable as she is considering that it is a provisional contract"}, {"id": "3", "text": "Raj will be personally liable as for all pre-incorporation contracts, promoters are personally liable"}, {"id": "4", "text": "Raj will not be liable as the machinery was used by the company not by Raj for his personal benefits"}], "correctAnswer": "3", "explanation": "Key Concepts:\n- Machinery contract (20 June) = **Pre-incorporation Contract** \u2014 company did NOT exist; therefore company has NO liability for this contract.\n- **Raj (promoter) is personally liable** \u2014 settled legal principle for pre-incorporation contracts; the promoter cannot escape liability by claiming he acted as company's agent.\n- Option 1 is WRONG \u2014 company cannot be bound by pre-incorporation contracts; it did not exist.\n- Option 4 is WRONG \u2014 whether machinery was used by company or personally is irrelevant to the promoter's personal liability under pre-incorporation contract law.\n**Related Concepts:**\n- Promoter's Fiduciary Duty: Must disclose all secret profits made during promotion; failure = liable to refund profits to company + damages.\n- Novation to Release Promoter: Only way Raj can be relieved \u2014 Pooja must agree to release Raj and accept company as the new contracting party via a fresh agreement; absent this, Raj remains personally liable.", "id": 10}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
