@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>21 August  UGC NET Paper 1 PYQS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "21 August  UGC NET Paper 1 PYQS", "organization": "ExamTym", "durationMinutes": 60, "totalMarks": 100.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Data Interpretation Context (Applies to Q1 - Q5)\n**Directions:** The following table shows the percentage (%) distribution of students in an M. Tech. (Computer Science) class who got employment in the areas of Hardware, Software Quality Assurance (SQA), Software Development, and Others during the five years from 2019 to 2023. It also shows the average starting salaries of students per month (in Rs.). The total numbers of students who passed out in the years 2019-2023 are 800, 600, 1100, 1200, and 1000, respectively. \nIn all the five years, the number of students getting employment in Hardware is less than the number of students getting employment in SQA by?\n| Employment Area | 2019 (%) | 2019 (\u20b9) | 2020 (%) | 2020 (\u20b9) | 2021 (%) | 2021 (\u20b9) | 2022 (%) | 2022 (\u20b9) | 2023 (%) | 2023 (\u20b9) |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| **Hardware** | 22 | 54500 | 17 | 63800 | 23 | 75500 | 19 | 89200 | 32 | 98100 |\n| **SQA** | 36 | 51700 | 43 | 63900 | 32 | 89600 | 37 | 76300 | 48 | 102200 |\n| **Software Dev.** | 19 | 52900 | 20 | 64400 | 16 | 70500 | 21 | 77600 | 23 | 86400 |\n| **Other** | 23 | 42600 | 12 | 50900 | 13 | 60200 | 28 | 66400 | 16 | 75400 |", "options": [{"id": "1", "text": "826"}, {"id": "2", "text": "650"}, {"id": "3", "text": "734"}, {"id": "4", "text": "548"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Calculate the total hardware employees across 5 years by multiplying the percentage by the total students each year.\n* Calculate the total SQA employees using the same percentage multiplication.\n* Find the difference between the sum of SQA students and the sum of Hardware students.\n*Related Concepts:*\n* Data extraction from complex percentage tables.\n* Weighted summations in statistical data.", "id": 1}, {"question": "Data Interpretation Context (Applies to Q1 - Q5)\n**Directions:** The following table shows the percentage (%) distribution of students in an M. Tech. (Computer Science) class who got employment in the areas of Hardware, Software Quality Assurance (SQA), Software Development, and Others during the five years from 2019 to 2023. It also shows the average starting salaries of students per month (in Rs.). The total numbers of students who passed out in the years 2019-2023 are 800, 600, 1100, 1200, and 1000, respectively.\nWhat is the percentage increase in the average starting salary (per month) of employment in Hardware in the year 2023 with reference to the year 2019?\n| Employment Area | 2019 (%) | 2019 (\u20b9) | 2020 (%) | 2020 (\u20b9) | 2021 (%) | 2021 (\u20b9) | 2022 (%) | 2022 (\u20b9) | 2023 (%) | 2023 (\u20b9) |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| **Hardware** | 22 | 54500 | 17 | 63800 | 23 | 75500 | 19 | 89200 | 32 | 98100 |\n| **SQA** | 36 | 51700 | 43 | 63900 | 32 | 89600 | 37 | 76300 | 48 | 102200 |\n| **Software Dev.** | 19 | 52900 | 20 | 64400 | 16 | 70500 | 21 | 77600 | 23 | 86400 |\n| **Other** | 23 | 42600 | 12 | 50900 | 13 | 60200 | 28 | 66400 | 16 | 75400 |", "options": [{"id": "1", "text": "60%"}, {"id": "2", "text": "32%"}, {"id": "3", "text": "96%"}, {"id": "4", "text": "80%"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Identify the Hardware salary in 2019 (Rs. 54,500).\n* Identify the Hardware salary in 2023 (Rs. 98,100).\n* Apply the percentage increase formula: $\\frac{Final - Initial}{Initial} \\times 100$.\n*Related Concepts:*\n* Percentage growth rate calculations.\n* Base year reference points.", "id": 2}, {"question": "Data Interpretation Context (Applies to Q1 - Q5)\n**Directions:** The following table shows the percentage (%) distribution of students in an M. Tech. (Computer Science) class who got employment in the areas of Hardware, Software Quality Assurance (SQA), Software Development, and Others during the five years from 2019 to 2023. It also shows the average starting salaries of students per month (in Rs.). The total numbers of students who passed out in the years 2019-2023 are 800, 600, 1100, 1200, and 1000, respectively.\nWhat is the average monthly salary offered to an M. Tech. (Computer Science) student in 2020?\n| Employment Area | 2019 (%) | 2019 (\u20b9) | 2020 (%) | 2020 (\u20b9) | 2021 (%) | 2021 (\u20b9) | 2022 (%) | 2022 (\u20b9) | 2023 (%) | 2023 (\u20b9) |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| **Hardware** | 22 | 54500 | 17 | 63800 | 23 | 75500 | 19 | 89200 | 32 | 98100 |\n| **SQA** | 36 | 51700 | 43 | 63900 | 32 | 89600 | 37 | 76300 | 48 | 102200 |\n| **Software Dev.** | 19 | 52900 | 20 | 64400 | 16 | 70500 | 21 | 77600 | 23 | 86400 |\n| **Other** | 23 | 42600 | 12 | 50900 | 13 | 60200 | 28 | 66400 | 16 | 75400 |", "options": [{"id": "1", "text": "\u20b9 60750"}, {"id": "2", "text": "\u20b9 63300"}, {"id": "3", "text": "\u20b9 63333"}, {"id": "4", "text": "\u20b9 64030"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Extract the salaries for all fields in 2020: Hardware (63800), SQA (63900), SD (64400), Other (50900).\n* Extract the percentage weights for each field in 2020: 17%, 43%, 20%, 12%.\n* Calculate the weighted average: Sum of (Salary \u00d7 Percentage) / Total Percentage.\n*Related Concepts:*\n* Weighted averages in grouped datasets.\n* Salary distribution analysis.", "id": 3}, {"question": "Data Interpretation Context (Applies to Q1 - Q5)\n**Directions:** The following table shows the percentage (%) distribution of students in an M. Tech. (Computer Science) class who got employment in the areas of Hardware, Software Quality Assurance (SQA), Software Development, and Others during the five years from 2019 to 2023. It also shows the average starting salaries of students per month (in Rs.). The total numbers of students who passed out in the years 2019-2023 are 800, 600, 1100, 1200, and 1000, respectively.\nIn 2021, students getting employment in Hardware earned _____ lakhs more than those getting employment in Software Development (per annum).?\n| Employment Area | 2019 (%) | 2019 (\u20b9) | 2020 (%) | 2020 (\u20b9) | 2021 (%) | 2021 (\u20b9) | 2022 (%) | 2022 (\u20b9) | 2023 (%) | 2023 (\u20b9) |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| **Hardware** | 22 | 54500 | 17 | 63800 | 23 | 75500 | 19 | 89200 | 32 | 98100 |\n| **SQA** | 36 | 51700 | 43 | 63900 | 32 | 89600 | 37 | 76300 | 48 | 102200 |\n| **Software Dev.** | 19 | 52900 | 20 | 64400 | 16 | 70500 | 21 | 77600 | 23 | 86400 |\n| **Other** | 23 | 42600 | 12 | 50900 | 13 | 60200 | 28 | 66400 | 16 | 75400 |", "options": [{"id": "1", "text": "430"}, {"id": "2", "text": "337.92"}, {"id": "3", "text": "284.12"}, {"id": "4", "text": "324.3"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Calculate the number of students in Hardware in 2021 (23% of 1100 = 253) and SD (16% of 1100 = 176).\n* Multiply by their respective monthly salaries and then by 12 to find the total annual earnings for each group.\n* Find the difference between the two annual totals and convert to lakhs.\n*Related Concepts:*\n* Annualization of monthly data.\n* Aggregate earnings comparison.", "id": 4}, {"question": "Data Interpretation Context (Applies to Q1 - Q5)\n**Directions:** The following table shows the percentage (%) distribution of students in an M. Tech. (Computer Science) class who got employment in the areas of Hardware, Software Quality Assurance (SQA), Software Development, and Others during the five years from 2019 to 2023. It also shows the average starting salaries of students per month (in Rs.). The total numbers of students who passed out in the years 2019-2023 are 800, 600, 1100, 1200, and 1000, respectively.\nThe average monthly salary offered to an M. Tech (Computer Science) student in 2023 is approximately ____ % more than that in 2022.?\n| Employment Area | 2019 (%) | 2019 (\u20b9) | 2020 (%) | 2020 (\u20b9) | 2021 (%) | 2021 (\u20b9) | 2022 (%) | 2022 (\u20b9) | 2023 (%) | 2023 (\u20b9) |\n| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |\n| **Hardware** | 22 | 54500 | 17 | 63800 | 23 | 75500 | 19 | 89200 | 32 | 98100 |\n| **SQA** | 36 | 51700 | 43 | 63900 | 32 | 89600 | 37 | 76300 | 48 | 102200 |\n| **Software Dev.** | 19 | 52900 | 20 | 64400 | 16 | 70500 | 21 | 77600 | 23 | 86400 |\n| **Other** | 23 | 42600 | 12 | 50900 | 13 | 60200 | 28 | 66400 | 16 | 75400 |", "options": [{"id": "1", "text": "12.17"}, {"id": "2", "text": "17.14"}, {"id": "3", "text": "25"}, {"id": "4", "text": "5.43"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Calculate the overall weighted average salary for 2022 using the sector percentages and salaries.\n* Calculate the overall weighted average salary for 2023 using the sector percentages and salaries.\n* Compute the percentage change between the 2022 and 2023 average values.\n*Related Concepts:*\n* Year-over-year growth metrics.\n* Weighted mean comparisons.\n### **Teaching & Research Aptitude**", "id": 5}, {"question": "The number of digits an individual can report back without error in a single presentation represents", "options": [{"id": "1", "text": "chunking"}, {"id": "2", "text": "memory span"}, {"id": "3", "text": "phonological loop"}, {"id": "4", "text": "Time Zone"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Memory span refers to the longest list of items that a person can repeat back in correct order immediately after presentation.\n* It is a common measure of working memory or short-term memory capacity.\n* Miller's \"Magic Number 7\u00b12\" is a classic theory regarding memory span limitations.\n*Related Concepts:*\n* Chunking (grouping items to improve memory span).\n* Phonological loop (auditory working memory component).", "id": 6}, {"question": "A history teacher wants to create an interactive timeline showcasing the evolution of different art movements over centuries. Which tool would best support the creation of this multimedia presentation?", "options": [{"id": "1", "text": "Prezi"}, {"id": "2", "text": "Adobe Illustrator"}, {"id": "3", "text": "Flipgrid"}, {"id": "4", "text": "Google forms"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Prezi is an online presentation tool known for its zooming user interface (ZUI) and spatial relationships.\n* It allows users to map out information on a non-linear, interactive canvas, perfect for timelines.\n* It supports multimedia integration seamlessly to showcase art movements dynamically.\n*Related Concepts:*\n* ICT tools in pedagogy.\n* Visual learning aids.", "id": 7}, {"question": "A collection of the student's work in an area, showing growth, self-reflection, and achievements is known as:", "options": [{"id": "1", "text": "Modelling"}, {"id": "2", "text": "Portfolio"}, {"id": "3", "text": "Mastery goal"}, {"id": "4", "text": "Problem solving"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* A portfolio is a purposeful collection of student work that exhibits the student's efforts, progress, and achievements.\n* It encourages self-reflection and allows educators to assess authentic learning over time.\n* It shifts focus from high-stakes testing to continuous formative assessment.\n*Related Concepts:*\n* Formative Assessment.\n* Reflective learning.", "id": 8}, {"question": "Match the List-I with List-II\n| LIST I (Swayamprabha Channel) | LIST II (Theme) |\n| :--- | :--- |\n| A. Channel 03 (PRABODH) | I. Education and Home Science |\n| B. Channel 04 (SAARASWAT) | II. Information, Communication and Management Studies |\n| C. Channel 05 (PRABANDHAN) | III. Law and Legal Studies |\n| D. Channel 06 (VIDHIK) | IV. Social and Behavioural Sciences |", "options": [{"id": "1", "text": "A-II, B-IV, C-III, D-I"}, {"id": "2", "text": "A-III, B-I, C-IV, D-II"}, {"id": "3", "text": "A-IV, B-I, C-II, D-III"}, {"id": "4", "text": "A-I, B-III, C-II, D-IV"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Swayamprabha is a group of DTH channels devoted to telecasting high-quality educational programs.\n* Channel 03 (PRABODH) focuses on Social and Behavioural Sciences.\n* Channel 04 (SAARASWAT) covers Education and Home Science, while Channel 05 (PRABANDHAN) covers Management, and 06 (VIDHIK) is Law.\n*Related Concepts:*\n* Digital initiatives in Indian higher education.\n* MOOCs and distance learning infrastructure.", "id": 9}, {"question": "Match the List-I with List-II\n| LIST I (Term) | LIST II (Meaning) |\n| :--- | :--- |\n| A. Decision making | I. The tendency to hold on a belief in the face of contradictory evidence. |\n| B. Confirmation bias | II. The tendency to have more confidence in judgement and decisions than we should based on probability. |\n| C. Belief perseverance | III. The tendency to search for and use information that supports our ideas rather than refuses them. |\n| D. Overconfidence bias | IV. Evaluating alternatives and making choices among them. |", "options": [{"id": "1", "text": "A-III, B-IV, C-II, D-I"}, {"id": "2", "text": "A-II, B-III, C-IV, D-I"}, {"id": "3", "text": "A-IV, B-III, C-I, D-II"}, {"id": "4", "text": "A-I, B-II, C-IV, D-III"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Decision making involves evaluating options (IV).\n* Confirmation bias is selectively searching for information that confirms preexisting views (III).\n* Belief perseverance is clinging to initial beliefs despite refuting evidence (I), and Overconfidence is overestimating one's accuracy (II).\n*Related Concepts:*\n* Cognitive biases in research and learning.\n* Heuristics in human psychology.", "id": 10}, {"question": "Which of the following research approaches suggests that theory is an outcome of research?", "options": [{"id": "1", "text": "deductive approach"}, {"id": "2", "text": "inductive approach"}, {"id": "3", "text": "quantitative approach"}, {"id": "4", "text": "cross-sectional approach"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The inductive research approach moves from specific observations to broader generalizations and theories.\n* It is often associated with qualitative research where data collection leads to theory building.\n* \"Bottom-up\" logic is the hallmark of induction.\n*Related Concepts:*\n* Deductive approach (testing existing theories).\n* Qualitative vs. Quantitative methodologies.", "id": 11}, {"question": "When the sample has been randomly selected, which among the following may be expected in cross-sectional research designs?\nA. strong external validity\nB. weak external validity\nC. weak internal validity\nD. strong internal validity", "options": [{"id": "1", "text": "Only A and C"}, {"id": "2", "text": "Only A and D"}, {"id": "3", "text": "Only B and C"}, {"id": "4", "text": "Only B and D"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Cross-sectional designs look at data at a single point in time. Because randomization ensures a representative sample, external validity (generalizability) is strong.\n* Internal validity is weak because cross-sectional studies cannot establish cause-and-effect relationships over time.\n* Random selection minimizes sampling bias, enhancing population validity.\n*Related Concepts:*\n* Internal vs. External Validity.\n* Longitudinal vs. Cross-sectional designs.", "id": 12}, {"question": "If you want to understand the theoretical reasons that led researchers to conduct a study that appeared as a research article in a journal, you would read which of the following sections of the research article?", "options": [{"id": "1", "text": "discussion"}, {"id": "2", "text": "abstract"}, {"id": "3", "text": "introduction"}, {"id": "4", "text": "results"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The Introduction section provides the background, theoretical framework, and rationale for the study.\n* It establishes the \"gap in the literature\" that the study aims to fill.\n* It sets up the research questions and hypotheses based on theoretical underpinnings.\n*Related Concepts:*\n* Anatomy of a research paper.\n* Literature review mapping.", "id": 13}, {"question": "The students' t-test would be useful for?\nA. comparing two groups to see whether their means differ.\nB. comparing multiple groups (more than two) to see whether their means differ.\nC. testing the significance of correlation coefficient.\nD. testing the significance of regression coefficient.", "options": [{"id": "1", "text": "Only A, B and C"}, {"id": "2", "text": "Only B and D"}, {"id": "3", "text": "Only A, C and D"}, {"id": "4", "text": "Only A, B, C and D"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The t-test assesses whether the means of *two* statistical groups are significantly different from each other (A).\n* It is also used to test the statistical significance of correlation coefficients (C) and regression coefficients (D).\n* Comparing *multiple* groups (more than two) requires ANOVA, not a t-test.\n*Related Concepts:*\n* Parametric tests.\n* ANOVA (Analysis of Variance).", "id": 14}, {"question": "Identify the probability sampling techniques?\nA. simple random sampling\nB. snowball sampling\nC. stratified random sampling\nD. convenience sampling", "options": [{"id": "1", "text": "Only A and B"}, {"id": "2", "text": "Only B and C"}, {"id": "3", "text": "Only A and C"}, {"id": "4", "text": "Only B and D"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Probability sampling means every member of the population has a known, non-zero chance of selection.\n* Simple random and stratified random sampling rely on randomization and statistical probability.\n* Snowball and convenience sampling are non-probability techniques based on ease of access or referrals.\n*Related Concepts:*\n* Sampling frame.\n* Non-probability sampling techniques.\n### **Communication**", "id": 15}, {"question": "Description of 'actual words, written or spoken, used to tell a story and images or pictures' come under the category of", "options": [{"id": "1", "text": "Discourse"}, {"id": "2", "text": "Event"}, {"id": "3", "text": "Law"}, {"id": "4", "text": "Performance"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Discourse refers to written or spoken communication or debate.\n* In literary and communication theory, it encompasses the actual language used to construct narratives and shape perceptions.\n* It includes both text and visual elements that communicate a cohesive message.\n*Related Concepts:*\n* Semiotics and signs.\n* Narrative paradigm.", "id": 16}, {"question": "The general context of communication is known as communication -", "options": [{"id": "1", "text": "situation"}, {"id": "2", "text": "position"}, {"id": "3", "text": "praxis"}, {"id": "4", "text": "convention"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* The communication situation (or context) includes the physical, social, psychological, and temporal environment where communication occurs.\n* It dictates the tone, medium, and expected behaviors of the communicators.\n* Context gives meaning to the raw data of the message.\n*Related Concepts:*\n* Noise in communication.\n* Communication environment.", "id": 17}, {"question": "Which of the following are essential elements of mass communication?\nA. Electronic observation\nB. Technological medium\nC. Large audience\nD. Professional communicators\nE. Organizational structure", "options": [{"id": "1", "text": "Only A, B, E"}, {"id": "2", "text": "Only A, C, D"}, {"id": "3", "text": "Only A, C, D, E"}, {"id": "4", "text": "Only B, C, D, E"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Mass communication involves transmitting information to a large, heterogeneous, and anonymous audience (C).\n* It inherently relies on a technological medium (B) and is generally produced by professional communicators (D) working within an organizational structure (E).\n* \"Electronic observation\" is not a definitional component of mass communication.\n*Related Concepts:*\n* Characteristics of Mass Media.\n* Gatekeeping theory.", "id": 18}, {"question": "Which of the following, in communication, are the 'rhetorical structures'?\nA. paralanguage\nB. clusters\nC. form\nD. genre\nE. narrative", "options": [{"id": "1", "text": "Only A, B, C, D"}, {"id": "2", "text": "Only B, C, D, E"}, {"id": "3", "text": "Only A, C, E"}, {"id": "4", "text": "Only A, D, E"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Rhetorical structures refer to the organized frameworks used to persuade or communicate effectively.\n* Form, genre, narrative, and clusters of ideas are structural ways messages are organized to create impact.\n* Paralanguage (tone, pitch) is a non-verbal delivery tool, not a structural framework.\n*Related Concepts:*\n* Rhetoric and Persuasion.\n* Non-verbal communication forms.", "id": 19}, {"question": "Match the List-I with List-II\n| LIST I (Patterns of Communication) | LIST II (Social Unit) |\n| :--- | :--- |\n| A. Physical situation | I. Participants |\n| B. Persons involved in interaction | II. Key |\n| C. Manner of communication enacted | III. Instrumentality |\n| D. Channels of communication | IV. Scene or setting |", "options": [{"id": "1", "text": "A-I, B-II, C-III, D-IV"}, {"id": "2", "text": "A-II, B-III, C-IV, D-I"}, {"id": "3", "text": "A-III, B-IV, C-I, D-II"}, {"id": "4", "text": "A-IV, B-I, C-II, D-III"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* This maps to Dell Hymes' SPEAKING model of sociolinguistics.\n* Physical situation corresponds to Scene/Setting (IV).\n* Persons involved correspond to Participants (I).\n* Manner of communication maps to Key (tone/manner) (II), and Channels map to Instrumentalities (III).\n*Related Concepts:*\n* Dell Hymes' SPEAKING paradigm.\n* Sociolinguistics and context.\n### **Mathematical Reasoning & Logic**", "id": 20}, {"question": "Working 9 hours a day, 12 persons complete a work in 25 days. Working 6 hours a day, 15 persons can do the same work in", "options": [{"id": "1", "text": "28 days"}, {"id": "2", "text": "29 days"}, {"id": "3", "text": "30 days"}, {"id": "4", "text": "32 days"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Use the Man-Days-Hours formula: $M_1 \\times D_1 \\times H_1 = M_2 \\times D_2 \\times H_2$.\n* Substitute the values: $12 \\times 25 \\times 9 = 15 \\times D_2 \\times 6$.\n* Solve for $D_2$: $2700 = 90 \\times D_2 \\implies D_2 = 30$.\n*Related Concepts:*\n* Time and Work equations.\n* Unitary method.", "id": 21}, {"question": "In the letter series, some of the letters are missing. Complete the given letter series by choosing the correct alternatives from the options given below.\nb _ b _ b b _ b b b _ b b _ b", "options": [{"id": "1", "text": "bbbbba"}, {"id": "2", "text": "bbaaab"}, {"id": "3", "text": "ababab"}, {"id": "4", "text": "aabaab"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The series follows a specific repeating or incrementally growing pattern.\n* By inserting 'bbaaab', the pattern divides into logical chunks showing increasing combinations of variables or a symmetric rhythm.\n* Pattern testing reveals the standard structure intended by the examiner.\n*Related Concepts:*\n* Alphanumeric series completion.\n* Logical pattern recognition.", "id": 22}, {"question": "Three successive discounts of 30% on the marked price of an item are together equivalent to a single discount of", "options": [{"id": "1", "text": "90%"}, {"id": "2", "text": "27%"}, {"id": "3", "text": "65.7%"}, {"id": "4", "text": "78.2%"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Successive discounts are calculated sequentially on the reduced price, not added together.\n* Let starting price = 100. After 1st 30% discount: 70.\n* After 2nd 30% discount (30% of 70 = 21): 70 - 21 = 49.\n* After 3rd 30% discount (30% of 49 = 14.7): 49 - 14.7 = 34.3. Total discount = 100 - 34.3 = 65.7%.\n*Related Concepts:*\n* Compound percentage changes.\n* Profit, Loss, and Discount.", "id": 23}, {"question": "In a certain coding language, if the word 'STORK' is coded as 'VQRON', then the word 'TIRED' will be coded as", "options": [{"id": "1", "text": "VETCF"}, {"id": "2", "text": "WFUBG"}, {"id": "3", "text": "WETCG"}, {"id": "4", "text": "VFUBF"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Analyze the letter shifts. STORK -> VQRON.\n* S(+3)=V, T(-3)=Q, O(+3)=R, R(-3)=O, K(+3)=N. The pattern is alternating +3 and -3 shifts.\n* Apply to TIRED: T(+3)=W, I(-3)=F, R(+3)=U, E(-3)=B, D(+3)=G. Result is WFUBG.\n*Related Concepts:*\n* Alphabetical forward/backward shifts.\n* Coding and Decoding logic.", "id": 24}, {"question": "A person travels from X to Y at a speed of 50 km/hr and returns from Y to X by increasing his speed by 50%. His average speed during the journey is", "options": [{"id": "1", "text": "62.5 km/hr"}, {"id": "2", "text": "60 km/hr"}, {"id": "3", "text": "62 km/hr"}, {"id": "4", "text": "64 km/hr"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Return speed is increased by 50%: $50 + (0.50 \\times 50) = 75$ km/hr.\n* Average speed for equal distances is $\\frac{2xy}{x+y}$.\n* $\\frac{2 \\times 50 \\times 75}{50 + 75} = \\frac{7500}{125} = 60$ km/hr.\n*Related Concepts:*\n* Time, Speed, and Distance formulas.\n* Harmonic mean in average speed.", "id": 25}, {"question": "\"Molecules are in random motion. Qutub Minar is composed of Molecules. Therefore, Qutub Minar is in constant random motion.\" Identify the fallacy committed in the above statement.", "options": [{"id": "1", "text": "Equivocation"}, {"id": "2", "text": "Slippery slope"}, {"id": "3", "text": "Hasty generalization"}, {"id": "4", "text": "Fallacy of composition"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* The Fallacy of Composition occurs when one infers that something is true of the whole from the fact that it is true of some part of the whole.\n* Just because the microscopic parts (molecules) have a property (random motion), it does not mean the macroscopic whole (Qutub Minar) possesses that same property visible at a macro level.\n* It assumes structural aggregation transfers behavioral properties linearly.\n*Related Concepts:*\n* Fallacy of Division.\n* Informal logical fallacies.", "id": 26}, {"question": "If the statement \"Some birds are not mammals\" is given as true, which of the following statements can be immediately inferred to be false?", "options": [{"id": "1", "text": "Some mammals are not birds."}, {"id": "2", "text": "Some birds are mammals."}, {"id": "3", "text": "No birds are mammals."}, {"id": "4", "text": "All birds are mammals."}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* This relies on the Aristotelian Square of Opposition.\n* The statement \"Some birds are not mammals\" is an 'O' proposition (Particular Negative).\n* The contradiction of an 'O' proposition is the 'A' proposition (Universal Affirmative): \"All birds are mammals.\" If 'O' is true, 'A' must be false.\n*Related Concepts:*\n* Square of Opposition.\n* Contradictory propositions.", "id": 27}, {"question": "Which of the following statements are logically equivalent?\nA. Some non-birds are mammals.\nB. Some birds are not mammals.\nC. Some non-mammals are non-birds.\nD. Some non-mammals are not non-birds.", "options": [{"id": "1", "text": "A, B and C Only"}, {"id": "2", "text": "A and C Only"}, {"id": "3", "text": "C and D Only"}, {"id": "4", "text": "B and D Only"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement B is \"Some birds are not mammals\" (O proposition: Some S is not P).\n* The obverse of B is \"Some birds are non-mammals\" (I proposition).\n* The contrapositive involves negating and swapping subjects and predicates. Logical equivalencies in categorical logic map statement B directly to D contextually.\n*Related Concepts:*\n* Conversion, Obversion, Contraposition.\n* Categorical syllogisms.", "id": 28}, {"question": "Which of the following is correct in the context of Syllogism?\nA. With two negative premise: affirmative conclusion can be drawn.\nB. Predicate of the conclusion is the minor term.\nC. Middle term must be distributed at least once in the premises.\nD. With two universal premises, particular conclusion can be drawn.\nE. The term distributed in the conclusion must be distributed in the premises.", "options": [{"id": "1", "text": "B and C Only"}, {"id": "2", "text": "A and C Only"}, {"id": "3", "text": "D and E Only"}, {"id": "4", "text": "C and E Only"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Rule 1: The middle term MUST be distributed in at least one premise (C is correct).\n* Rule 2: Any term distributed in the conclusion must also be distributed in its corresponding premise (E is correct).\n* Two negative premises yield NO valid conclusion (Fallacy of exclusive premises), making A wrong.\n*Related Concepts:*\n* Rules of Valid Syllogisms.\n* Distribution of terms.", "id": 29}, {"question": "According to classical Indian school of logic (Ny\u0101ya) which fallacy is committed in the following argument \"Anything that is thinkable is nameable because it is thinkable\".", "options": [{"id": "1", "text": "As\u0101dh\u0101rana"}, {"id": "2", "text": "Saadh\u0101rana"}, {"id": "3", "text": "\u0100sray\u0101siddha"}, {"id": "4", "text": "Svarup\u0101siddha"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* As\u0101dh\u0101rana Savyabhichara is a fallacy where the middle term is present ONLY in the minor term (paksha) and nowhere else.\n* In \"Anything thinkable is nameable because it is thinkable\", the middle term lacks corroborative examples (sapaksha) or contrary examples (vipaksha).\n* It is an uncommon/exclusive middle term fallacy.\n*Related Concepts:*\n* Hetvabhasa (Fallacies of Inference).\n* Savyabhichara (Irregular middle).\n### **Information and Communication Technology (ICT)**", "id": 30}, {"question": "Which of the following electronic technologies is the key technology for making the first generation electronic computer?", "options": [{"id": "1", "text": "Transistor based"}, {"id": "2", "text": "Integrated Circuit based"}, {"id": "3", "text": "Vacuum Tube based"}, {"id": "4", "text": "Dual Core CPU based"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* First-generation computers (1940s-1950s) relied on vacuum tubes for circuitry and magnetic drums for memory.\n* They were massive, generated enormous heat, and were highly prone to hardware failures (e.g., ENIAC, UNIVAC).\n* Transistors defined the second generation, and Integrated Circuits defined the third.\n*Related Concepts:*\n* Generations of Computers.\n* Hardware evolution.", "id": 31}, {"question": "Which of the following statements best describes a blog?", "options": [{"id": "1", "text": "A website that allows multiple users to collaborate and create information."}, {"id": "2", "text": "A chronological list of posts on a website typically written by a single author about a subject."}, {"id": "3", "text": "A series of audio or video episodes that subscribers download or stream to their devices."}, {"id": "4", "text": "A standardised format that allows users to subscribe to view content updates from a creator."}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* A blog (short for weblog) is an informational website or online journal displaying information in reverse chronological order.\n* It is traditionally maintained by a single person or small group, providing commentary on a specific subject.\n* Option A describes a Wiki; Option C describes a Podcast; Option D describes an RSS Feed.\n*Related Concepts:*\n* Web 2.0 tools.\n* Digital content platforms.", "id": 32}, {"question": "Identify the sequence of words A-E that correctly fills the blanks in the following paragraph:\nThe ___ is the 'brain' of the computer and the ___ processor made by Intel is an example of this. The speed of the processor is measured in ___. ___ is used in most computers to hold a small special piece of software known as the 'boot up' program. ___ is a volatile memory.\nA. ROM\nB. CPU\nC. RAM\nD. Pentium\nE. Hertz", "options": [{"id": "1", "text": "B, D, E, C, A"}, {"id": "2", "text": "D, B, C, E, A"}, {"id": "3", "text": "C, D, E, A, B"}, {"id": "4", "text": "B, E, D, A, C\n*(Note: Matching strictly to paragraph logical flow)*"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* The CPU (B) is the brain of the computer.\n* Pentium (D) is a famous processor brand by Intel. Speed is measured in Hertz (E).\n* ROM (A) holds the non-volatile boot-up program (BIOS). RAM (C) is volatile memory. The sequence in paragraph is CPU, Pentium, Hertz, ROM, RAM (Wait, \"___ is used... boot up\" -> ROM. \"___ is a volatile memory\" -> RAM). So: B, D, E, A, C. Looking at options: Option A is B, D, E, C, A... there is a typo in the question's text flow vs options, but standard mapping applies.\n*Related Concepts:*\n* Computer hardware architecture.\n* Memory types (Volatile vs Non-Volatile).", "id": 33}, {"question": "If $(L)_M$ represents a number L in base-M number system, then which of the following equalities are true?\nA. $(127.125)_{10} = (1111111.001)_2$\nB. $(127.125)_{10} = (1333.02)_4$\nC. $(127.125)_{10} = (177.1)_8$\nD. $(127.125)_{10} = (7F.2)_{16}$", "options": [{"id": "1", "text": "A only"}, {"id": "2", "text": "A and B only"}, {"id": "3", "text": "A, B and C only"}, {"id": "4", "text": "A, B, C and D"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Convert $127_{10}$ to binary: 1111111. Fractional $0.125_{10}$ to binary: $0.125 \\times 2 = 0.25$ (0), $0.25 \\times 2 = 0.5$ (0), $0.5 \\times 2 = 1.0$ (1) $\\implies .001$. So A is true.\n* Convert $1111111.001_2$ to base 8 (group by 3): $001 111 111 . 001 \\implies 177.1_8$. C is true.\n* Convert to base 16 (group by 4): $0111 1111 . 0010 \\implies 7F.2_{16}$. D is true. B is also true by grouping by 2s for base 4.\n*Related Concepts:*\n* Number system conversions.\n* Fractional base conversion.", "id": 34}, {"question": "Match the List-I with List-II\n| LIST I (Malware types) | LIST II (Characteristics) |\n| :--- | :--- |\n| A. Trojan Horse | I. Propagates copies of itself through a network |\n| B. Worm | II. Triggers action when certain condition occurs |\n| C. Logic Bomb | III. Hooks standard OS calls to hide the existence of malware |\n| D. Rootkit | IV. Contains unexpected covert effect |", "options": [{"id": "1", "text": "A-I, B-IV, C-III, D-II"}, {"id": "2", "text": "A-IV, B-II, C-I, D-III"}, {"id": "3", "text": "A-II, B-I, C-III, D-IV"}, {"id": "4", "text": "A-IV, B-I, C-II, D-III"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* A Trojan Horse masquerades as legitimate software but contains a covert, malicious effect (IV).\n* A Worm is a standalone malware that propagates itself across networks automatically (I).\n* A Logic Bomb executes a malicious payload only when specific conditions or dates are met (II).\n* A Rootkit hides its presence by hooking into the OS deeply (III).\n*Related Concepts:*\n* Cybersecurity threats.\n* Malware classification.\n### **People, Development and Environment**", "id": 35}, {"question": "The convention of Biological Diversity (CBD) was first opened for signature during", "options": [{"id": "1", "text": "Conference on human environment"}, {"id": "2", "text": "Earth Summit"}, {"id": "3", "text": "Montreal Protocol"}, {"id": "4", "text": "COP1"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The Convention on Biological Diversity (CBD) was opened for signature at the UN Conference on Environment and Development (UNCED).\n* This conference is colloquially known as the Rio Earth Summit, held in Rio de Janeiro in 1992.\n* Its main goals are the conservation of biodiversity and the sustainable use of its components.\n*Related Concepts:*\n* Rio Earth Summit (1992).\n* Multilateral environmental agreements.", "id": 36}, {"question": "To understand the Global Climate Change, GCM model are widely used. GCM stands for\nA. Global Circulation Model\nB. General Circulation Model\nC. Global Climate Model\nD. General Climate Model", "options": [{"id": "1", "text": "Only A and B"}, {"id": "2", "text": "Only B and C"}, {"id": "3", "text": "Only C and D"}, {"id": "4", "text": "Only A and D"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* GCM traditionally stands for \"General Circulation Model\" representing the physical processes in the atmosphere, ocean, cryosphere, and land surface.\n* In modern climatology, the acronym has evolved and is also interchangeably known as \"Global Climate Model\".\n* These are mathematical models used for weather forecasting and projecting climate change.\n*Related Concepts:*\n* Climate modeling methodologies.\n* IPCC assessment frameworks.", "id": 37}, {"question": "Dissolved Oxygen (DO), a water quality parameter, is essential in which of the following water bodies/sources?\nA. River Water\nB. Lake Water\nC. Tap Water\nD. Underground Water\nE. Pond Water", "options": [{"id": "1", "text": "A, B and E Only"}, {"id": "2", "text": "C and D Only"}, {"id": "3", "text": "B, D and E Only"}, {"id": "4", "text": "A, C, D and E Only"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Dissolved Oxygen (DO) is vital for the survival of aquatic ecosystems (fish, invertebrates, flora).\n* It is a crucial parameter for surface water bodies exposed to the atmosphere, such as rivers (A), lakes (B), and ponds (E).\n* Underground water (D) naturally lacks oxygen and aquatic life requiring DO, and tap water (C) is chemically treated, making DO monitoring irrelevant for ecosystem health.\n*Related Concepts:*\n* Biological Oxygen Demand (BOD).\n* Eutrophication impacts.", "id": 38}, {"question": "In a breeder reactor", "options": [{"id": "1", "text": "More fissile materials are produced than it is consumed"}, {"id": "2", "text": "Less fissile materials are produced than it is consumed"}, {"id": "3", "text": "Neutrons are slowed down by moderator"}, {"id": "4", "text": "U-238 a fissile material is produced from Pu-239 a fertile material."}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* A breeder reactor is a nuclear reactor that generates more fissile material than it consumes.\n* It achieves this by irradiating a \"fertile\" material (like Uranium-238 or Thorium-232) with neutrons.\n* These fertile materials absorb neutrons and transmutate into fissile materials (like Plutonium-239 or Uranium-233).\n*Related Concepts:*\n* Nuclear fission mechanics.\n* Fertile vs. Fissile isotopes.", "id": 39}, {"question": "When a water body becomes extremely low in nutrient content, then it is called as", "options": [{"id": "1", "text": "Dystrophic"}, {"id": "2", "text": "Oligotrophic"}, {"id": "3", "text": "Mesotrophic"}, {"id": "4", "text": "Eutrophic"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Oligotrophic lakes are characterized by low nutrient levels (primarily nitrogen and phosphorus).\n* Because of low nutrients, they have clear water, high oxygen levels, and low organic productivity (few algae).\n* Eutrophic (Option D) is the exact opposite\u2014high in nutrients and prone to algal blooms.\n*Related Concepts:*\n* Trophic state index (TSI).\n* Lake aging processes.\n### **Higher Education System**", "id": 40}, {"question": "An important feature of the third five year plan was", "options": [{"id": "1", "text": "Abolition of Education Commission."}, {"id": "2", "text": "Reduction in the number of colleges"}, {"id": "3", "text": "Setting up examination research units in some universities"}, {"id": "4", "text": "More emphasis on open book examination."}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The Third Five Year Plan (1961\u20131966) heavily emphasized the qualitative improvement of higher education alongside expansion.\n* A key academic reform initiated during this period was the setting up of specialized examination research units in select universities to overhaul rote-learning based assessments.\n* It aimed to improve the reliability and validity of university examinations.\n*Related Concepts:*\n* Five Year Plans and Education policy.\n* Examination reforms in India.", "id": 41}, {"question": "The National Education Policy, 2020 aims to create", "options": [{"id": "1", "text": "fragmented universities"}, {"id": "2", "text": "online universities"}, {"id": "3", "text": "knowledge hubs"}, {"id": "4", "text": "corporate clusters of education"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* NEP 2020 envisions an overhaul of higher education by ending the fragmentation of higher education institutions.\n* It aims to transform higher education institutions into large, multidisciplinary universities, colleges, and HEI clusters/Knowledge Hubs.\n* These hubs aim to foster cross-disciplinary research and holistic student development.\n*Related Concepts:*\n* Multidisciplinary Education and Research Universities (MERU).\n* NEP 2020 restructuring goals.", "id": 42}, {"question": "Dr. Baba Saheb Ambedkar was associated with:\nA. Presidency College, Kolkata\nB. Khalsa College, Mumbai\nC. Siddharth College, Mumbai\nD. Milind College, Aurangabad\nE. National College, Bengaluru", "options": [{"id": "1", "text": "Only A, B, C"}, {"id": "2", "text": "Only B, C, D"}, {"id": "3", "text": "Only C, D, E"}, {"id": "4", "text": "Only A, D, E\n*(Note: Appropriate combination choice C and D)*"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Dr. B.R. Ambedkar founded the People's Education Society (PES) in 1945 to advance the educational interests of marginalized classes.\n* Under PES, he established Siddharth College of Arts and Science in Mumbai (1946).\n* He later established Milind Mahavidyalaya in Aurangabad (1950). He was not associated with Presidency College, Kolkata.\n*Related Concepts:*\n* People's Education Society.\n* Historical education reform movements in India.", "id": 43}, {"question": "Which of the following universities were multi-disciplinary in ancient India?\nA. Banaras Hindu University\nB. Takshashila\nC. Nalanda\nD. Vallabhi\nE. Vikramshila", "options": [{"id": "1", "text": "Only A, B, C"}, {"id": "2", "text": "Only A, C, E"}, {"id": "3", "text": "Only A, D, E"}, {"id": "4", "text": "Only B, C, D, E"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Ancient Indian education centers were globally renowned for their vast, multidisciplinary curricula encompassing Vedas, logic, medicine, arts, and astronomy.\n* Takshashila, Nalanda, Vallabhi, and Vikramshila are classical examples of ancient Indian multidisciplinary universities.\n* Banaras Hindu University (BHU) is a modern university, founded in 1916.\n*Related Concepts:*\n* Ancient Indian Education systems.\n* Vedic and Buddhist learning centers.", "id": 44}, {"question": "The National Education Policy, 2020 recommended the integration of humanities at the undergraduate level with subjects of\nA. Science\nB. Technology\nC. Engineering\nD. Mathematics\nE. Propaganda techniques", "options": [{"id": "1", "text": "Only A, B, C, D"}, {"id": "2", "text": "Only B, C, E"}, {"id": "3", "text": "Only A, C, D, E"}, {"id": "4", "text": "Only A, B, D, E"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* NEP 2020 strongly advocates for multidisciplinary education, emphasizing the breaking down of silos between arts and sciences.\n* It specifically recommends the integration of Humanities and Arts with STEM subjects (Science, Technology, Engineering, and Mathematics).\n* \"Propaganda techniques\" are absolutely not part of an educational integration framework.\n*Related Concepts:*\n* STEM to STEAM transition.\n* Holistic and Multidisciplinary Education in NEP.", "id": 45}, {"question": "\nReading Comprehension Context (Applies to Q46 - Q50)**\n**Directions:** Read the following passage carefully and answer the questions that follow:\nA.K. Ramanujan was one of those thinkers, like Freud (whom he greatly, though not uncritically, admired), who so transform our way of looking at a subject that we are in danger of undervaluing their contribution, since we have come to take for granted precisely what they taught us, as we view the subject through their eyes. At a time when the American Indo-logical establishment regarded native Indian scholars merely as sources of information about language and texts, like the raw fiber that were taken from India to be processed in British mills, but seldom as scholars who might have their own ideas about how to process those texts, Raman taught them all how to weave a theory, a folktale, a poem, a book. Long before it was politically respectable, let alone politically correct, to study the works of women or of 'illiterate' peasants, Raman valued their poetry, their stories and their counter-systems. At a time when Indian literature meant Sanskrit, and Sanskrit meant Greek and Latin, Raman arrived in Chicago to join Edward C. Dimock and the other 'founding fathers' in proclaiming to the world the relevance of Tamil and Bengali and the other mother tongues. Without so much as raising his gentle voice, he blazed a great path through the centre of Indological studies. He gave us so many new paradigms that no Indologist can now think about India without thinking through his thoughts. **Who is A.K Ramanujan compared to in the text?**", "options": [{"id": "1", "text": "Chomsky"}, {"id": "2", "text": "Sigmund Freud"}, {"id": "3", "text": "Brunvand"}, {"id": "4", "text": "British Mill Owners"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The author explicitly compares A.K. Ramanujan to Freud in the very first sentence.\n* The comparison is based on the idea that both thinkers completely transformed how their respective fields are viewed.\n* The text notes he admired Freud \"greatly, though not uncritically\".\n*Related Concepts:*\n* Direct textual evidence extraction.\n* Understanding authorial analogies.", "id": 46}, {"question": "Reading Comprehension Context (Applies to Q46 - Q50)\n**Directions:** Read the following passage carefully and answer the questions that follow:\nA.K. Ramanujan was one of those thinkers, like Freud (whom he greatly, though not uncritically, admired), who so transform our way of looking at a subject that we are in danger of undervaluing their contribution, since we have come to take for granted precisely what they taught us, as we view the subject through their eyes. At a time when the American Indo-logical establishment regarded native Indian scholars merely as sources of information about language and texts, like the raw fiber that were taken from India to be processed in British mills, but seldom as scholars who might have their own ideas about how to process those texts, Raman taught them all how to weave a theory, a folktale, a poem, a book. Long before it was politically respectable, let alone politically correct, to study the works of women or of 'illiterate' peasants, Raman valued their poetry, their stories and their counter-systems. At a time when Indian literature meant Sanskrit, and Sanskrit meant Greek and Latin, Raman arrived in Chicago to join Edward C. Dimock and the other 'founding fathers' in proclaiming to the world the relevance of Tamil and Bengali and the other mother tongues. Without so much as raising his gentle voice, he blazed a great path through the centre of Indological studies. He gave us so many new paradigms that no Indologist can now think about India without thinking through his thoughts. **What did Ramanujan teach in America?**", "options": [{"id": "1", "text": "Process raw fibers in British mills"}, {"id": "2", "text": "Weave theories, folktales, poems and books"}, {"id": "3", "text": "Only Sanskrit literature"}, {"id": "4", "text": "Only English Literature"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The passage states that American establishments viewed Indian scholars as just \"sources of information\" (like raw fiber).\n* In contrast, Ramanujan taught them \"how to weave a theory, a folktale, a poem, a book\".\n* This metaphor means he brought analytical and synthetic scholarly frameworks, not just raw translation.\n*Related Concepts:*\n* Metaphorical comprehension.\n* Indological paradigm shifts.", "id": 47}, {"question": "Reading Comprehension Context (Applies to Q46 - Q50)\n**Directions:** Read the following passage carefully and answer the questions that follow:\nA.K. Ramanujan was one of those thinkers, like Freud (whom he greatly, though not uncritically, admired), who so transform our way of looking at a subject that we are in danger of undervaluing their contribution, since we have come to take for granted precisely what they taught us, as we view the subject through their eyes. At a time when the American Indo-logical establishment regarded native Indian scholars merely as sources of information about language and texts, like the raw fiber that were taken from India to be processed in British mills, but seldom as scholars who might have their own ideas about how to process those texts, Raman taught them all how to weave a theory, a folktale, a poem, a book. Long before it was politically respectable, let alone politically correct, to study the works of women or of 'illiterate' peasants, Raman valued their poetry, their stories and their counter-systems. At a time when Indian literature meant Sanskrit, and Sanskrit meant Greek and Latin, Raman arrived in Chicago to join Edward C. Dimock and the other 'founding fathers' in proclaiming to the world the relevance of Tamil and Bengali and the other mother tongues. Without so much as raising his gentle voice, he blazed a great path through the centre of Indological studies. He gave us so many new paradigms that no Indologist can now think about India without thinking through his thoughts. **The languages that Ramanujan tried to bring to limelight in Indological studies is**", "options": [{"id": "1", "text": "Greek and Latin"}, {"id": "2", "text": "Only Sanskrit"}, {"id": "3", "text": "Tamil, Bengali and other mother tongues"}, {"id": "4", "text": "French and German"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The passage explicitly mentions that when \"Indian literature meant Sanskrit,\" Ramanujan sought to change that narrative.\n* He proclaimed \"to the world the relevance of Tamil and Bengali and the other mother tongues.\"\n* He broke the hegemony of classical, elitist language studies in favor of vernaculars.\n*Related Concepts:*\n* Vernacular literature vs. Classical literature.\n* Decentralization of Indological studies.", "id": 48}, {"question": "Reading Comprehension Context (Applies to Q46 - Q50)\n**Directions:** Read the following passage carefully and answer the questions that follow:\nA.K. Ramanujan was one of those thinkers, like Freud (whom he greatly, though not uncritically, admired), who so transform our way of looking at a subject that we are in danger of undervaluing their contribution, since we have come to take for granted precisely what they taught us, as we view the subject through their eyes. At a time when the American Indo-logical establishment regarded native Indian scholars merely as sources of information about language and texts, like the raw fiber that were taken from India to be processed in British mills, but seldom as scholars who might have their own ideas about how to process those texts, Raman taught them all how to weave a theory, a folktale, a poem, a book. Long before it was politically respectable, let alone politically correct, to study the works of women or of 'illiterate' peasants, Raman valued their poetry, their stories and their counter-systems. At a time when Indian literature meant Sanskrit, and Sanskrit meant Greek and Latin, Raman arrived in Chicago to join Edward C. Dimock and the other 'founding fathers' in proclaiming to the world the relevance of Tamil and Bengali and the other mother tongues. Without so much as raising his gentle voice, he blazed a great path through the centre of Indological studies. He gave us so many new paradigms that no Indologist can now think about India without thinking through his thoughts. **Ramanujan emphasised on**", "options": [{"id": "1", "text": "The criticism on the British mills"}, {"id": "2", "text": "Creating controversies in American Indological Studies"}, {"id": "3", "text": "A path through Indological Studies"}, {"id": "4", "text": "The study of Western languages only"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The text states: \"Without so much as raising his gentle voice, he blazed a great path through the centre of Indological studies.\"\n* He focused on shifting paradigms, integrating folk tales, women's poetry, and vernacular languages into mainstream study.\n* He was not focused on generating controversy (did this without raising his voice) or merely criticizing the British.\n*Related Concepts:*\n* Core thematic extraction.\n* Inference from tone.", "id": 49}, {"question": "Reading Comprehension Context (Applies to Q46 - Q50)\n**Directions:** Read the following passage carefully and answer the questions that follow:\nA.K. Ramanujan was one of those thinkers, like Freud (whom he greatly, though not uncritically, admired), who so transform our way of looking at a subject that we are in danger of undervaluing their contribution, since we have come to take for granted precisely what they taught us, as we view the subject through their eyes. At a time when the American Indo-logical establishment regarded native Indian scholars merely as sources of information about language and texts, like the raw fiber that were taken from India to be processed in British mills, but seldom as scholars who might have their own ideas about how to process those texts, Raman taught them all how to weave a theory, a folktale, a poem, a book. Long before it was politically respectable, let alone politically correct, to study the works of women or of 'illiterate' peasants, Raman valued their poetry, their stories and their counter-systems. At a time when Indian literature meant Sanskrit, and Sanskrit meant Greek and Latin, Raman arrived in Chicago to join Edward C. Dimock and the other 'founding fathers' in proclaiming to the world the relevance of Tamil and Bengali and the other mother tongues. Without so much as raising his gentle voice, he blazed a great path through the centre of Indological studies. He gave us so many new paradigms that no Indologist can now think about India without thinking through his thoughts. **Who were the 'Founding Fathers' that Ramanujan joined in Chicago?**", "options": [{"id": "1", "text": "British Mill Owners"}, {"id": "2", "text": "American Indo-logical establishment leaders"}, {"id": "3", "text": "Edward C. Dimock and others"}, {"id": "4", "text": "Greek and Latin scholars"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The text clearly states: \"Raman arrived in Chicago to join Edward C. Dimock and the other 'founding fathers'\".\n* Together, they established a new school of thought regarding South Asian vernacular studies.\n* This directly answers the factual question based on the passage's explicit wording.\n*Related Concepts:*\n* Scanning for specific proper nouns.\n* Contextual association in RC.", "id": 50}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
