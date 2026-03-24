@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Business Finance 2021 PYQs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Business Finance 2021 PYQs", "organization": "ExamTym", "durationMinutes": 40, "totalMarks": 56.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Which one of the following is not one of the advantages of the derivatives market?", "options": [{"id": "1", "text": "Leveraging increases risk"}, {"id": "2", "text": "They enhance liquidity in the market for underlying assets"}, {"id": "3", "text": "They represent a form of insurance against risks"}, {"id": "4", "text": "They reduce price volatility"}], "correctAnswer": "1", "explanation": "**Key Concepts:**\n* Derivatives are financial instruments whose value relies on (is derived from) an underlying asset, such as stocks, bonds, or commodities.\n* While leveraging allows investors to control a large position with a small amount of capital (margin), it exponentially magnifies potential losses, which is a structural *disadvantage* and a systemic risk, not an advantage.\n* Derivative markets fundamentally enhance the liquidity of underlying assets by attracting speculators and arbitrageurs who ensure continuous trading volume.\n* Hedging through derivatives acts as a formal insurance mechanism, locking in future prices and subsequently reducing overall market price volatility for commercial producers.\n**Related Concepts:**\n* **Hedging:** The practice of taking a position in the derivatives market opposite to a physical position to eliminate price risk.\n* **Speculation:** Trading purely to profit from anticipated price movements, utilizing leverage to maximize returns.\n* **Margin Call:** A broker's demand that an investor deposit additional money to cover potential losses when a leveraged derivative position moves against them.", "id": 1}, {"question": "Which one of the following is considered a necessary precondition by Richard Roll for markets to become efficient?", "options": [{"id": "1", "text": "Costless trading"}, {"id": "2", "text": "Free access to and flow of information"}, {"id": "3", "text": "Prices approximate a random walk"}, {"id": "4", "text": "Traders who make a living by 'beating the market' through trading"}], "correctAnswer": "4", "explanation": "**Key Concepts:**\n* The Efficient Market Hypothesis (EMH) traditionally assumes prices reflect all available information, seemingly rendering active trading useless.\n* However, Richard Roll (and the related Grossman-Stiglitz paradox) points out a critical mechanism: if the market is perfectly efficient, no one would spend resources gathering information.\n* Therefore, for markets to *remain* efficient, there must be a constant presence of active, informed traders who genuinely believe they can \"beat the market\" to uncover and trade on new information.\n* It is the relentless, competitive actions of these profit-seeking arbitrageurs and active traders that continuously force market prices back to their true fundamental values.\n**Related Concepts:**\n* **Grossman-Stiglitz Paradox:** The economic theory stating that perfectly informationally efficient markets are impossible because information is costly to obtain.\n* **Arbitrageurs:** Traders who exploit tiny price discrepancies across different markets, instantly correcting mispricings.\n* **Random Walk Theory:** The financial concept that stock market prices evolve according to a random process and cannot be predicted based on historical trends.", "id": 2}, {"question": "Given below are two statements:\nStatement I: Modified Internal Rate of Return (MIRR) is based on the reinvestment assumption.\nStatement II: Value-additivity principle is not applicable in NPV.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct."}, {"id": "2", "text": "Both Statement I and Statement II are incorrect."}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect."}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct."}], "correctAnswer": "3", "explanation": "**Key Concepts:**\n* **Statement I is correct:** The Modified Internal Rate of Return (MIRR) actively relies on a structured reinvestment assumption, assuming that positive cash flows are reinvested at the firm's cost of capital, resolving the fatal flaw of traditional IRR.\n* **Statement II is incorrect:** The **Value-Additivity Principle** is a cornerstone of the Net Present Value (NPV) method. \n* Value-additivity dictates that the total NPV of a set of independent projects is simply the mathematical sum of their individual NPVs ($NPV(A+B) = NPV(A) + NPV(B)$).\n* Because NPV uses absolute dollar values and a uniform discount rate (cost of capital), it inherently supports value-additivity, making it the superior metric for corporate wealth maximization.\n**Related Concepts:**\n* **Internal Rate of Return (IRR):** Assumes intermediate cash flows are reinvested at the project's *own* high rate of return, which is often mathematically unrealistic.\n* **Mutually Exclusive Projects:** A situation where accepting one project requires rejecting another. NPV value-additivity ensures the combination maximizing total firm wealth is selected.\n* **Capital Rationing:** A scenario where a firm has more positive NPV projects than available funding.", "id": 3}, {"question": "If a project cost is \u20b940,000. Its stream of earning before depreciation and tax during the first year through five years is expected to be \u20b910,000, \u20b912,000, \u20b914,000, \u20b916,000 and \u20b920,000. Assume a 50% tax rate and depreciation on a straight line basis: the project's ARR is", "options": [{"id": "1", "text": "14.40%"}, {"id": "2", "text": "72%"}, {"id": "3", "text": "16%"}, {"id": "4", "text": "55.56%"}], "correctAnswer": "3", "explanation": "**Key Concepts:**\n* The **Accounting Rate of Return (ARR)** relies on accounting profits (Earnings After Tax) rather than pure cash flows.\n* **Step 1 (Depreciation):** Straight-line depreciation = $\u20b940,000 / 5 \\text{ years} = \u20b98,000$ per year.\n* **Step 2 (Average EAT):** Total Earnings Before Dep & Tax (EBDT) = $10k+12k+14k+16k+20k = \u20b972,000$. Average EBDT = $72,000 / 5 = \u20b914,400$. Average Earnings Before Tax (EBT) = $14,400 - 8,000 = \u20b96,400$. Average Earnings After Tax (EAT at 50%) = $\u20b96,400 \\times 0.50 = \u20b93,200$.\n* **Step 3 (Average Investment):** Initial Investment / 2 = $40,000 / 2 = \u20b920,000$.\n* **Step 4 (ARR):** $ARR = \\frac{\\text{Average EAT}}{\\text{Average Investment}} = \\frac{3,200}{20,000} = 0.16$ or **16%**.\n**Related Concepts:**\n* **Straight-Line Method (SLM):** A depreciation method distributing the cost of an asset evenly across its useful life.\n* **Cash Flow vs. Accounting Profit:** ARR is unique among capital budgeting tools because it uses accrual accounting profits (which subtract non-cash depreciation) instead of raw cash inflows.\n* **Time Value of Money (TVM):** A major limitation of ARR is that it completely ignores TVM, treating a rupee earned in Year 5 identical to one earned in Year 1.", "id": 4}, {"question": "Pecking order theory in finance is based on the assertion of", "options": [{"id": "1", "text": "Asymmetric information between managers and investors"}, {"id": "2", "text": "Symmetric information between managers and investors"}, {"id": "3", "text": "Outside information"}, {"id": "4", "text": "Asymmetric information among investors only"}], "correctAnswer": "1", "explanation": "**Key Concepts:**\n* The **Pecking Order Theory**, developed by Myers and Majluf (1984), explicitly relies on the concept of **Asymmetric Information**.\n* It posits that corporate managers intrinsically possess more accurate, internal information about the firm's true value, prospects, and risks than external investors do.\n* Because of this asymmetry, investors view the issuance of new equity as a negative signal (assuming managers only issue stock when it is overvalued).\n* To avoid this \"signaling penalty,\" managers follow a strict financing hierarchy: internal funds first, followed by safe debt, and only utilizing new external equity as an absolute last resort.\n**Related Concepts:**\n* **Signaling Theory:** The idea that corporate financial decisions (like dividend payouts or equity issuance) pass hidden information to the stock market.\n* **Floatation Costs:** The administrative and underwriting fees associated with issuing new public securities, further discouraging external financing.\n* **Trade-off Theory:** The competing capital structure theory suggesting firms actively balance the tax shields of debt against bankruptcy costs to find an optimal ratio.", "id": 5}, {"question": "Following are the problems that mar an optimal international diversification:\n(A) Unfavourable exchange rate movements\n(B) Frictions in international markets\n(C) Manipulation of security prices\n(D) Unequal access to information", "options": [{"id": "1", "text": "A, B, C only"}, {"id": "2", "text": "B, C, D only"}, {"id": "3", "text": "A, C, D only"}, {"id": "4", "text": "A, B, C, D only"}], "correctAnswer": "4", "explanation": "**Key Concepts:**\n* **International Diversification** aims to reduce portfolio risk by investing across borders, taking advantage of the low correlation between different national economies.\n* It is consistently marred by **Exchange Rate Risk (A)**, where a profitable foreign stock return can be wiped out if the foreign currency depreciates against the investor's home currency.\n* **Market Frictions (B)**, such as differing tax laws, heavy transaction costs, capital controls, and illiquidity, severely hinder seamless global trading.\n* Weak regulatory frameworks in emerging markets lead to rampant **Price Manipulation (C)** and **Unequal Access to Information (D)** (insider trading), placing foreign investors at a massive systemic disadvantage.\n**Related Concepts:**\n* **Home Bias:** The well-documented behavioral finance phenomenon where investors heavily overweight their portfolios with domestic stocks despite the mathematical benefits of global diversification.\n* **Systematic Risk:** Market-wide risk that cannot be diversified away; international investing attempts to isolate domestic systematic risk.\n* **Sovereign Risk:** The political risk that a foreign government will default on its debts or dramatically alter capital repatriation laws.", "id": 6}, {"question": "The value of the firm in wealth maximization objective is measured by", "options": [{"id": "1", "text": "Present value of all expected future cash flows"}, {"id": "2", "text": "All expected future cash flows"}, {"id": "3", "text": "Present value of all expected future profits"}, {"id": "4", "text": "All expected future profits"}], "correctAnswer": "1", "explanation": "**Key Concepts:**\n* **Wealth Maximization** is universally accepted as the superior normative goal of corporate financial management.\n* It defines the theoretical value of a firm explicitly as the **Present Value of all expected future cash flows**, discounted at a rate that reflects the inherent risk of those flows (the Cost of Capital).\n* This explicitly incorporates the **Time Value of Money** (unlike options 2 and 4), recognizing that a dollar received today is worth more than a dollar received tomorrow.\n* It strictly relies on objective **Cash Flows** rather than subjective accounting \"profits\" (unlike option 3), as profits can be easily manipulated through accrual accounting policies and do not represent actual liquidity.\n**Related Concepts:**\n* **Discounted Cash Flow (DCF) Valuation:** The primary valuation model used by analysts to estimate an investment's absolute value based on its projected future cash generation.\n* **Agency Problem:** The conflict of interest between corporate managers (agents) and shareholders (principals) regarding the maximization of firm wealth.\n* **Profit Maximization:** A narrower, short-term goal that ignores both the time value of money and the risk profile of the returns.", "id": 7}, {"question": "Arrange the following steps in the logical sequence of operation of the registration of portfolio managers:\n(A) Prior approval of the SEBI.\n(B) Adequate steps for redressal of investors' grievances.\n(C) Maintenance of the specified capital adequacy requirements.\n(D) Payment of fee.\n(E) Abide by the regulations under the SEBI Act.", "options": [{"id": "1", "text": "(C), (E), (A), (B), (D)"}, {"id": "2", "text": "(D), (A), (B), (E), (C)"}, {"id": "3", "text": "(A), (D), (B), (C), (E)"}, {"id": "4", "text": "(D), (E), (A), (C), (B)"}], "correctAnswer": "3", "explanation": "**Key Concepts:**\n* The registration of financial intermediaries (like Portfolio Managers) under SEBI follows a strict regulatory sequence.\n* **Step 1 (A):** The entity must seek and secure the **Prior initial approval** of SEBI to even begin the formal registration process.\n* **Step 2 (D):** Upon initial clearance, the applicant must make the mandatory **Payment of the registration fee**.\n* **Step 3 & 4 (B & C):** To secure the final certificate, the firm must demonstrate **Adequate steps for investor grievance redressal** and prove it maintains the specified **Capital adequacy requirements** (net worth rules).\n* **Step 5 (E):** Finally, once registered, the ongoing mandate is to strictly **Abide by the regulations** under the SEBI Act for the duration of its operation.\n**Related Concepts:**\n* **SEBI (Securities and Exchange Board of India):** The supreme regulatory body for securities and commodity markets in India under the ownership of the Ministry of Finance.\n* **Capital Adequacy:** The statutory minimum amount of capital a financial institution must hold to absorb potential losses and protect investors.\n* **Fiduciary Duty:** The legal and ethical obligation of a portfolio manager to act strictly in the best financial interests of their clients.", "id": 8}, {"question": "Arrange the following items, i.e. stages of capital budgeting in correct sequence:\n(A) Identification of potential investment opportunities\n(B) Assembling of proposed investments\n(C) Decision making\n(D) Implementation and performance review\n(E) Preparation of capital budget and appropriations.", "options": [{"id": "1", "text": "(B), (A), (E), (C), (D)"}, {"id": "2", "text": "(E), (C), (A), (B), (D)"}, {"id": "3", "text": "(C), (E), (D), (B), (A)"}, {"id": "4", "text": "(A), (B), (C), (E), (D)"}], "correctAnswer": "4", "explanation": "**Key Concepts:**\n* Capital Budgeting is a rigorous, multi-stage chronological process for evaluating long-term, large-scale investments.\n* **Stage 1 (A):** The process begins with the **Identification of potential investment opportunities** generated from various departments (R&D, marketing, operations).\n* **Stage 2 (B):** These raw ideas undergo the **Assembling of proposed investments**, where cash flows are estimated and proposals are formally structured.\n* **Stage 3 (C):** Management proceeds with formal **Decision making**, applying metrics like NPV or IRR to accept or reject the proposals.\n* **Stage 4 & 5 (E & D):** Accepted projects move to the **Preparation of the capital budget** (allocating the actual funds), followed by actual physical **Implementation and performance review** (post-audit).\n**Related Concepts:**\n* **Net Present Value (NPV):** The optimal decision-making metric in Stage 3, calculating the difference between the present value of inflows and outflows.\n* **Capital Rationing:** A constraint encountered during Stage 3 and 4 where the firm has more positive NPV projects than available capital.\n* **Post-Audit:** The crucial final review stage (D) that compares actual project performance against initial forecasts to improve future accuracy.", "id": 9}, {"question": "According to the theory of dividend, the firm should follow its investment policy of accepting all positive NPV projects and paying out dividends if and only if funds are available:", "options": [{"id": "1", "text": "Bird in hand theory"}, {"id": "2", "text": "Investor rationality theory"}, {"id": "3", "text": "100 percent retention theory"}, {"id": "4", "text": "Residual theory"}], "correctAnswer": "4", "explanation": "**Key Concepts:**\n* The **Residual Theory of Dividends** treats dividend payments strictly as a passive, leftover decision rather than an active financial strategy.\n* Under this theory, a firm's primary obligation is to fund all internal projects that possess a positive Net Present Value (NPV) using its retained earnings, as this maximizes ultimate shareholder wealth.\n* Dividends are distributed **if and only if** there are surplus earnings remaining *after* all optimal capital budgeting requirements have been fully satisfied.\n* If positive NPV projects require more capital than internally generated earnings can provide, the dividend payout drops to absolute zero.\n**Related Concepts:**\n* **Capital Budgeting:** The overarching process of identifying and selecting long-term investments that drive the Residual Theory's demands.\n* **Target Payout Ratio:** A competing dividend strategy where firms attempt to pay a consistent, stable percentage of earnings regardless of short-term investment needs.\n* **Floatation Costs:** The administrative costs of issuing new external equity; the Residual Theory avoids these costs by prioritizing free internal retained earnings.", "id": 10}, {"question": "What is the value of a levered firm \"L\" if it has the same EBIT as an unlevered firm \"U\", (with a value of \u20b9700 lac), has a debt of \u20b9200 lac, and the tax rate is 35% under the MM approach?", "options": [{"id": "1", "text": "\u20b9950 lac"}, {"id": "2", "text": "\u20b9630 lac"}, {"id": "3", "text": "\u20b9770 lac"}, {"id": "4", "text": "\u20b9525 lac"}], "correctAnswer": "3", "explanation": "**Key Concepts:**\n* Under the **Modigliani-Miller (MM) Approach with Corporate Taxes**, the value of a levered firm (one utilizing debt) mathematically exceeds the value of an identical unlevered firm.\n* This increase in value is directly equal to the Present Value of the **Tax Shield** generated by the debt's tax-deductible interest payments.\n* The formal equation is: $V_L = V_U + (D \\times t)$, where $V_L$ is Levered Value, $V_U$ is Unlevered Value, $D$ is total Debt, and $t$ is the corporate tax rate.\n* **Execution:** $V_L = 700 + (200 \\times 0.35) \\rightarrow V_L = 700 + 70 = \u20b9770$ lac.\n**Related Concepts:**\n* **Tax Shield:** The reduction in income taxes that results from taking an allowable deduction, specifically the interest expense on debt.\n* **Unlevered Firm:** A company that operates entirely without debt, financed 100% by equity.\n* **Financial Distress Costs:** In real-world trade-off theory, these costs offset the MM tax shield at high debt levels, eventually causing firm value to drop.", "id": 11}, {"question": "is a percentage discount rate used in capital investment appraisals which brings the cost of a project and its future cash inflows into equality.", "options": [{"id": "1", "text": "Accounting rate of return"}, {"id": "2", "text": "Internal rate of return"}, {"id": "3", "text": "Profitability Index"}, {"id": "4", "text": "Net present value"}], "correctAnswer": "2", "explanation": "**Key Concepts:**\n* The **Internal Rate of Return (IRR)** is the specific discount rate that mathematically forces the Net Present Value (NPV) of a project to exactly zero.\n* By definition, it is the precise rate at which the present value of a project's future cash inflows exactly equals the present value of its initial capital outflows (the cost).\n* A project is deemed acceptable if its calculated IRR exceeds the firm's required Cost of Capital (the hurdle rate).\n* Unlike NPV, which provides an absolute dollar amount, IRR provides a percentage yield, making it highly intuitive for managers comparing relative project returns.\n**Related Concepts:**\n* **Net Present Value (NPV):** The absolute difference between the present value of cash inflows and outflows; the optimal metric that IRR attempts to solve for zero.\n* **Hurdle Rate:** The minimum acceptable return on an investment, typically representing the firm's Weighted Average Cost of Capital (WACC).\n* **Multiple IRRs:** A severe mathematical flaw where a project with alternating positive and negative cash flows produces more than one valid IRR.", "id": 12}, {"question": "Which of the following are the reasons for raising funds via securitization?\n(A) To raise capital using non-conventional sources\n(B) To accelerate earnings for financial reporting purposes\n(C) To diversify funding resources\n(D) The potential for reducing funding cost", "options": [{"id": "1", "text": "(A), (C), (D) only"}, {"id": "2", "text": "(B), (C), (D) only"}, {"id": "3", "text": "(C), (D) only"}, {"id": "4", "text": "(A), (B), (D) only"}], "correctAnswer": "1", "explanation": "**Key Concepts:**\n* **Securitization** is the process of pooling illiquid financial assets (like mortgages or auto loans) and transforming them into tradable securities to sell to investors.\n* Banks and corporations use it to **raise capital using non-conventional sources (A)**, bypassing traditional bank loans or corporate bond issuance by directly monetizing their receivables.\n* It inherently allows firms to **diversify funding resources (C)** by accessing a broader spectrum of institutional investors who want asset-backed securities.\n* Because the specific pooled assets are isolated in a bankruptcy-remote Special Purpose Vehicle (SPV), they often receive a higher credit rating than the parent company, giving the firm the **potential for reducing its overall funding cost (D)**.\n* Accelerating earnings (B) is a potential accounting side-effect (monetizing future flows today), but is historically an abusive manipulation tactic rather than a core, legitimate financial reason for securitization.\n**Related Concepts:**\n* **Special Purpose Vehicle (SPV):** A separate legal entity created specifically to purchase the assets from the originator, protecting investors if the originator goes bankrupt.\n* **Asset-Backed Securities (ABS):** The actual financial instruments generated by the securitization process, collateralized by the underlying loan pools.\n* **Credit Enhancement:** Strategies (like overcollateralization) used to improve the credit rating of the newly issued securities.", "id": 13}, {"question": "The cash flow approach to assessing debt capacity involves the following steps; arrange these steps in a correct sequence:\n(A) Specify the tolerance limit on the probability of default.\n(B) Estimate the probability distribution of cash flows, taking into account the projected performance of the firm.\n(C) Calculate the fixed charges by way of interest payment and principal repayment associated with various levels of debt.\n(D) Estimate the debt capacity of the firm as the highest level of debt which is acceptable.", "options": [{"id": "1", "text": "(D), (C), (A), (B)"}, {"id": "2", "text": "(A), (B), (C), (D)"}, {"id": "3", "text": "(B), (C), (D), (A)"}, {"id": "4", "text": "(D), (A), (C), (B)"}], "correctAnswer": "2", "explanation": "**Key Concepts:**\n* Donaldson's Cash Flow Approach to debt capacity measures a firm's ability to safely handle debt during recessionary, adverse periods based on expected cash liquidity.\n* **Step 1 (A):** Management must first establish its risk appetite by **Specifying the tolerance limit** for the probability of running out of cash (e.g., accepting a 5% chance of insolvency).\n* **Step 2 (B):** The firm must then **Estimate the probability distribution of future cash flows**, specifically modeling expected recessionary behavior.\n* **Step 3 (C):** Analysts **Calculate the fixed charges** (interest and principal schedules) associated with hypothetical increasing tiers of debt.\n* **Step 4 (D):** Finally, matching the cash flow distributions against the fixed charges, the firm **Estimates its maximum debt capacity** without breaching the initial default tolerance limit.\n**Related Concepts:**\n* **Debt Capacity:** The absolute maximum amount of debt a company can safely take on and service based on its free cash flow limits.\n* **Coverage Ratios:** Static accounting metrics (like Interest Coverage Ratio) that the Cash Flow Approach attempts to improve upon by using dynamic probability distributions.\n* **Financial Distress:** The condition where a company struggles to meet its fixed charge obligations, risking bankruptcy.", "id": 14}, {"question": "A new issue debt or shares will invariably involve floatation costs in the form of:\n(A) Legal fees\n(B) Administrative expenses\n(C) Brokerage\n(D) Underwriting\n(E) Risk premium", "options": [{"id": "1", "text": "(A), (B), (D), (E) only"}, {"id": "2", "text": "(A), (C) only"}, {"id": "3", "text": "(A), (B), (C), (D) only"}, {"id": "4", "text": "(A), (B), (C), (D), (E)"}], "correctAnswer": "3", "explanation": "**Key Concepts:**\n* **Floatation Costs** are the direct and indirect out-of-pocket expenses a publicly traded company incurs when it issues new securities (equity or debt) to the open market.\n* These explicitly include **Legal fees (A)** for regulatory filings, **Administrative expenses (B)** for printing prospectus materials, **Brokerage commissions (C)**, and **Underwriting fees (D)** paid to investment banks to guarantee the sale.\n* A **Risk premium (E)** is completely distinct; it is the theoretical extra yield demanded by an investor to compensate for the fundamental risk of the asset, not an issuance expense paid by the company to intermediaries.\n* Floatation costs effectively reduce the actual net proceeds a firm receives from an issue, forcing them to raise their calculated Cost of Capital.\n**Related Concepts:**\n* **Underwriter:** An investment bank that administers the public issuance of securities, guaranteeing the firm a specific price by assuming the risk of selling the shares to the public.\n* **Net Proceeds:** The final amount of cash a firm actually receives from a security issue *after* all floatation costs have been deducted.\n* **Cost of External Equity:** The required rate of return for newly issued stock, which is mathematically higher than retained earnings explicitly due to floatation costs.", "id": 15}, {"question": "Which one of the following statements is false?", "options": [{"id": "1", "text": "Capital market is a market for medium and long-term funds."}, {"id": "2", "text": "GDR is a negotiable instrument issued by a US bank."}, {"id": "3", "text": "Many publicly listed companies in India trade their shares through the Bombay Stock Exchange or the National Stock Exchange."}, {"id": "4", "text": "Securities that are listed on various stock exchanges and are eligible for being traded there are called listed securities."}], "correctAnswer": "2", "explanation": "**Key Concepts:**\n* A **Global Depository Receipt (GDR)** is a highly negotiable bank certificate issued by an *international* depository bank, representing shares in a foreign company trading on major global exchanges (like London or Frankfurt).\n* An **American Depository Receipt (ADR)** is the specific instrument that is exclusively issued by a **US depository bank**, intended strictly for trading on United States stock exchanges. Therefore, statement (2) is demonstrably false.\n* The Capital Market (1) strictly deals with long-term debt and equity instruments (maturities > 1 year), contrasting with the short-term Money Market.\n* BSE and NSE (3) are the primary recognized national stock exchanges facilitating listed security trading (4) in India.\n**Related Concepts:**\n* **Depository Receipt:** A financial mechanism allowing investors to easily trade shares of foreign companies without worrying about cross-border currency exchanges or foreign tax laws.\n* **Money Market:** The financial market mechanism dealing with highly liquid, short-term borrowing and lending (like Commercial Paper or Treasury Bills).\n* **Primary vs. Secondary Market:** Primary markets involve issuing new securities (IPOs), while secondary markets (like the BSE/NSE) facilitate the trading of already-issued securities.", "id": 16}, {"question": "Match List I with List II:\n| List I | List II |\n| :--- | :--- |\n| (A) Hedgers | (I) Osaka |\n| (B) Financial derivatives in India | (II) Increased volatility |\n| (C) Arbitrageurs | (III) Commercial producers |\n| (D) Commodity future in origin | (IV) Riskless profit |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A)-(I), (B)-(IV), (C)-(II), (D)-(III)"}, {"id": "2", "text": "(A)-(III), (B)-(II), (C)-(IV), (D)-(I)"}, {"id": "3", "text": "(A)-(IV), (B)-(III), (C)-(I), (D)-(II)"}, {"id": "4", "text": "(A)-(II), (B)-(I), (C)-(III), (D)-(IV)"}], "correctAnswer": "2", "explanation": "**Key Concepts:**\n* **Hedgers (A)** are fundamentally **Commercial producers (III)** (like farmers or airlines) who use the derivatives market strictly to lock in prices and eliminate the physical price risk of their core business.\n* The introduction of **Financial derivatives in India (B)** has often been historically linked by critics to **Increased volatility (II)** in the underlying spot markets due to intense speculation.\n* **Arbitrageurs (C)** are traders utilizing complex algorithmic strategies to exploit tiny, fleeting price discrepancies across different markets, seeking guaranteed **Riskless profit (IV)**.\n* Historically, the world's first recorded **Commodity futures (D)** exchange originated in **Osaka, Japan (I)** in the 17th century (The Dojima Rice Exchange).\n**Related Concepts:**\n* **Speculators:** The third major class of derivative participants; they accept the price risk that hedgers want to shed, hoping to profit from directional price movements.\n* **Spot Market:** The underlying public financial market where financial instruments or commodities are traded for immediate delivery.\n* **Law of One Price:** The economic theory that arbitrageurs enforce; dictating that an identical asset must have the exact same price across all global markets when friction is ignored.", "id": 17}, {"question": "The annual demand for an item is 3,200 units. The unit cost is \u20b96 and inventory carrying charges are 25% p.a. If the cost of one procurement is \u20b9150, determine the number of orders per year:", "options": [{"id": "1", "text": "3"}, {"id": "2", "text": "4"}, {"id": "3", "text": "6"}, {"id": "4", "text": "800"}], "correctAnswer": "2", "explanation": "**Key Concepts:**\n* The **Economic Order Quantity (EOQ)** formula determines the ideal order size to minimize combined holding and ordering costs: $EOQ = \\sqrt{\\frac{2 \\cdot A \\cdot O}{C}}$.\n* **Variables:** Annual Demand ($A$) = 3,200 units. Ordering Cost ($O$) = \u20b9150. Carrying Cost ($C$) = 25% of \u20b96 = \u20b91.50 per unit per year.\n* **Step 1 (Calculate EOQ):** $\\sqrt{\\frac{2 \\times 3,200 \\times 150}{1.5}} = \\sqrt{\\frac{960,000}{1.5}} = \\sqrt{640,000} = 800 \\text{ units per order}$.\n* **Step 2 (Calculate Number of Orders):** The number of orders per year is simply the Total Annual Demand divided by the EOQ order size. $\\frac{3,200}{800} = \\textbf{4 orders}$.\n**Related Concepts:**\n* **Inventory Carrying Costs:** Expenses associated with holding inventory, including warehousing, insurance, and the opportunity cost of tied-up capital.\n* **Ordering Costs:** Fixed clerical and logistical expenses incurred each time a purchase order is processed, regardless of the size of the order.\n* **Reorder Point:** The specific inventory level that triggers the firm to immediately place a new order to replenish stock before a stockout occurs.", "id": 18}, {"question": "Given below are two statements, one is labelled as Assertion A and the other is labelled as Reason R\nAssertion A: Two companies with the same general earning power and same general position in an industry, the one paying a larger dividend will almost always sell at a higher price.\nReason R: The discounted value of near dividends is higher than the present worth of distant dividends.\nIn light of the above statements, choose the most appropriate answer from the options given below\nOptions:-", "options": [{"id": "1", "text": "A is correct but R is not correct"}, {"id": "2", "text": "A is not correct but R is correct"}, {"id": "3", "text": "Both A and R are correct and R is the correct explanation of A"}, {"id": "4", "text": "Both A and R are correct but R is NOT the correct explanation of A"}], "correctAnswer": "3", "explanation": "**Key Concepts:**\n* This assertion directly outlines Myron Gordon and John Lintner\u2019s **\"Bird-in-the-Hand\" Theory** of dividend policy.\n* **Assertion (A) is correct:** Gordon argues that investors inherently prefer cash dividends today over the promise of future capital gains, meaning they will pay a premium (higher stock price) for high-dividend-paying firms.\n* **Reason (R) is correct and explains A:** The mathematical basis for this preference is risk. \"Near dividends\" (cash today) carry absolute certainty, making their discounted value higher in the minds of investors than the \"distant dividends\" (future capital gains), which are highly uncertain and deeply discounted due to future market risk.\n* Therefore, increasing the dividend payout mathematically decreases the perceived risk, lowers the required cost of equity, and drives up the stock price.\n**Related Concepts:**\n* **Dividend Irrelevance Theory:** Modigliani and Miller's competing theory arguing that a firm's value relies solely on basic earning power, dismissing the Bird-in-the-Hand theory as a \"fallacy.\"\n* **Cost of Equity:** The return an investor requires for investing in a stock; Gordon argues higher dividends lower this required return.\n* **Capital Gains Yield:** The return an investor generates from the appreciation of the stock's market price, viewed as riskier than dividend yield.", "id": 19}, {"question": "The practice of delaying receipts from the foreign currency designated receivables whose currencies are likely to appreciate and delaying foreign currency designated payables whose currencies are likely to depreciate is known as:\nOptions:-", "options": [{"id": "1", "text": "Lagging"}, {"id": "2", "text": "Leading"}, {"id": "3", "text": "Netting"}, {"id": "4", "text": "Risk hedging"}], "correctAnswer": "1", "explanation": "**Key Concepts:**\n* **Leading and Lagging** are operational risk management techniques used by multinational corporations to manipulate cash flows based on anticipated exchange rate movements.\n* **Lagging (Option 1)** explicitly means *delaying* payment. A firm will intentionally \"lag\" (delay) paying a foreign debt if they believe the foreign currency will soon depreciate (making the debt cheaper to pay later).\n* Conversely, they will intentionally delay collecting foreign receivables if they expect that currency to appreciate (making the received funds more valuable when finally collected).\n* **Leading** is the exact opposite: paying a debt *early* before a foreign currency appreciates, or collecting receivables early before the currency crashes.\n**Related Concepts:**\n* **Transaction Exposure:** The risk that the value of existing contractual cash flows will be harmed by exchange rate fluctuations before settlement.\n* **Netting:** A settlement mechanism where multinational subsidiaries consolidate their mutual debts and only transfer the net difference across borders to save transaction fees.\n* **Forward Contract:** A formal financial hedge locking in an exchange rate today for a future transaction date, removing the need to gamble on leading/lagging.", "id": 20}, {"question": "What is the sustainable growth rate of the company that enjoys a return on equity = 30 percent and a dividend payout ratio of 40 percent?\nOptions:-", "options": [{"id": "1", "text": "12 per cent"}, {"id": "2", "text": "18 per cent"}, {"id": "3", "text": "30 per cent"}, {"id": "4", "text": "40 per cent"}], "correctAnswer": "2", "explanation": "**Key Concepts:**\n* The **Sustainable Growth Rate (SGR)** is the maximum rate at which a firm can grow its sales and earnings without having to alter its capital structure by issuing new external equity.\n* The core formula is: $SGR = ROE \\times \\text{Retention Ratio } (b)$.\n* The **Retention Ratio ($b$)** is the exact inverse of the dividend payout ratio. If the firm pays out 40%, it mathematically retains 60% of its earnings ($1.00 - 0.40 = 0.60$).\n* **Execution:** $SGR = 30\\% \\times 0.60 = 18\\%$.\n**Related Concepts:**\n* **Return on Equity (ROE):** A measure of financial performance calculated by dividing net income by shareholders' equity.\n* **Internal Growth Rate (IGR):** A stricter metric showing the maximum growth rate a firm can achieve without relying on *any* external financing (neither new debt nor new equity).\n* **Gordon Growth Model:** The SGR calculation ($ROE \\times b$) forms the foundational growth variable ($g$) used in Gordon's dividend discount valuation formula.", "id": 21}, {"question": "The basic premise of the MM-approach is based on which of the following assumptions?\nA. Asymmetrical information\nB. Efficient capital markets\nC. Investor rationality\nD. Diverse business risk profile\nE. 100% dividend payout ratio", "options": [{"id": "1", "text": "A, B and C only"}, {"id": "2", "text": "A, C and E only"}, {"id": "3", "text": "B, C and E only"}, {"id": "4", "text": "C, D, and E only"}], "correctAnswer": "3", "explanation": "**Key Concepts:**\n* The **Modigliani-Miller (MM) Approach** (specifically their capital structure and dividend irrelevance proofs) relies on an idealized, theoretical financial universe.\n* It strictly assumes **Efficient Capital Markets (B)** where there are no transaction costs, no floatation costs, and no taxes to distort value.\n* It assumes strict **Investor Rationality (C)**, meaning all investors act systematically to maximize their wealth using arbitrage.\n* While dividend irrelevance argues payouts don't matter, their foundational Capital Structure Proposition I proofs are traditionally built on the simplifying assumption of a **100% dividend payout ratio (E)** (retaining zero earnings) to isolate the impact of debt financing from investment policy.\n* It actively *rejects* asymmetrical information (A), assuming all participants have free and equal access to data.\n**Related Concepts:**\n* **Arbitrage:** The mechanism MM relies upon; investors will continuously buy and sell identical assets (homemade leverage) to force the market value of levered and unlevered firms to equalize.\n* **Equivalent Risk Class:** An MM assumption (rejecting D) that firms can be perfectly grouped into classes based purely on their identical business risk profiles.\n* **Homemade Leverage:** The assumption that individual investors can borrow money at the exact same risk-free interest rate as massive corporations.", "id": 22}, {"question": "Companies strive to stockpile internally generated cash. Such a cash reserve is called\nOptions:-", "options": [{"id": "1", "text": "Financial float"}, {"id": "2", "text": "Financial slack"}, {"id": "3", "text": "Margin of safety"}, {"id": "4", "text": "Reserve float"}], "correctAnswer": "2", "explanation": "**Key Concepts:**\n* **Financial Slack** refers to the excess liquidity, unused debt capacity, and highly liquid cash reserves a company intentionally stockpiles.\n* According to the Pecking Order Theory, managers aggressively build financial slack during highly profitable periods to ensure they have internal funds ready for future emergencies or sudden investment opportunities.\n* By possessing deep financial slack, a firm can fully bypass the heavy floatation costs and negative market signaling associated with issuing new external debt or equity during a crisis.\n* Too much slack, however, can trigger agency problems, as managers might be tempted to waste the massive cash reserves on unprofitable \"empire-building\" acquisitions.\n**Related Concepts:**\n* **Pecking Order Theory:** The capital structure theory dictating that firms prioritize internal financing over debt, and debt over equity.\n* **Free Cash Flow:** The raw cash a company generates after accounting for cash outflows to support operations and maintain its capital assets.\n* **Agency Costs:** The internal costs that arise from the fundamental conflict of interest between corporate management and shareholders over cash utilization.", "id": 23}, {"question": "Identify the components of the credit policy of a business firm from the following:\nA. Collection policy\nB. Factoring\nC. Credit rating\nD. Credit analysis\nE. Terms of sale", "options": [{"id": "1", "text": "A, C and D only"}, {"id": "2", "text": "A, D and E only"}, {"id": "3", "text": "B, C and D only"}, {"id": "4", "text": "C, D and E only"}], "correctAnswer": "2", "explanation": "**Key Concepts:**\n* A corporate **Credit Policy** is a formal internal guideline dictating how a company extends credit to its customers and manages its accounts receivable.\n* **Terms of Sale (E)** is the foundational component, defining the precise conditions under which credit is granted (e.g., \"Net 30\" or offering cash discounts for early payment).\n* **Credit Analysis (D)** is the vetting component, establishing the strict criteria and financial metrics used to determine if a specific customer is actually creditworthy.\n* **Collection Policy (A)** is the enforcement component, outlining the escalating steps the firm will take to recover past-due payments from delinquent accounts.\n* Factoring (B) is external financing, and Credit Rating (C) is typically an external agency score, neither being core internal policy parameters.\n**Related Concepts:**\n* **Accounts Receivable:** The balance of money due to a firm for goods or services delivered or used but not yet paid for by customers.\n* **5 C's of Credit:** The qualitative framework (Character, Capacity, Capital, Collateral, Conditions) used intensely during the Credit Analysis phase.\n* **Bad Debt Expense:** An allowance recognized on the income statement representing credit sales that the firm estimates will never be collected.", "id": 24}, {"question": "Match List I with List II\n| List I (Hedging Concepts) | List II (Description) |\n| :--- | :--- |\n| A. European option | I. Option contract exercised on any date up to maturity |\n| B. Option premium | II. When the immediate exercise of an option yields positive value to its holder |\n| C. In-money option | III. Option contract exercised only on the maturity date |\n| D. American option | IV. It is paid by the buyer of the options upfront to the option seller |\nChoose the correct answer from the options given below:\nOptions:-", "options": [{"id": "1", "text": "A-I, B-II, C-III, D - IV,"}, {"id": "2", "text": "A-I, B-II, C - IV, D - III,"}, {"id": "3", "text": "A-I, B-IV, C-II, D - III,"}, {"id": "4", "text": "A-III, B-IV, C - II, D - I,"}], "correctAnswer": "4", "explanation": "**Key Concepts:**\n* A **European Option (A)** is a rigid derivative contract that strictly restricts the buyer from exercising their right to buy or sell until the exact expiration/maturity date **(III)**.\n* The **Option Premium (B)** is the non-refundable, upfront purchase price the buyer explicitly pays to the option seller (writer) to acquire the contractual rights **(IV)**.\n* An **In-the-Money (ITM) option (C)** describes a financial state where exercising the option immediately generates a guaranteed intrinsic profit for the holder **(II)** (e.g., holding a call option where the strike price is much lower than the current stock price).\n* An **American Option (D)** provides absolute flexibility, allowing the holder to exercise their right on any trading date up to and including the maturity date **(I)**.\n**Related Concepts:**\n* **Out-of-the-Money (OTM):** A state where exercising the option would result in a financial loss; such options only carry time value, not intrinsic value.\n* **Strike Price (Exercise Price):** The predetermined, fixed price at which the underlying asset can be bought or sold under the option contract.\n* **Call vs. Put Options:** A \"Call\" provides the right to *buy* an asset, while a \"Put\" provides the right to *sell* it.", "id": 25}, {"question": "Cash flows are presumably reinvested in capital budgeting decisions at\nA. Discount rate\nB. Market rate\nC. Cost of capital\nD. Riskless rate\nE. Internal rate of return", "options": [{"id": "1", "text": "A, C and D only"}, {"id": "2", "text": "A, C and E only"}, {"id": "3", "text": "B, C and D only"}, {"id": "4", "text": "C, D and E only"}], "correctAnswer": "2", "explanation": "**Key Concepts:**\n* The \"reinvestment rate assumption\" is a critical mathematical debate differentiating major capital budgeting techniques.\n* The Net Present Value (NPV) method mathematically assumes that all intermediate cash inflows generated by a project are reinvested at the firm's required **Cost of Capital (C)**.\n* The Internal Rate of Return (IRR) method mathematically assumes that all cash inflows are reinvested at the project's own calculated **Internal Rate of Return (E)**.\n* Because both the Cost of Capital and IRR act mathematically as the project's **Discount Rate (A)** within their respective formulas, A, C, and E are the correct terms identifying reinvestment assumptions in corporate finance appraisals.\n**Related Concepts:**\n* **Modified Internal Rate of Return (MIRR):** A modernized capital budgeting metric specifically designed to fix traditional IRR by forcibly assuming reinvestment happens at the safer Cost of Capital.\n* **Net Present Value (NPV):** The difference between the present value of cash inflows and outflows, widely considered the superior metric due to its realistic Cost of Capital reinvestment assumption.\n* **Hurdle Rate:** Another common term for Cost of Capital; the minimum acceptable return management demands from an investment.", "id": 26}, {"question": "In Securitisation when no assets are acquired and the collateral is fixed for the life of the asset, the type of a structure is called as", "options": [{"id": "1", "text": "Revolving structure"}, {"id": "2", "text": "Amortized structure"}, {"id": "3", "text": "Collateralized structure"}, {"id": "4", "text": "Self-liquidating structure"}], "correctAnswer": "2", "explanation": "**Key Concepts:**\n* **Securitisation** is the structured finance practice of pooling various types of contractual debt and selling their related cash flows to third-party investors as securities.\n* An **Amortized Structure** is a rigid setup where the principal and interest received from the underlying collateral are systematically used to pay down the investors' principal over the life of the security. \n* In this specific structure, no new assets are ever added to the collateral pool once the SPV is finalized; the pool is completely static and fixed until it is fully depleted.\n* This strictly contrasts with a \"revolving structure,\" (common in credit card securitization) where early principal repayments are aggressively reinvested to purchase new receivables, keeping the collateral pool dynamic.\n**Related Concepts:**\n* **Special Purpose Vehicle (SPV):** A separate legal entity created specifically to hold the pooled assets, isolating them from the originator's bankruptcy risk.\n* **Asset-Backed Securities (ABS):** The financial instruments created by the securitization process, deriving their value and cash flows entirely from the pooled collateral.\n* **Credit Enhancement:** Internal or external mechanisms (like overcollateralization or insurance) used to secure a higher credit rating for the newly issued securities.", "id": 27}, {"question": "Match List I with List II:\n| List I (Methods of Inventory Control) | List II (Explanation) |\n| :--- | :--- |\n| (A) JIT system | (I) Divide the items into the categories in the descending order of their usage rate. |\n| (B) ABC Analysis | (II) Divides items into categories in the descending order of their critical use. |\n| (C) FSND Analysis | (III) Inventory arrives at the manufacturing sites just a few hours before they are put to use |\n| (D) VED Analysis | (IV) The items of inventory are classified according to the value of usage. |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)"}, {"id": "2", "text": "(A)-(II), (B)-(III), (C)-(IV), (D)-(I)"}, {"id": "3", "text": "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)"}, {"id": "4", "text": "(A)-(IV), (B)-(III), (C)-(II), (D)-(I)"}], "correctAnswer": "3", "explanation": "**Key Concepts:**\n* **JIT (Just-In-Time) System (A):** An aggressive lean manufacturing strategy where materials arrive exactly when production demands them **(III)**, practically eliminating massive warehousing and holding costs.\n* **ABC Analysis (B):** An inventory categorization technique based on the Pareto Principle, classifying items strictly by their total annual consumption value/expenditure **(IV)**.\n* **FSND Analysis (C):** A classification system grouping inventory purely based on physical consumption speed or usage rate: Fast-moving, Slow-moving, Normal-moving, and Dead stock **(I)**.\n* **VED Analysis (D):** A classification heavily used for industrial spare parts, sorting them by how absolutely critical they are to preventing production halts: Vital, Essential, and Desirable **(II)**.\n**Related Concepts:**\n* **Economic Order Quantity (EOQ):** A core inventory management formula used to mathematically calculate the optimal order size that minimizes total holding and ordering costs.\n* **Safety Stock:** Buffer inventory strategically held in warehouses as a precaution to prevent catastrophic stockouts caused by unexpected supply chain delays.\n* **Pareto Principle (80/20 Rule):** The foundation of ABC analysis, noting that roughly 20% of the inventory items (A-items) account for 80% of the firm's total inventory value.", "id": 28}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
