@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>06 Dec 2023- Morning Shift- UGC NET Paper 1</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "06 Dec 2023- Morning Shift- UGC NET Paper 1", "organization": "ExamTym", "durationMinutes": 60, "totalMarks": 100.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Directions:** The following table shows the income and expenditure (in millions) of a certain Company during the five years from 2018 - 2022, along with profit % and loss % incurred in all these years. Some values are missing in the table (indicated by '-') that you are expected to calculate if required. Based on the data in the table, answer the questions that follow.\n**Profit in 2020 is ______ % more than in 2018 ?**\n| Year | Expenditure (in millions) | Income (in millions) | Profit % (+) / Loss % (-) |\n| :--- | :--- | :--- | :--- |\n| **2018** | 192 | - | +15% |\n| **2019** | 248 | - | - |\n| **2020** | 210 | - | +20% |\n| **2021** | - | 359.6 | - |\n| **2022** | - | - | -12% |", "options": [{"id": "1", "text": "56.76"}, {"id": "2", "text": "44.98"}, {"id": "3", "text": "45.83"}, {"id": "4", "text": "59.82"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* First, find the profit for 2018: 15% of 192 = 28.8 million.\n* Next, find the profit for 2020: 20% of 210 = 42 million.\n* Calculate the percentage increase: ((42 - 28.8) / 28.8) * 100 = (13.2 / 28.8) * 100 = 45.83%.\n*Related Concepts:*\n* Income and Expenditure formula: Income = Expenditure + Profit.\n* Percentage Growth calculations.", "id": 1}, {"question": "Directions:** The following table shows the income and expenditure (in millions) of a certain Company during the five years from 2018 - 2022, along with profit % and loss % incurred in all these years. Some values are missing in the table (indicated by '-') that you are expected to calculate if required. Based on the data in the table, answer the questions that follow.\n**In 2022, if the expenditure of company was 15% more as compared to 2019, then the income of the company in 2022 was (in million):**\n| Year | Expenditure (in millions) | Income (in millions) | Profit % (+) / Loss % (-) |\n| :--- | :--- | :--- | :--- |\n| **2018** | 192 | - | +15% |\n| **2019** | 248 | - | - |\n| **2020** | 210 | - | +20% |\n| **2021** | - | 359.6 | - |\n| **2022** | - | - | -12% |", "options": [{"id": "1", "text": "250.976"}, {"id": "2", "text": "248.976"}, {"id": "3", "text": "250.936"}, {"id": "4", "text": "230.936"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* The expenditure in 2019 is 248. \n* Calculate 2022 expenditure (15% more): 248 * 1.15 = 285.2 million.\n* In 2022, the company incurred a 12% loss. Income = Expenditure * (1 - 0.12) = 285.2 * 0.88 = 250.976 million.\n*Related Concepts:*\n* Successive percentage applications.\n* Loss derivation from expenditure base.", "id": 2}, {"question": "Directions:** The following table shows the income and expenditure (in millions) of a certain Company during the five years from 2018 - 2022, along with profit % and loss % incurred in all these years. Some values are missing in the table (indicated by '-') that you are expected to calculate if required. Based on the data in the table, answer the questions that follow.\n**If the loss incurred by the Company in 2019 was 33.2 million more than the profit of the Company in 2018, then the loss percent incurred by the Company in 2019 was:**\n| Year | Expenditure (in millions) | Income (in millions) | Profit % (+) / Loss % (-) |\n| :--- | :--- | :--- | :--- |\n| **2018** | 192 | - | +15% |\n| **2019** | 248 | - | - |\n| **2020** | 210 | - | +20% |\n| **2021** | - | 359.6 | - |\n| **2022** | - | - | -12% |", "options": [{"id": "1", "text": "17%"}, {"id": "2", "text": "22%"}, {"id": "3", "text": "25%"}, {"id": "4", "text": "23%"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Profit in 2018 was calculated earlier as 28.8 million.\n* Loss in 2019 = 28.8 + 33.2 = 62 million.\n* Expenditure in 2019 is 248. Loss % = (Loss / Expenditure) * 100 = (62 / 248) * 100 = 25%.\n*Related Concepts:*\n* Cross-referencing year-over-year profit data.\n* Base calculation for profit/loss metrics.", "id": 3}, {"question": "Directions:** The following table shows the income and expenditure (in millions) of a certain Company during the five years from 2018 - 2022, along with profit % and loss % incurred in all these years. Some values are missing in the table (indicated by '-') that you are expected to calculate if required. Based on the data in the table, answer the questions that follow.\n**In 2021, if the profit percent (%) of the company was higher by 60% of the profit percent (%) in 2018, then the percent increase (approximately) in the expenditure of the Company in 2021 as compared to the previous year would be:**\n| Year | Expenditure (in millions) | Income (in millions) | Profit % (+) / Loss % (-) |\n| :--- | :--- | :--- | :--- |\n| **2018** | 192 | - | +15% |\n| **2019** | 248 | - | - |\n| **2020** | 210 | - | +20% |\n| **2021** | - | 359.6 | - |\n| **2022** | - | - | -12% |", "options": [{"id": "1", "text": "46%"}, {"id": "2", "text": "45%"}, {"id": "3", "text": "41%"}, {"id": "4", "text": "38%"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* 2018 Profit % = 15%. An increase of \"60% of 15%\" is 9%, making the 2021 profit % = 24%.\n* 2021 Income is 359.6. Expenditure = Income / 1.24 = 359.6 / 1.24 = 290 million.\n* Increase from 2020 Expenditure (210) to 2021 (290) is 80. % Increase = (80 / 210) * 100 = 38.09% (Approx 38%).\n*Related Concepts:*\n* Reverse engineering expenditure from income.\n* Percentage of a percentage.", "id": 4}, {"question": "Directions:** The following table shows the income and expenditure (in millions) of a certain Company during the five years from 2018 - 2022, along with profit % and loss % incurred in all these years. Some values are missing in the table (indicated by '-') that you are expected to calculate if required. Based on the data in the table, answer the questions that follow.\n**What is the average of the income of the Company in 2018 and 2020 (in million)?**\n| Year | Expenditure (in millions) | Income (in millions) | Profit % (+) / Loss % (-) |\n| :--- | :--- | :--- | :--- |\n| **2018** | 192 | - | +15% |\n| **2019** | 248 | - | - |\n| **2020** | 210 | - | +20% |\n| **2021** | - | 359.6 | - |\n| **2022** | - | - | -12% |", "options": [{"id": "1", "text": "220.8"}, {"id": "2", "text": "236.4"}, {"id": "3", "text": "252.2"}, {"id": "4", "text": "246.6"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Calculate 2018 Income: Expenditure (192) + Profit (28.8) = 220.8 million.\n* Calculate 2020 Income: Expenditure (210) + Profit (42) = 252.0 million.\n* Find the average: (220.8 + 252) / 2 = 236.4 million.\n*Related Concepts:*\n* Mean calculation.\n* Aggregate financial data processing.\n### **Teaching & Research Aptitude**", "id": 5}, {"question": "The organised bodies of information stored in memory that bias the way new information is interpreted, stored, and recalled is known as:", "options": [{"id": "1", "text": "Constructive process"}, {"id": "2", "text": "Schemas"}, {"id": "3", "text": "Chunks"}, {"id": "4", "text": "Association"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* In cognitive psychology, a schema is a mental structure or cognitive framework that helps organize and interpret information.\n* Schemas allow us to take shortcuts in interpreting vast amounts of information but can also cause us to exclude pertinent information to focus instead only on things that confirm our pre-existing beliefs.\n* They play a crucial role in the constructive process of memory.\n*Related Concepts:*\n* Cognitive Load Theory.\n* Piaget's Theory of Cognitive Development.", "id": 6}, {"question": "Which of the following are the components of pedagogical analysis of teaching and learning?\n(A) Objective formulation\n(B) Selection of teaching methods and materials\n(C) Content analysis\n(D) Selection of evaluation devices", "options": [{"id": "1", "text": "(B), (C) and (D) Only"}, {"id": "2", "text": "(A) and (D) Only"}, {"id": "3", "text": "(A), (B), (C) and (D)"}, {"id": "4", "text": "(B) and (C) Only"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Pedagogical analysis is the logical and systematic breakdown of the curriculum into understandable sub-topics.\n* It involves four primary pillars: Content Analysis, Formulation of Instructional Objectives, Selection of Teaching Methods/Materials, and Selection of Evaluation Devices.\n* It bridges the gap between the \"what\" (content) and the \"how\" (methodology).\n*Related Concepts:*\n* Instructional Design.\n* Formative and Summative Evaluation.", "id": 7}, {"question": "Given below are two statements:\nStatement I: In teacher-centred learning the teacher gives up the traditional decision making role and chooses instead the role of a facilitator who focuses on students feelings.\nStatement II: In learner-centred method the teacher attempts to see the world as the students see it, creating an atmosphere of empathetic communication.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is false because giving up the traditional decision-making role to become a facilitator describes Learner-Centric Education, not Teacher-Centric.\n* Statement II accurately describes the learner-centred method, where empathy, perspective-taking, and student autonomy are central.\n* Teacher-centred environments rely on the educator as the primary knowledge dispenser.\n*Related Concepts:*\n* Pedagogy vs. Andragogy.\n* Facilitative teaching models.", "id": 8}, {"question": "Given below are two statements:\nStatement I: The ability to generate unusual, yet appropriate, responses to problems or questions is known as convergent thinking.\nStatement II: The ability to produce responses that are based primarily on knowledge and logic is known as divergent thinking.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Both definitions are flipped. Generating unusual yet appropriate responses (brainstorming multiple solutions) is Divergent Thinking.\n* Producing responses based primarily on standard knowledge and logic to find a single correct answer is Convergent Thinking.\n* Therefore, both statements are incorrect as presented.\n*Related Concepts:*\n* Guilford's Structure of Intellect.\n* Creativity and Problem Solving.", "id": 9}, {"question": "Given below are two statements: one is labelled as Assertion (A) and the other is labelled as Reason (R).\nAssertion (A): No test provides a perfect picture of a student's abilities and skills.\nReason (R): A test is only one small sample of a student's performance.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both (A) and (R) are correct and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are correct but (R) is not the correct explanation of (A)"}, {"id": "3", "text": "(A) is correct but (R) is not correct"}, {"id": "4", "text": "(A) is not correct but (R) is correct"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* The assertion is a widely accepted educational truth; assessments have margins of error and cannot capture holistic ability perfectly.\n* The reason explains exactly why: tests are limited by time, format, and sampling. They only capture a snapshot of performance on a specific day under specific conditions.\n* Therefore, the reason directly validates the assertion.\n*Related Concepts:*\n* Assessment Reliability and Validity.\n* Formative vs. Summative Assessments.", "id": 10}, {"question": "An epistemological position that advocates the application of the methods of the natural sciences to the study of social reality and beyond, refers to:", "options": [{"id": "1", "text": "Positivism"}, {"id": "2", "text": "Interpretivism"}, {"id": "3", "text": "Objectivism"}, {"id": "4", "text": "Constructionism"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Positivism is an epistemological doctrine that asserts that factual knowledge is obtained through observation and the scientific method, mirroring the natural sciences.\n* It assumes an objective reality that can be measured, quantified, and predicted.\n* Interpretivism is its opposite, focusing on subjective human experiences.\n*Related Concepts:*\n* Quantitative research paradigms.\n* Auguste Comte's sociological theories.", "id": 11}, {"question": "Identify the similarities between quantitative and qualitative research:\n(A) Both are concerned with data reduction.\n(B) Both are concerned with variation in data.\n(C) Both lay emphasis on contextual understanding.\n(D) Both lay emphasis on generalization.\n(E) Both are concerned with answering research questions.", "options": [{"id": "1", "text": "(A) and (D) Only"}, {"id": "2", "text": "(A), (B), (D) and (E) Only"}, {"id": "3", "text": "(B) (D) and (E) Only"}, {"id": "4", "text": "(A), (B) and (E) Only"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Both paradigms condense massive amounts of raw data (Data Reduction) and explore variations or patterns in that data.\n* Both ultimately exist to answer fundamental research questions.\n* Contextual understanding is exclusively qualitative, while statistical generalization is primarily quantitative. Thus, C and D are not similarities.\n*Related Concepts:*\n* Mixed-methods research.\n* Data analysis methodologies.", "id": 12}, {"question": "Identify the correct reasons for writing a literature review:\n(A) You need to know what is already known in connection with your research area.\n(B) It may help you to develop an analytic framework.\n(C) It will help with the interpretation of your findings.\n(D) It may suggest further research questions for you.", "options": [{"id": "1", "text": "(A) and (B) Only"}, {"id": "2", "text": "(B), (C) and (D) Only"}, {"id": "3", "text": "(A), (C) and (D) Only"}, {"id": "4", "text": "(A), (B) (C) and (D)"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* A literature review maps the existing knowledge terrain to identify gaps (A and D).\n* It provides the theoretical lens or analytical framework through which to build your methodology (B).\n* After data collection, existing literature is vital to interpret how new findings fit into the broader academic conversation (C).\n*Related Concepts:*\n* Research Hypothesis generation.\n* Theoretical frameworks.\n### **Information & Communication Technology (ICT) and Communication**", "id": 13}, {"question": "Identify the sampling issues that are problematic in online surveys:\n(A) Many people use more than one internet service provider.\n(B) Every person has only one (unique) email address.\n(C) A house hold may have one computer but several users.\n(D) Internet users are a biased sample of the population.", "options": [{"id": "1", "text": "(A), (B) and (C) Only"}, {"id": "2", "text": "(B), (C) and (D) Only"}, {"id": "3", "text": "(A), (B) and (D) Only"}, {"id": "4", "text": "(A), (C) and (D) Only"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Online surveys suffer from IP/device tracking confusion because one person might use multiple ISPs/devices (A), or multiple users might share one computer (C).\n* They inherently suffer from selection bias because they exclude populations without digital access or literacy (D).\n* Statement (B) is factually incorrect; individuals often possess multiple email addresses, making it a non-issue as stated (though multiple emails per person would be an issue).\n*Related Concepts:*\n* Non-probability sampling flaws.\n* Digital divide impacts on research.", "id": 14}, {"question": "Which among the following is an open source software for data analysis?", "options": [{"id": "1", "text": "SPSS"}, {"id": "2", "text": "MATLAB"}, {"id": "3", "text": "R"}, {"id": "4", "text": "MINITAB"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* R is a free, open-source programming language and software environment specifically designed for statistical computing and graphics.\n* SPSS, MATLAB, and MINITAB are expensive, proprietary, closed-source commercial software packages used for data analysis.\n* Open-source allows users to modify the source code and use the software freely.\n*Related Concepts:*\n* Open-Source vs. Proprietary software.\n* Statistical analysis tools.", "id": 15}, {"question": "When the primary function of communication is to convey new information, it is known as:", "options": [{"id": "1", "text": "Subliminal function"}, {"id": "2", "text": "Single task function"}, {"id": "3", "text": "Referential function"}, {"id": "4", "text": "Differential function"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* According to Roman Jakobson's model of communication, the referential function focuses on the context or the \"referent\" to convey factual, objective information.\n* It is highly utilized in news reporting, scientific texts, and educational environments where transmitting \"new facts\" is paramount.\n* The other options are not standard classifications in classical communication theory.\n*Related Concepts:*\n* Jakobson's Functions of Language.\n* Informative Communication.", "id": 16}, {"question": "One of the four maxims of conversation, quantity maxim, reflects the right amount of:", "options": [{"id": "1", "text": "Paradigms"}, {"id": "2", "text": "Syntagms"}, {"id": "3", "text": "Similes"}, {"id": "4", "text": "Information"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Paul Grice introduced the Cooperative Principle, divided into four conversational maxims: Quality, Quantity, Relation, and Manner.\n* The Maxim of Quantity demands that communicators provide exactly the right amount of information\u2014no more and no less than is required to understand the message.\n* Overloading or under-delivering information violates this maxim.\n*Related Concepts:*\n* Grice's Cooperative Principle.\n* Pragmatics in linguistics.", "id": 17}, {"question": "Which of the following contextual factors determine meaning in communication behaviour?\n(A) Physical location\n(B) Participants\n(C) Preceding events\n(D) Nonfunctional goals\n(E) Absence of audience", "options": [{"id": "1", "text": "(A), (B) and (C) Only"}, {"id": "2", "text": "(B), (C) and (D) Only"}, {"id": "3", "text": "(C), (D) and (E) Only"}, {"id": "4", "text": "(A), (D) and (E) Only"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Context dictates meaning. Physical location (A) changes whether you whisper or shout; Participants (B) dictate the formality (boss vs. friend).\n* Preceding events (C) provide historical context to a conversation (e.g., an inside joke).\n* Nonfunctional goals and absence of audience are not standard structural determinants of communication meaning.\n*Related Concepts:*\n* Communication environment.\n* Sociolinguistics.", "id": 18}, {"question": "Which of the following belong to the field of proxemics in communication?\n(A) Facial expressions\n(B) Crowding\n(C) Territoriality\n(D) Personal space\n(E) Eye contact", "options": [{"id": "1", "text": "(A), (B) and (C) Only"}, {"id": "2", "text": "(B), (C) and (D) Only"}, {"id": "3", "text": "(C), (D) and (E) Only"}, {"id": "4", "text": "(A), (D) and (E) Only"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Proxemics is the study of how humans use space and distance in communication.\n* It encompasses concepts like personal space (D), territoriality (C), and crowding (B).\n* Facial expressions and eye contact fall under Kinesics (body movement) and Oculesics (eye behavior), respectively.\n*Related Concepts:*\n* Non-verbal communication channels.\n* Edward T. Hall's Proxemics theory.", "id": 19}, {"question": "Given below are two statements:\nStatement (I): According to Buddhism, linguistic communication should be used to adopt moral stance.\nStatement (II): Critical introspection is not preferred by Buddhists as part of intra-personal communication.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct."}, {"id": "2", "text": "Both Statement I and Statement II are incorrect."}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect."}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct."}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Buddhism emphasizes \"Right Speech\" (Samma Vaca) as part of the Eightfold Path, insisting language be truthful, gentle, and morally grounded (Statement I is true).\n* Statement II is blatantly false; Buddhism relies heavily on critical introspection, mindfulness, and deep intra-personal communication through meditation.\n* Therefore, the first is true and the second is false.\n*Related Concepts:*\n* The Noble Eightfold Path.\n* Intra-personal communication paradigms.\n### **Mathematical Reasoning & Logic**", "id": 20}, {"question": "In an arithmetic series having 50 terms, the first and last terms are 3 and 199, respectively. What is the sum of the series?", "options": [{"id": "1", "text": "4950"}, {"id": "2", "text": "5050"}, {"id": "3", "text": "5150"}, {"id": "4", "text": "4850"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The sum of an Arithmetic Progression can be found using the formula: $S_n = \\frac{n}{2} \\times (a + l)$.\n* Here, number of terms ($n$) = 50, first term ($a$) = 3, and last term ($l$) = 199.\n* $S_{50} = \\frac{50}{2} \\times (3 + 199) = 25 \\times 202 = 5050$.\n*Related Concepts:*\n* Arithmetic Progressions (AP).\n* Sequences and series calculations.", "id": 21}, {"question": "Find the next term (?) in the following letters series AM, GJ, MG, SD, ..........", "options": [{"id": "1", "text": "XZ"}, {"id": "2", "text": "YC"}, {"id": "3", "text": "XA"}, {"id": "4", "text": "YA"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Break the series into two independent letter tracks: First letter track and second letter track.\n* Track 1 (A, G, M, S): A(+6)=G, G(+6)=M, M(+6)=S, S(+6)=Y.\n* Track 2 (M, J, G, D): M(-3)=J, J(-3)=G, G(-3)=D, D(-3)=A.\n* Combining them yields \"YA\".\n*Related Concepts:*\n* Alphanumeric series logic.\n* Skip counting in the alphabet.", "id": 22}, {"question": "The sum and difference of two numbers are 19 and 7, respectively. What is the sum of their squares?", "options": [{"id": "1", "text": "190"}, {"id": "2", "text": "200"}, {"id": "3", "text": "205"}, {"id": "4", "text": "210"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Set up equations: $x + y = 19$ and $x - y = 7$.\n* Add them: $2x = 26 \\implies x = 13$. Substitute to find $y$: $13 + y = 19 \\implies y = 6$.\n* Calculate sum of squares: $13^2 + 6^2 = 169 + 36 = 205$.\n*Related Concepts:*\n* Simultaneous linear equations.\n* Algebraic identities.", "id": 23}, {"question": "A certain sum of money doubles in 4 years at a compound rate of interest per annum. The rate of interest is [Given: $2^{1/2} = 1.414$, $2^{1/4} = 1.1892$]", "options": [{"id": "1", "text": "~14.9%"}, {"id": "2", "text": "~16.8%"}, {"id": "3", "text": "~18.9%"}, {"id": "4", "text": "~12.9%"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The formula for Compound Interest is $A = P(1 + r/100)^n$.\n* If the sum doubles, $2P = P(1 + r/100)^4 \\implies 2 = (1 + r/100)^4$.\n* Take the 4th root: $1 + r/100 = 2^{1/4} = 1.1892 \\implies r/100 = 0.1892 \\implies r = 18.92\\%$.\n*Related Concepts:*\n* Compound interest multipliers.\n* Root functions in finance.", "id": 24}, {"question": "A train moving at a speed of 63 km/hr enters a railway station and crosses the platform in 20 s. If the length of the train is 100 m, what is the length of the platform?", "options": [{"id": "1", "text": "150 m"}, {"id": "2", "text": "200 m"}, {"id": "3", "text": "250 m"}, {"id": "4", "text": "300 m"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Convert speed to m/s: $63 \\times (5/18) = 17.5$ m/s.\n* Calculate total distance covered in 20s: Distance = Speed $\\times$ Time = $17.5 \\times 20 = 350$ m.\n* Total distance = Length of train + Length of platform $\\implies 350 = 100 + P \\implies P = 250$ m.\n*Related Concepts:*\n* Relative speed and distance.\n* Unit conversions (km/hr to m/s).", "id": 25}, {"question": "As per square of opposition which of the following propositions are so related that if one of them is true, the other must be false and vice-versa?\n(A) All mammals are vertebrates.\n(B) No mammals are vertebrates.\n(C) Some non mammals are not vertebrates.\n(D) Some mammals are not vertebrates.", "options": [{"id": "1", "text": "(A) and (D) Only"}, {"id": "2", "text": "(A) and (C) Only"}, {"id": "3", "text": "(A) and (B) Only"}, {"id": "4", "text": "(C) and (D) Only"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* The question describes the relationship of \"Contradiction\" in the Aristotelian Square of Opposition.\n* Contradictories have opposite truth values. 'A' propositions (Universal Affirmative - All) contradict 'O' propositions (Particular Negative - Some are not).\n* Option A is an 'A' proposition, and Option D is an 'O' proposition.\n*Related Concepts:*\n* Square of Opposition.\n* Categorical propositions.", "id": 26}, {"question": "Which of the following statements are logically equivalent?\n(A) No liquids are beverages.\n(B) No beverages are liquids.\n(C) All non-beverages are non-liquids.\n(D) All non-liquids are non-beverages.", "options": [{"id": "1", "text": "(A) and (B) Only"}, {"id": "2", "text": "(A) and (C) Only"}, {"id": "3", "text": "(B) and (D) Only"}, {"id": "4", "text": "(C) and (D) Only"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Categorical logic dictates that \"E\" propositions (No S is P) can be simply converted by swapping the subject and predicate without altering truth value.\n* Therefore, \"No liquids are beverages\" is perfectly logically equivalent to \"No beverages are liquids\".\n* Options C and D involve complex contrapositions that do not equal the primary statements universally.\n*Related Concepts:*\n* Immediate inference: Conversion.\n* Boolean logic equivalence.", "id": 27}, {"question": "If the statement \"Some rectangles are not squares\" is given as true, then according to the square of opposition which of the following statements can by immediately inferred to be false?", "options": [{"id": "1", "text": "All rectangles are squares."}, {"id": "2", "text": "Some rectangles are squares."}, {"id": "3", "text": "No rectangles are squares."}, {"id": "4", "text": "Some squares are not rectangles."}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* \"Some rectangles are not squares\" is an 'O' proposition (Particular Negative).\n* According to the Square of Opposition, the contradictory of an 'O' proposition is the 'A' proposition (Universal Affirmative).\n* If 'O' is true, its contradiction 'A' (\"All rectangles are squares\") MUST be false.\n*Related Concepts:*\n* Truth value inference.\n* Propositional contradictions.", "id": 28}, {"question": "\"More laws have been added on the books in past five years than ever before, yet the number of crimes committed during the same period has significantly increased. Therefore, to bring the crime rate down, we must eliminate the laws\". Which fallacy is committed in the above statement?", "options": [{"id": "1", "text": "Red herring"}, {"id": "2", "text": "Straw man"}, {"id": "3", "text": "Slippery slope"}, {"id": "4", "text": "False cause"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* This argument commits the *False Cause* fallacy (specifically *post hoc ergo propter hoc* or correlation vs causation).\n* It incorrectly assumes that because an increase in laws correlated with an increase in crime, the laws *caused* the crime.\n* It completely ignores other socioeconomic factors driving crime.\n*Related Concepts:*\n* Logical fallacies in informal arguments.\n* Causation vs. Correlation.", "id": 29}, {"question": "Given below are two statements:\nStatement (I): According to classical Indian school of logic (Nyaya) the argument \"Sound is eternal because it is audible\" is fallacious.\nStatement (II): According to classical Indian school of logic the argument \"Sound is eternal because it is audible\" commits the fallacy of irregular middle term where the middle term is too wide.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct."}, {"id": "2", "text": "Both Statement I and Statement II are incorrect."}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect."}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct."}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Statement I is true; Nyaya asserts that sound is non-eternal, making the argument fallacious (specifically, a *Savyabhichara* or *Asadharana* fallacy).\n* Statement II is false because the middle term \"audible\" is not \"too wide\" (Sadharana); it is \"too narrow/exclusive\" (Asadharana) because audibility belongs *only* to sound (the paksha) and lacks examples anywhere else.\n* Therefore, only the first statement is correct.\n*Related Concepts:*\n* Hetvabhasa (Fallacies of Inference).\n* Asadharana Savyabhichara.", "id": 30}, {"question": "In comparison to secondary computer storage, primary storage is:", "options": [{"id": "1", "text": "Slower, more expensive per unit of storage and persistent"}, {"id": "2", "text": "Faster, less expensive per unit of storage and persistent"}, {"id": "3", "text": "Faster, more expensive per unit of storage and not persistent"}, {"id": "4", "text": "Faster, less expensive per unit of storage and not persistent"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Primary storage (RAM) connects directly to the CPU, making it vastly *faster* than secondary storage (Hard Drives, SSDs).\n* It costs significantly *more* per gigabyte.\n* It is volatile (not persistent), meaning it loses all data when the power is turned off.\n*Related Concepts:*\n* Computer memory hierarchy.\n* Volatile vs Non-Volatile Memory.", "id": 31}, {"question": "A security system records video footage. One minute of video requires 180 MegaBytes of storage. The recording system can store several hours of video footage. How much storage would be needed for 2 hours of video footage? (1k = 1024):", "options": [{"id": "1", "text": "19.2 Giga Bytes"}, {"id": "2", "text": "20.3 Giga Bytes"}, {"id": "3", "text": "21.1 Giga Bytes"}, {"id": "4", "text": "22.4 Giga Bytes"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* First, find total minutes: 2 hours = 120 minutes.\n* Calculate total Megabytes: 120 * 180 = 21,600 MB.\n* Convert Megabytes to Gigabytes dividing by 1024: 21,600 / 1024 = 21.09375 GB.\n* Rounds to approximately 21.1 Giga Bytes.\n*Related Concepts:*\n* Data unit conversion standards.\n* Storage capacity scaling.", "id": 32}, {"question": "If $(P)_8$ represents the number P in base - 8, then $(144)_8 + (175)_8 = $", "options": [{"id": "1", "text": "$(225)_8$"}, {"id": "2", "text": "$(341)_8$"}, {"id": "3", "text": "$(441)_8$"}, {"id": "4", "text": "$(314)_8$"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* In Base-8 arithmetic, numbers range from 0-7. Carry over happens when the sum hits 8.\n* Right column: 4 + 5 = 9. In base 8, 9 is 11 (Write 1, carry 1).\n* Middle column: 4 + 7 + 1 (carry) = 12. In base 8, 12 is 14 (Write 4, carry 1).\n* Left column: 1 + 1 + 1 (carry) = 3. \n* Final Result: $(341)_8$.\n*Related Concepts:*\n* Octal number system addition.\n* Base arithmetic.", "id": 33}, {"question": "Given below are two statements:\nStatement (I): IPv6 address in computer networking is 4 times larger than an IPv4 address\nStatement (II): The IP address gives the location of a device on the Internet, whereas the MAC address identifies the device connected to the Internet\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct."}, {"id": "2", "text": "Both Statement I and Statement II are incorrect."}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect."}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct."}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Statement I is true: IPv4 is a 32-bit address system, while IPv6 is a 128-bit address system ($32 \\times 4 = 128$).\n* Statement II is true: An IP address acts like a postal address (location-based, dynamic), whereas a MAC address acts like a hardware fingerprint (device-specific, static).\n* Both statements accurately reflect networking principles.\n*Related Concepts:*\n* Internet Protocol versions.\n* OSI Model Data Link vs. Network layers.", "id": 34}, {"question": "Match List I with List - II.\n| List - I (Graphical User Interface Term) | List - II (Description) |\n| :--- | :--- |\n| (A) Window | (I) Represents a folder or a program - can be seen within a window or free standing on screen |\n| (B) Icon | (II) Contains lists of options for a certain program |\n| (C) Menu | (III) Used to select menu options/icons/close/open windows |\n| (D) Pointer | (IV) Represents an area on the screen that displays information for a specific program |", "options": [{"id": "1", "text": "(A)-(III), (B)-(I), (C)-(II), (D)-(IV)"}, {"id": "2", "text": "(A)-(I), (B)-(IV), (C)-(II), (D)-(III)"}, {"id": "3", "text": "(A)-(IV), (B)-(I), (C)-(II), (D)-(III)"}, {"id": "4", "text": "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* A \"Window\" maps to (IV) as a visual area containing an application's UI.\n* An \"Icon\" maps to (I) as a visual representation of files or apps.\n* A \"Menu\" maps to (II) as it houses dropdown lists of commands.\n* A \"Pointer\" maps to (III) as it's the mouse cursor used for selection.\n*Related Concepts:*\n* Operating System fundamentals.\n* WIMP (Windows, Icons, Menus, Pointer) paradigm.\n### **Environment & Higher Education**", "id": 35}, {"question": "Which of the following are true about Producer Gas?\n(A) It is the result of conversion of solid biomass into gaseous fuels.\n(B) It is done at lower temperature.\n(C) It can be used as fuel in internal combustion engines.\n(D) It is produced in the complete absence of oxygen.\n(E) Hydrogen and methane present in Producer Gas determine its heating value.", "options": [{"id": "1", "text": "(A), (B) and (C) Only"}, {"id": "2", "text": "(B) and (D) Only"}, {"id": "3", "text": "(C), (D) and (E) Only"}, {"id": "4", "text": "(A), (C) and (E) Only"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Producer gas is a combustible gas created by the high-temperature (not lower temp) gasification of solid biomass (A).\n* It is an excellent, clean-burning fuel that can power Internal Combustion Engines (C).\n* Its heating value primarily depends on its combustible components like Carbon Monoxide, Hydrogen, and Methane (E).\n* It is created with partial air/oxygen, not completely absent oxygen (which is Pyrolysis).\n*Related Concepts:*\n* Biomass Gasification.\n* Renewable fuel chemistry.", "id": 36}, {"question": "The convention on biological diversity is dedicated to promote sustainable development conceived as a practical tool for translating the principles of:", "options": [{"id": "1", "text": "Agenda 20"}, {"id": "2", "text": "Agenda 21"}, {"id": "3", "text": "Agenda 22"}, {"id": "4", "text": "Agenda 23"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The Convention on Biological Diversity (CBD) emerged from the 1992 Earth Summit in Rio de Janeiro.\n* It acts as a legally binding treaty to put the sustainable development goals and principles outlined in **Agenda 21** into practical, global action.\n* Agenda 21 was a comprehensive blueprint for global action regarding the environment.\n*Related Concepts:*\n* UN Conference on Environment and Development (UNCED).\n* International environmental treaties.", "id": 37}, {"question": "What is the correct sequence of steps followed from initial to last during water treatment process?\n(A) Coagulation\n(B) Filtration\n(C) Screening\n(D) Sedimentation", "options": [{"id": "1", "text": "(D), (C), (B), (A)"}, {"id": "2", "text": "(D), (C), (A), (B)"}, {"id": "3", "text": "(C), (A), (D), (B) *(Note: Aligned with logical step progression)"}, {"id": "4", "text": "(C), (D), (B), (A)"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The standard water treatment process begins with **Screening** (C) to remove large debris.\n* Next is **Coagulation** (A) where chemicals are added to clump tiny particles.\n* Those heavy clumps sink to the bottom during **Sedimentation** (D).\n* Finally, the clear water on top goes through **Filtration** (B) to remove microscopic impurities.\n*Related Concepts:*\n* Municipal water purification.\n* Flocculation and Coagulation processes.", "id": 38}, {"question": "Given below are two statements: one is labelled as Assertion (A) and the other is labelled as Reason (R).\nAssertion (A): DDT bioaccumulates in tissues of many species including humans.\nReason (R): DDT is relatively insoluble in water but readily soluble in fats and oils.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both (A) and (R) are correct and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are correct but (R) is not the correct explanation of (A)"}, {"id": "3", "text": "(A) is correct but (R) is not correct"}, {"id": "4", "text": "(A) is not correct but (R) is correct"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Bioaccumulation happens when an organism absorbs a substance faster than it can excrete it. DDT does this extensively (Assertion is true).\n* Because DDT is highly fat-soluble (lipophilic) and water-insoluble, it stores easily in animal adipose (fat) tissues instead of being flushed out via urine (Reason is true and explains the Assertion).\n*Related Concepts:*\n* Biomagnification up the food chain.\n* Persistent Organic Pollutants (POPs).", "id": 39}, {"question": "Given below are two statements:\nStatement (I): Millennium Development Goals (MDGs) were mainly targeted at developing or poor countries.\nStatement (II): Sustainable Development Goals (SDGs) are targeted at all countries whether developed, developing or poor.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct."}, {"id": "2", "text": "Both Statement I and Statement II are incorrect."}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect."}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct."}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* The MDGs (2000-2015) were primarily an anti-poverty agenda designed to funnel aid to developing nations from wealthy nations.\n* The SDGs (2015-2030) are universally applicable. They recognize that climate action, sustainable consumption, and inequality require drastic changes from wealthy, developed nations just as much as developing ones.\n*Related Concepts:*\n* MDGs vs. SDGs structure.\n* Global environmental governance.", "id": 40}, {"question": "Which of the following was recommended by the Hunter Commission?", "options": [{"id": "1", "text": "Abolition of higher education in India"}, {"id": "2", "text": "Restricting women's entry into colleges"}, {"id": "3", "text": "Participation of private enterprise in higher education"}, {"id": "4", "text": "Encouraging establishment of more and more public universities in rural India"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The Hunter Education Commission (1882) evaluated the state of education under British rule.\n* A landmark recommendation was the gradual withdrawal of the government from the direct management of higher education, encouraging native private enterprise through grants-in-aid.\n* It did not seek to abolish education or restrict women; in fact, it encouraged female education.\n*Related Concepts:*\n* History of Indian Education (British Era).\n* Grants-in-aid systems.", "id": 41}, {"question": "The University of Punjab was established at Lahore in 1882 to reduce the burden of the university of:", "options": [{"id": "1", "text": "Bombay"}, {"id": "2", "text": "Calcutta"}, {"id": "3", "text": "Madras"}, {"id": "4", "text": "Himachal Pradesh"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Following Wood's Despatch (1854), universities were created in Calcutta, Bombay, and Madras in 1857.\n* Calcutta University's jurisdiction became overwhelmingly large (covering northern India, Punjab, etc.).\n* To ease its massive administrative burden, the University of Punjab was established at Lahore in 1882.\n*Related Concepts:*\n* Pre-Independence university formations.\n* Affiliating university models.", "id": 42}, {"question": "Which of the following steps were taken by the university grants commission during the second five year plan?\n(A) Introduction of three-year degree course\n(B) Improvement in libraries and laboratories\n(C) Increase in the salaries of university teachers\n(D) No new departments were approved in the universities\n(E) Hindi was made the optional medium of instruction besides local languages in all Indian universities", "options": [{"id": "1", "text": "(A), (B) and (C) Only"}, {"id": "2", "text": "(B), (C) and (D) Only"}, {"id": "3", "text": "(C), (D) and (E) Only"}, {"id": "4", "text": "(A), (D) and (E) Only"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* During the Second Five-Year Plan, the UGC focused heavily on standardizing and upgrading higher education quality.\n* They mandated the transition to a uniform three-year undergraduate degree (A), heavily funded infrastructure like labs/libraries (B), and significantly improved academic pay scales (C) to attract talent.\n* They actively encouraged new departments, making (D) false.\n*Related Concepts:*\n* Five-Year Plans in Education.\n* Quality mandate of the UGC.", "id": 43}, {"question": "Which of the following research institutes were established between the first and third five year plans?\n(A) Indian Institute of Science\n(B) Saha Institute of Nuclear physics\n(C) Lok Bharati\n(D) Gandhi Gram Rural Institute\n(E) Raman Research Institute", "options": [{"id": "1", "text": "(A), (B) and (C) Only"}, {"id": "2", "text": "(A), (D) and (E) Only"}, {"id": "3", "text": "(B), (C) and (E) Only"}, {"id": "4", "text": "(B), (C) and (D) Only"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* The 1st to 3rd Five-Year Plans covered roughly 1951\u20131966.\n* Lok Bharati (1953) and Gandhigram Rural Institute (1956) were firmly established in this era of rural educational development. \n* Saha Institute was founded around 1950 (just before/overlapping the 1st plan).\n* IISc was founded in 1909 (pre-independence), making options with 'A' incorrect.\n*Related Concepts:*\n* Rural Institutes in post-independence India.\n* Institutional chronologies.", "id": 44}, {"question": "Given below are two statements:\nStatement (I): The Nalanda University of ancient India attracted students from various parts of Asia.\nStatement (II): The Nalanda University was overshadowed by the universities in Europe and Arabia immediately after its establishment.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct."}, {"id": "2", "text": "Both Statement I and Statement II are incorrect."}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect."}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct."}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Nalanda was an international beacon of learning, drawing scholars from China, Tibet, Korea, and Central Asia (Statement I is true).\n* Statement II is false; Nalanda thrived from the 5th to the 12th centuries. It was not \"immediately overshadowed\" as Europe lacked formal universities during Nalanda's peak (the early middle ages/Dark Ages in Europe).\n*Related Concepts:*\n* Ancient Indian universities.\n* Global intellectual history.", "id": 45}, {"question": "Reading Comprehension (Questions 46 to 50)\n**Directions:** Read the following passage carefully and answer the questions:\nThe most important part of a person's life is his childhood. The learning our young citizens receive at home, in school and in society between the ages of five and sixteen will shape them for the rest of their lives. During this phase, they need a good value based education to become enlightened human beings. Parents and teachers need to have an integrated mission: education with a good value system at home and in school. Education is fundamental to building the nation of our dreams. All our aspirations as a society are tied to the capabilities of our youngsters, who form such a large part of our population. A child's individuality and creativity need to be given due importance in our education. The curriculum needs to be innovative and the examination system overhauled so that it recognizes and evaluates creativity and new thinking rather than the memorization of facts. Schools must move away from being centres of education alone, instead becoming centres of knowledge and skill development. **A child becomes an enlightened human being as a result of the value based education received?**\n(A) At home only\n(B) In school only\n(C) At home, in school and in society\n(D) In society only\n(E) Between the ages of five and sixteen", "options": [{"id": "1", "text": "(A) & (E) Only"}, {"id": "2", "text": "(A), (D) & (E) Only"}, {"id": "3", "text": "(C) & (E) Only"}, {"id": "4", "text": "(A) & (B) Only"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The passage states: \"The learning our young citizens receive at home, in school and in society (C) between the ages of five and sixteen (E) will shape them... they need a good value based education to become enlightened human beings.\"\n* It represents a holistic geographic and chronological framework for development.\n* Options isolating only \"home\" or only \"school\" ignore the text's explicit trifecta.\n*Related Concepts:*\n* Direct textual extraction.\n* Holistic learning environments.", "id": 46}, {"question": "Reading Comprehension (Questions 46 to 50)\n**Directions:** Read the following passage carefully and answer the questions:\nThe most important part of a person's life is his childhood. The learning our young citizens receive at home, in school and in society between the ages of five and sixteen will shape them for the rest of their lives. During this phase, they need a good value based education to become enlightened human beings. Parents and teachers need to have an integrated mission: education with a good value system at home and in school. Education is fundamental to building the nation of our dreams. All our aspirations as a society are tied to the capabilities of our youngsters, who form such a large part of our population. A child's individuality and creativity need to be given due importance in our education. The curriculum needs to be innovative and the examination system overhauled so that it recognizes and evaluates creativity and new thinking rather than the memorization of facts. Schools must move away from being centres of education alone, instead becoming centres of knowledge and skill development. **What is essential for building the nation of our dreams?**", "options": [{"id": "1", "text": "More schools"}, {"id": "2", "text": "Value based education"}, {"id": "3", "text": "Democracy"}, {"id": "4", "text": "Rapid Urbanization"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* The passage states: \"Education is fundamental to building the nation of our dreams.\"\n* The preceding sentence defines the specific type of education the author is referring to: \"education with a good value system at home and in school.\"\n* Thus, value-based education is the structural requirement mentioned.\n*Related Concepts:*\n* Synthesizing connected sentences.\n* Purpose of education models.", "id": 47}, {"question": "Reading Comprehension (Questions 46 to 50)\n**Directions:** Read the following passage carefully and answer the questions:\nThe most important part of a person's life is his childhood. The learning our young citizens receive at home, in school and in society between the ages of five and sixteen will shape them for the rest of their lives. During this phase, they need a good value based education to become enlightened human beings. Parents and teachers need to have an integrated mission: education with a good value system at home and in school. Education is fundamental to building the nation of our dreams. All our aspirations as a society are tied to the capabilities of our youngsters, who form such a large part of our population. A child's individuality and creativity need to be given due importance in our education. The curriculum needs to be innovative and the examination system overhauled so that it recognizes and evaluates creativity and new thinking rather than the memorization of facts. Schools must move away from being centres of education alone, instead becoming centres of knowledge and skill development. **Who need to have an integrated mission: education with a good value system at home and in school?**", "options": [{"id": "1", "text": "Politicians"}, {"id": "2", "text": "Philanthropists"}, {"id": "3", "text": "Parents and Teachers"}, {"id": "4", "text": "Businessmen"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The text explicitly states: \"Parents and teachers need to have an integrated mission: education with a good value system at home and in school.\"\n* This is a direct factual retrieval question.\n* It emphasizes the dual responsibility of home and institutional guardians.\n*Related Concepts:*\n* Fact-finding in RC.\n* Educational stakeholder roles.", "id": 48}, {"question": "Reading Comprehension (Questions 46 to 50)\n**Directions:** Read the following passage carefully and answer the questions:\nThe most important part of a person's life is his childhood. The learning our young citizens receive at home, in school and in society between the ages of five and sixteen will shape them for the rest of their lives. During this phase, they need a good value based education to become enlightened human beings. Parents and teachers need to have an integrated mission: education with a good value system at home and in school. Education is fundamental to building the nation of our dreams. All our aspirations as a society are tied to the capabilities of our youngsters, who form such a large part of our population. A child's individuality and creativity need to be given due importance in our education. The curriculum needs to be innovative and the examination system overhauled so that it recognizes and evaluates creativity and new thinking rather than the memorization of facts. Schools must move away from being centres of education alone, instead becoming centres of knowledge and skill development. **A good examination system should?**\n(A) Recognize a child's creativity\n(B) Recognize a child's individuality\n(C) Encourage rote learning\n(D) Encourage new thinking", "options": [{"id": "1", "text": "(A), (B) & (D) Only"}, {"id": "2", "text": "(B) & (C) Only"}, {"id": "3", "text": "(A), (B) & (C) Only"}, {"id": "4", "text": "(C) & (D) Only"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* The author argues the system should be overhauled \"so that it recognizes and evaluates creativity (A) and new thinking (D) rather than the memorization of facts.\"\n* It also demands that \"A child's individuality (B) and creativity need to be given due importance\".\n* It actively discourages rote learning/memorization (C).\n*Related Concepts:*\n* Critique of rote memorization.\n* Assessment paradigm shifts.", "id": 49}, {"question": "Reading Comprehension (Questions 46 to 50)\n**Directions:** Read the following passage carefully and answer the questions:\nThe most important part of a person's life is his childhood. The learning our young citizens receive at home, in school and in society between the ages of five and sixteen will shape them for the rest of their lives. During this phase, they need a good value based education to become enlightened human beings. Parents and teachers need to have an integrated mission: education with a good value system at home and in school. Education is fundamental to building the nation of our dreams. All our aspirations as a society are tied to the capabilities of our youngsters, who form such a large part of our population. A child's individuality and creativity need to be given due importance in our education. The curriculum needs to be innovative and the examination system overhauled so that it recognizes and evaluates creativity and new thinking rather than the memorization of facts. Schools must move away from being centres of education alone, instead becoming centres of knowledge and skill development. **Given below are two statements:**\n**Statement I**: Schools should only be centres of education.\n**Statement II**: Youngsters form a minimal part of our population.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct."}, {"id": "2", "text": "Both Statement I and Statement II are incorrect."}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect."}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct."}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Statement I directly contradicts the text's closing line: \"Schools must move away from being centres of education alone, instead becoming centres of knowledge and skill development.\"\n* Statement II contradicts the text stating: \"...youngsters, who form such a large part of our population.\"\n* Both statements are factually opposite to the passage's claims.\n*Related Concepts:*\n* Identifying authorial contradictions.\n* True/False RC evaluation.", "id": 50}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
