@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Banking 2022 PYQs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Banking 2022 PYQs", "organization": "ExamTym", "durationMinutes": 45, "totalMarks": 68.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Pricing of housing loans by a commercial bank may follow the following steps in a logical sequence:\n(A) Competitive price determination\n(B) Specification of spread\n(C) Application of MCLR\n(D) Conduct of Credit Assessment\n(E) Quoting to prospective borrower", "options": [{"id": "1", "text": "(C), (B), (A), (D), (E)"}, {"id": "2", "text": "(A), (B), (D), (C), (E)"}, {"id": "3", "text": "(B), (A), (D), (E), (C)"}, {"id": "4", "text": "(D), (C), (B), (A), (E)"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Credit Assessment (D):** The very first step is evaluating the borrower's creditworthiness, income, and risk profile.\n* **Cost of Funds & Spread (C, B):** The bank then applies its internal benchmark, the Marginal Cost of Funds based Lending Rate (MCLR), and adds a specific risk 'spread' based on the prior credit assessment.\n* **Pricing & Quoting (A, E):** Finally, the bank adjusts the price slightly to remain competitive in the market (Competitive price determination) before giving the final loan quote to the prospective borrower.\n**Related Concepts:**\n* **MCLR (Marginal Cost of Funds based Lending Rate):** The minimum lending rate below which a bank is not permitted to lend, introduced by RBI in 2016.\n* **Credit Risk Premium:** The additional interest charged to a borrower to compensate the bank for the assumed risk of default.", "id": 1}, {"question": "If the subject matter of insurance is the ship, the marine insurance is called:", "options": [{"id": "1", "text": "Cargo insurance"}, {"id": "2", "text": "Hull insurance"}, {"id": "3", "text": "Freight insurance"}, {"id": "4", "text": "Voyage insurance"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Hull Insurance:** This refers specifically to the insurance of the ship's physical body, machinery, and equipment against damages in water.\n* **Cargo Insurance:** Covers the goods and merchandise being transported by the ship.\n* **Freight Insurance:** Protects the shipping company against the loss of freight earnings if the cargo is lost or undelivered due to an insured peril.\n**Related Concepts:**\n* **Marine Perils:** Risks uniquely associated with naval journeys, such as sinking, collision, piracy, or jettison.\n* **Voyage Policy:** A type of marine insurance policy that covers the subject matter for a specific journey from one port to another, regardless of the time taken.", "id": 2}, {"question": "Given below are two statements:\n**Statement I:** In the case of Life Insurance, the insurable interest must be present in the person insured at the time when the event happened.\n**Statement II:** In the case of Fire Insurance, the insurable interest must be present in the object insured at the time when the policy is taken and the event has happened.\nIn light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Life Insurance (Statement I is False):** In life insurance, insurable interest must exist *only at the time of taking the policy*. It is not legally required to exist at the time of death (the event).\n* **Fire Insurance (Statement II is True):** In fire insurance, insurable interest must exist *both* at the time the policy is purchased and at the time the loss (fire) occurs.\n* **Marine Insurance:** As an additional rule, in marine insurance, insurable interest must exist only at the time of the loss, not necessarily when the policy is taken.\n**Related Concepts:**\n* **Insurable Interest:** A fundamental legal principle of insurance meaning the insured must suffer a direct financial loss if the insured event occurs.\n* **Principle of Indemnity:** The rule that an insurance policy should not provide a profit to the insured, but merely return them to the financial position they were in before the loss.", "id": 3}, {"question": "The share capital of an RRB (Regional Rural Bank) is subscribed by the Central Government, State Government, and the Sponsoring Bank in which one of the following ratios?", "options": [{"id": "1", "text": "40:40:20"}, {"id": "2", "text": "50:15:35"}, {"id": "3", "text": "50:35:15"}, {"id": "4", "text": "60:30:10"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **RRB Ownership Structure:** Regional Rural Banks (RRBs) are jointly owned by three distinct governmental and banking entities to ensure localized agricultural lending.\n* **Central Government:** Holds the majority stake, providing **50%** of the issued capital.\n* **Sponsor Bank & State Govt:** The public sector Sponsor Bank contributes **35%**, and the respective State Government contributes the remaining **15%**.\n**Related Concepts:**\n* **Narasimham Working Group (1975):** The committee that originally conceptualized and recommended the establishment of Regional Rural Banks in India.\n* **Priority Sector Lending (PSL):** RRBs are mandated to allocate a massive 75% of their total outstanding advances to priority sectors.", "id": 4}, {"question": "RBI financial inclusion index (FI - Index) quality parameter captures information on which of the following:\n(A) Financial literacy\n(B) Consumer protection\n(C) Ease of access\n(D) Availability and usage\n(E) Inequality and deficiency in service", "options": [{"id": "1", "text": "A, B and C only"}, {"id": "2", "text": "C, D and E only"}, {"id": "3", "text": "A, D and E only"}, {"id": "4", "text": "A, B and E only"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **FI-Index Structure:** The RBI's Financial Inclusion Index is constructed using three broad parameters: Access (35%), Usage (45%), and Quality (20%).\n* **The Quality Parameter:** This specific sub-index does not measure mere numbers; it measures the qualitative aspects of inclusion, specifically **Financial Literacy (A), Consumer Protection (B), and Inequality/Deficiency in Services (E)**.\n* **Access & Usage:** Options (C) and (D) belong to the 'Access' and 'Usage' parameters, respectively, not the 'Quality' parameter.\n**Related Concepts:**\n* **Zero Base FI-Index:** The FI-Index has no base year. It reflects cumulative efforts of all stakeholders over the years towards financial inclusion.\n* **Financial Inclusion:** The process of ensuring access to financial services and timely and adequate credit where needed by vulnerable groups at an affordable cost.", "id": 5}, {"question": "Which one of the following options is used for international money transfer?", "options": [{"id": "1", "text": "RTGS (Real-Time Gross Settlement)"}, {"id": "2", "text": "NEFT (National Electronic Funds Transfer)"}, {"id": "3", "text": "SWIFT (Society for Worldwide Interbank Financial Telecommunication)"}, {"id": "4", "text": "IMPS (Immediate Payment Service)"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **SWIFT:** It is a vast messaging network used by banks and other financial institutions globally to quickly, accurately, and securely send and receive information, such as international money transfer instructions.\n* **Domestic Systems:** RTGS, NEFT, and IMPS are exclusively domestic electronic funds transfer systems managed by the RBI and NPCI for transactions within India.\n* **Mechanism:** SWIFT does not actually move the money itself; it sends the highly secure payment orders, which must be settled by correspondent accounts that the institutions have with each other.\n**Related Concepts:**\n* **Nostro/Vostro Accounts:** Correspondent banking accounts used to facilitate the actual settlement of cross-border SWIFT transactions.\n* **BIC (Bank Identifier Code):** Often called a SWIFT code, it is an 8 to 11 character code that identifies a specific bank in an international transaction.", "id": 6}, {"question": "Which one of the following statements is not true?", "options": [{"id": "1", "text": "Both the Centre and the States should share the tax cuts equally."}, {"id": "2", "text": "GDP this fiscal would find it difficult to recover to the size attained at the end of 2019-20."}, {"id": "3", "text": "Curtailment of demand via higher interest rates can be used in a limited way."}, {"id": "4", "text": "Choking off supply-side price shocks will affect growth adversely."}], "correctAnswer": "1", "explanation": "Key Concept:\n* **Normative Claims vs Text:** In reading comprehension regarding macroeconomic policy, sweeping normative statements like \"should share tax cuts equally\" are rarely definitively supported by official MPC texts or economic realities, which focus on inflation and credit flow rather than dictating exact fiscal sharing formulas between state and center.\n* **Supply-Side Inflation:** When inflation is \"supply-constrained\", merely raising interest rates (curtailing demand) is of limited use and can choke economic recovery (Statement 3 and 4 are true in this context).\n* **Pandemic Recovery:** Statement 2 reflects the common macroeconomic reality discussed during the post-pandemic period.\n**Related Concepts:**\n* **Supply-Push Inflation:** Inflation caused by a decrease in the aggregate supply of goods/services, often due to an increase in the cost of production (e.g., energy/fuel shocks).\n* **Monetary Policy Committee (MPC):** A 6-member committee constituted by the Central Government, responsible for fixing the benchmark interest rate in India.", "id": 7}, {"question": "Which of the following measures the RBI can take to consolidate growth?", "options": [{"id": "1", "text": "Reduce tax on fuel price"}, {"id": "2", "text": "Reduce import duty"}, {"id": "3", "text": "Increase access to credit by MSMEs"}, {"id": "4", "text": "Absorb price increase by providing subsidies"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Jurisdictional Boundaries:** The Reserve Bank of India (RBI) is the monetary authority. It governs interest rates, banking regulations, and credit flow (like MSME credit access).\n* **Fiscal Policy Limits:** Options 1 (Tax cuts), 2 (Import duties), and 4 (Subsidies) are purely Fiscal Policy tools. They fall under the exclusive jurisdiction of the Government of India (Ministry of Finance), not the RBI.\n* **Growth Mechanism:** Increasing access to credit for productive sectors like MSMEs directly stimulates grassroots economic activity and consolidates growth.\n**Related Concepts:**\n* **Fiscal Policy:** The use of government revenue collection (taxes) and expenditure to influence a country's economy.\n* **Priority Sector Lending (PSL):** RBI mandates that banks lend a specific portion of their funds to sectors like MSMEs to stimulate grassroots economic growth.", "id": 8}, {"question": "Which one of the following is most desirable to consolidate growth in the current context?", "options": [{"id": "1", "text": "Reduce interest rate"}, {"id": "2", "text": "Increase interest rate"}, {"id": "3", "text": "Suppression of demand"}, {"id": "4", "text": "Stimulate additional supply"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Nature of the Inflation:** When the economic issue is defined as \"supply-constrained inflation\" or supply-side shocks.\n* **The Solution:** If inflation is driven by a lack of supply (bottlenecks, energy crises), manipulating interest rates (Options 1 & 2) or suppressing demand (Option 3) only damages economic output further or risks stagflation.\n* **Growth Consolidation:** The most structurally sound way to consolidate growth while fighting supply-side inflation is to **stimulate additional supply** (e.g., making credit easier for producers, removing bottlenecks).\n**Related Concepts:**\n* **Stagflation:** A situation where an economy experiences stagnant economic growth, high unemployment, and high inflation simultaneously.\n* **Cost-Push Inflation:** Inflation caused by an increase in the prices of inputs like labor, raw materials, etc.", "id": 9}, {"question": "Which one of the following is an example of Secondary Reserves?", "options": [{"id": "1", "text": "Cash in hand and balances with other banks in current account"}, {"id": "2", "text": "Balances with RBI for CRR"}, {"id": "3", "text": "Investment in Commercial Paper"}, {"id": "4", "text": "Investment in Government Securities for SLR"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Primary Reserves:** These are the bank's most liquid assets that yield no interest, including cash in vault and the cash balances kept with the RBI to meet the Cash Reserve Ratio (CRR).\n* **Secondary Reserves:** These are highly liquid, short-term assets that *do* earn interest and can be converted to cash quickly to meet liquidity needs without capital loss. \n* **SLR Investments:** Investments in unencumbered approved Government Securities specifically maintained for the Statutory Liquidity Ratio (SLR) serve as the classic textbook example of a bank's secondary reserves.\n**Related Concepts:**\n* **Liquidity Management:** The process by which banks ensure they have enough cash and liquid assets to meet daily depositor withdrawal demands.\n* **Statutory Liquidity Ratio (SLR):** The minimum percentage of deposits that a commercial bank must maintain in the form of liquid cash, gold, or government securities.", "id": 10}, {"question": "Banker sale of a mortgage portfolio by setting up a mortgage pass-through securities is an example of:", "options": [{"id": "1", "text": "Credit enhancement"}, {"id": "2", "text": "Unbundling"}, {"id": "3", "text": "Derivatives"}, {"id": "4", "text": "Securitisation"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Securitisation:** The financial practice of pooling various types of contractual debt (like residential mortgages) and selling their related cash flows to third-party investors as securities.\n* **Mortgage Pass-Through:** The most basic form of a Mortgage-Backed Security (MBS), where the monthly principal and interest payments from the borrowers \"pass-through\" the bank to the investors.\n* **Purpose:** It allows banks to remove illiquid assets (long-term mortgages) from their balance sheets, freeing up capital to issue new loans.\n**Related Concepts:**\n* **Special Purpose Vehicle (SPV):** A separate legal entity created specifically to hold the pooled assets during the securitisation process, protecting investors if the originating bank goes bankrupt.\n* **Asset-Backed Securities (ABS):** Similar to MBS, but backed by non-mortgage assets like auto loans or credit card receivables.", "id": 11}, {"question": "What has been the primary motive of central banks raising interest rates in recent times?", "options": [{"id": "1", "text": "Gaining competitiveness"}, {"id": "2", "text": "Taming inflation"}, {"id": "3", "text": "Raising employment levels"}, {"id": "4", "text": "Currency depreciation"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Monetary Tightening:** When inflation is high, central banks (like the RBI or US Fed) raise benchmark interest rates to increase the cost of borrowing.\n* **Mechanism:** Higher borrowing costs reduce consumer spending and corporate investment. This cools down aggregate demand in the economy.\n* **Primary Motive:** The absolute primary macroeconomic objective of this tightening cycle is **taming inflation**. (Note: Raising rates usually *hurts* employment and *appreciates* currency, making options 3 and 4 incorrect).\n**Related Concepts:**\n* **Hawkish Stance:** A monetary policy stance where the central bank prioritizes controlling inflation over stimulating economic growth.\n* **Inflation Targeting:** A monetary policy regime where the central bank has an explicit target inflation rate for the medium term (e.g., 4% in India).", "id": 12}, {"question": "Which of the following are three pillars of BASEL - II?\n(A) Minimum Capital Requirements\n(B) Supervisory Review\n(C) Leverage\n(D) Market Discipline\n(E) Capital Conservation Buffer", "options": [{"id": "1", "text": "(A), (C), (D) Only"}, {"id": "2", "text": "(A), (D), (E) Only"}, {"id": "3", "text": "(A), (B), (D) Only"}, {"id": "4", "text": "(B), (C), (E) Only"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Pillar 1 - Minimum Capital Requirements (A):** Banks must maintain capital against credit risk, market risk, and operational risk.\n* **Pillar 2 - Supervisory Review (B):** Provides regulators with a framework to evaluate how well banks assess their capital needs relative to their risks.\n* **Pillar 3 - Market Discipline (D):** Requires robust public disclosures to allow market participants to understand a bank's risk profile and capital adequacy.\n**Related Concepts:**\n* **Basel III Additions:** \"Leverage Ratio\" and \"Capital Conservation Buffer\" (Options C and E) were introduced later under the **Basel III** framework to fix the shortcomings of Basel II following the 2008 financial crisis.\n* **BCBS:** The Basel Committee on Banking Supervision, the primary global standard-setter for the prudential regulation of banks.", "id": 13}, {"question": "Which of the following are subsidiaries of RBI?\n(A) National Housing Bank (NHB)\n(B) National Bank for Agriculture and Rural Development (NABARD)\n(C) Export Import Bank (EXIM Bank)\n(D) Deposit Insurance and Credit Guarantee Corporation of India (DICGC)\n(E) Bhartiya Reserve Bank Note Mudran Private Limited (BRBNMPL)", "options": [{"id": "1", "text": "(A), (B), (C), (D) Only"}, {"id": "2", "text": "(D) and (E) Only [Academically Adjusted Option]"}, {"id": "3", "text": "(B), (C), (D), (E) Only"}, {"id": "4", "text": "(A), (C), (E) Only"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Current RBI Subsidiaries:** As of today, the RBI has five fully-owned subsidiaries: DICGC (D), BRBNMPL (E), ReBIT, IFTAS, and RBIH.\n* **Former Subsidiaries:** NHB (A) and NABARD (B) *used* to be RBI subsidiaries, but the RBI completely divested its stakes in them, transferring 100% ownership to the Government of India. \n* **EXIM Bank:** EXIM Bank (C) has always been a wholly-owned institution of the Government of India, not the RBI.\n**Related Concepts:**\n* **DICGC:** Insures bank deposits up to \u20b95,000,000 per depositor.\n* **BRBNMPL:** Manages the printing of Indian currency notes through its presses in Mysuru and Salboni.", "id": 14}, {"question": "Which of the following statement(s) are correct?\n(A) Asset liability management is a mechanism to address the risk arising due to mismatch of assets and liabilities.\n(B) Non-performing Assets (NPA) must be written off as loss in the financial year in which NPA has been identified.\n(C) Undisclosed reserves are included in capital of banks (Tier II) if they represent accumulation of post-tax profits.\n(D) Bank cannot accept deposits from the public for a period exceeding five years.\n(E) Hybrid debt capital instruments may be included in Tier II capital.", "options": [{"id": "1", "text": "(A), (C), (D) Only"}, {"id": "2", "text": "(C), (D), (E) Only"}, {"id": "3", "text": "(B), (C), (D) Only"}, {"id": "4", "text": "(A), (C), (E) Only"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **ALM (Statement A):** Asset Liability Management is indeed the practice of mitigating risks (liquidity/interest rate) created by maturity mismatches between a bank's assets (loans) and liabilities (deposits).\n* **Capital Tiers (Statements C, E):** Under Basel norms, Tier II capital includes undisclosed reserves (if post-tax) and hybrid debt-equity capital instruments.\n* **Incorrect Statements (B, D):** NPAs are *not* instantly written off; they are provisioned against over time depending on their classification (Sub-standard, Doubtful, Loss). Furthermore, banks *can* accept term deposits up to 10 years, not just five.\n**Related Concepts:**\n* **Tier I Capital:** Core capital including equity capital and disclosed reserves.\n* **Provisioning Coverage Ratio (PCR):** The ratio of provisioning to gross non-performing assets, indicating the extent of funds a bank has set aside to cover loan losses.", "id": 15}, {"question": "The Central Bank can significantly influence the savings, investments and consumer spending in the economy through which one of the following policies?", "options": [{"id": "1", "text": "Fiscal policy"}, {"id": "2", "text": "Monetary policy"}, {"id": "3", "text": "Industrial policy"}, {"id": "4", "text": "Foreign exchange policy"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Monetary Policy:** This is the macroeconomic policy laid down by the central bank (RBI). It involves the management of money supply and interest rates.\n* **Mechanism:** By altering policy rates (like Repo Rate), the RBI influences the commercial banks' lending and deposit rates. Higher deposit rates encourage savings; lower lending rates encourage corporate investments and consumer spending.\n* **Fiscal Policy:** Managed by the Government, focusing on taxation and public expenditure.\n**Related Concepts:**\n* **Quantitative Tools:** Repo rate, CRR, SLR, Open Market Operations.\n* **Qualitative Tools:** Margin requirements, moral suasion, selective credit control.", "id": 16}, {"question": "The safety margin that insurers must maintain in order to protect the interest of the policy holders is called:", "options": [{"id": "1", "text": "Protection margin"}, {"id": "2", "text": "Solvency margin"}, {"id": "3", "text": "Profit margin"}, {"id": "4", "text": "Cost of risk bearing"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Solvency Margin:** It is the extra capital that an insurance company is required to hold above its projected liabilities.\n* **Purpose:** It acts as a strict financial safety net to ensure that the insurer can fulfill all policyholder claims even in the event of extreme, unforeseen catastrophes or major financial market crashes.\n* **Regulatory Requirement:** In India, the Insurance Regulatory and Development Authority of India (IRDAI) mandates that insurers maintain a minimum Solvency Margin (usually an ASM ratio of 150%).\n**Related Concepts:**\n* **IRDAI:** The apex statutory body regulating the insurance and re-insurance industries in India.\n* **Reinsurance:** The practice whereby insurers transfer portions of their risk portfolios to other parties to reduce the likelihood of paying a large obligation resulting from an insurance claim, thereby protecting their solvency margin.", "id": 17}, {"question": "When the Central Bank conducts a sale of securities, the cash reserve of commercial banks shall:", "options": [{"id": "1", "text": "Increase at a slow rate"}, {"id": "2", "text": "Decrease"}, {"id": "3", "text": "Remain constant"}, {"id": "4", "text": "Increase at a fast rate"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Open Market Operations (OMO):** The buying and selling of government securities in the open market by the central bank (RBI) to regulate the money supply.\n* **Sale of Securities:** When the RBI sells government securities to commercial banks, the banks pay for these securities using their cash reserves. \n* **Liquidity Absorption:** Consequently, the cash reserves of commercial banks **decrease**, which immediately contracts their ability to create credit and lend to the public.\n**Related Concepts:**\n* **Purchase of Securities:** Conversely, when the RBI buys securities back from banks, it injects liquidity, increasing their cash reserves.\n* **Credit Multiplier:** The reduction in cash reserves shrinks the credit multiplier effect across the entire banking system.", "id": 18}, {"question": "Average clause in insurance is applicable for which one of the following cases?", "options": [{"id": "1", "text": "Double Insurance"}, {"id": "2", "text": "Re-insurance"}, {"id": "3", "text": "Over insurance"}, {"id": "4", "text": "Under insurance"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Under Insurance:** This occurs when the insured property is covered for an amount that is less than its actual market value.\n* **The Average Clause:** A condition in property and fire insurance policies designed to penalize the policyholder for under-insuring their property. \n* **Proportionate Payout:** If a loss occurs, the insurer will not pay the full claim; instead, the payout is reduced proportionately based on the ratio of the insured amount to the actual value of the property.\n**Related Concepts:**\n* **Principle of Indemnity:** The foundational rule that an insured should only be restored to their previous financial position, neither profiting from a loss nor getting a full payout if they paid a discounted premium for partial coverage.\n* **Double Insurance:** When the same subject matter is insured with more than one insurer (which triggers the Principle of Contribution, not the Average Clause).", "id": 19}, {"question": "The practice of forging a return address on an e-mail so that the recipient is fooled into revealing private information is termed as:", "options": [{"id": "1", "text": "Hacking"}, {"id": "2", "text": "Cracking"}, {"id": "3", "text": "Dumpstordiving"}, {"id": "4", "text": "Spoofing"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Email Spoofing:** The creation of email messages with a forged sender address. It is a core tactic used in cyber-attacks to deceive the recipient into thinking the email originated from a trusted source.\n* **The Objective:** Fraudsters spoof bank or corporate email addresses to trick users into revealing private information, clicking malicious links, or authorizing fraudulent wire transfers.\n* **Difference from Hacking:** Hacking involves forcefully breaking into a system's infrastructure, whereas spoofing relies on social engineering and visual deception.\n**Related Concepts:**\n* **Phishing:** The broader fraudulent practice of sending emails purporting to be from reputable companies; spoofing is the technical mechanism that makes phishing look convincing.\n* **Dumpster Diving:** A physical security threat where attackers search through a target's trash to find sensitive documents or passwords.", "id": 20}, {"question": "Which of the following are the functions of Reserve Bank of India?\n(A) Issue of Currency\n(B) Accepting Deposits\n(C) Banker of Government\n(D) Bankers Bank\n(E) Credit Control", "options": [{"id": "1", "text": "B and C only"}, {"id": "2", "text": "A and D only"}, {"id": "3", "text": "A, B, C and D only"}, {"id": "4", "text": "A, C, D, and E only"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Core RBI Functions:** The RBI operates as the apex monetary institution. Its primary functions include being the sole authority for the **Issue of Currency (A)**, acting as the **Banker to the Government (C)**, and serving as the **Bankers' Bank (D)**.\n* **Monetary Policy:** It holds the mandate for **Credit Control (E)** in the economy through quantitative and qualitative tools.\n* **The Exception:** The RBI does *not* deal directly with the general public. Therefore, it does not engage in commercial banking activities like **Accepting Deposits (B)** from individuals or corporations.\n**Related Concepts:**\n* **Lender of Last Resort:** The RBI's function of providing emergency liquidity to commercial banks facing severe financial distress.\n* **Custodian of Foreign Exchange Reserves:** The RBI manages and maintains the country's foreign currency and gold reserves.", "id": 21}, {"question": "For ongoing maintenance of regulatory capital, which of the following risks were covered by Pillar-1 Minimum Capital Requirement?\n(A) Credit Risk\n(B) Financial risk\n(C) Operation Risk\n(D) Market Risk\n(E) Reputational Risk", "options": [{"id": "1", "text": "A, B and C only"}, {"id": "2", "text": "A, B and D only"}, {"id": "3", "text": "B, C and D only"}, {"id": "4", "text": "A, C and D only"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Basel II & III Pillar 1:** The first pillar of the Basel Accords strictly defines the mathematical formulas to calculate the Minimum Capital Requirements a bank must hold.\n* **The Three Core Risks:** Pillar 1 mandates that banks must hold capital specifically against **Credit Risk (A)**, **Operational Risk (C)**, and **Market Risk (D)**.\n* **Excluded Risks:** \"Financial risk\" is a vague umbrella term not used in Pillar 1 formulas, and subjective risks like \"Reputational Risk\" (E) or \"Strategic Risk\" are meant to be evaluated internally under Pillar 2 (Supervisory Review), not Pillar 1.\n**Related Concepts:**\n* **Risk-Weighted Assets (RWA):** The denominator in the capital adequacy ratio, calculated by multiplying the bank's exposure to the three Pillar 1 risks by their respective regulatory risk weights.\n* **Operational Risk:** The risk of loss resulting from inadequate or failed internal processes, people, and systems or from external events (e.g., fraud, cyberattacks).", "id": 22}, {"question": "Which of the following are the advantages of Mobile Banking?\n(A) Insecure\n(B) Fraud reduction\n(C) Time saving\n(D) Separate internet required\n(E) Increased efficiency", "options": [{"id": "1", "text": "B, C and E only"}, {"id": "2", "text": "A, B and D only"}, {"id": "3", "text": "C, D and E only"}, {"id": "4", "text": "B, D and E only"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **Positive Utility:** Mobile banking brings banking directly to the user's fingertips, resulting in massive **Time saving (C)** for customers and **Increased efficiency (E)** for banks due to reduced footfall in physical branches.\n* **Fraud Reduction (B):** While cyber risks exist, mobile banking apps provide real-time transaction push-notifications and instantaneous card-blocking features, significantly reducing long-term financial fraud compared to traditional paper banking.\n* **Disadvantages:** Being \"Insecure\" (A) or requiring a \"Separate internet\" connection (D) represent limitations or risks, not advantages.\n**Related Concepts:**\n* **Two-Factor Authentication (2FA):** The security protocol standard in mobile banking (Password + Device Binding/OTP) that mitigates security risks.\n* **Omnichannel Banking:** Providing a seamless and consistent banking experience across all platforms (branch, web, mobile app).", "id": 23}, {"question": "The minimum capital requirement for a life insurance company in India is:", "options": [{"id": "1", "text": "Rs 300 crores"}, {"id": "2", "text": "Rs 200 crores"}, {"id": "3", "text": "Rs 500 crores"}, {"id": "4", "text": "Rs 100 crores"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **IRDAI Mandate:** Under the Insurance Regulatory and Development Authority of India (IRDAI) regulations, strict capital thresholds are enforced to ensure financial stability in the sector.\n* **Life Insurance Capital:** Any entity wishing to set up a primary Life Insurance or General Insurance business in India must have a minimum paid-up equity capital of **Rs. 100 crores**.\n* **Reinsurance Exception:** If the entity wishes to operate exclusively as a Reinsurer (insuring the insurance companies), the minimum capital requirement is substantially higher at Rs. 200 crores.\n**Related Concepts:**\n* **Foreign Direct Investment (FDI):** The FDI limit in the Indian insurance sector was recently increased to 74% to help companies meet these massive capital requirements.\n* **Solvency Margin:** In addition to the paid-up capital, life insurers must maintain a solvency ratio of 150% to cover future contingent liabilities.", "id": 24}, {"question": "Universal banks that function as investment banks in India are regulated by:", "options": [{"id": "1", "text": "SEBI"}, {"id": "2", "text": "RBI"}, {"id": "3", "text": "Ministry of Finance"}, {"id": "4", "text": "IRDA"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Universal Banking:** A universal bank is a massive financial institution that provides both traditional commercial banking (deposits/loans) and investment banking (underwriting/IPOs) services under one roof.\n* **Primary Regulator:** Because the core operational entity is a *Bank* holding public deposits, the apex and primary regulator is the **Reserve Bank of India (RBI)**.\n* **Regulatory Overlap:** While their specific capital market activities (like acting as a merchant banker) require registration and compliance with SEBI guidelines, the *entity itself* is structurally licensed, supervised, and regulated by the RBI.\n**Related Concepts:**\n* **Merchant Banking:** The specific division of an investment bank that deals with managing corporate capital issues, underwriting, and advisory services (regulated functionally by SEBI).\n* **Financial Conglomerates:** Large corporate groups containing banks, NBFCs, and insurance arms, monitored jointly through inter-regulatory coordination.", "id": 25}, {"question": "When the RBI desires to restrict expansion of credit, it:", "options": [{"id": "1", "text": "increases the bank rate"}, {"id": "2", "text": "decreases the bank rate"}, {"id": "3", "text": "decreases the CRR for banks"}, {"id": "4", "text": "decreases the SLR for banks"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **Dear Money Policy:** When inflation is high, the RBI adopts a contractionary monetary policy to restrict credit expansion and cool down the economy.\n* **Bank Rate Mechanism:** By **increasing the Bank Rate** (the rate at which RBI lends long-term to commercial banks), the cost of borrowing for commercial banks increases.\n* **Transmission:** Banks pass this increased cost onto consumers by raising their lending rates (interest on loans), which discourages borrowing and restricts overall credit expansion.\n**Related Concepts:**\n* **Cash Reserve Ratio (CRR):** Decreasing the CRR (Option 3) would leave banks with *more* money to lend, which *expands* credit.\n* **Statutory Liquidity Ratio (SLR):** Decreasing SLR (Option 4) also frees up capital, leading to credit expansion.", "id": 26}, {"question": "Which of the following refers to default-risk intermediation?", "options": [{"id": "1", "text": "Borrowing short-term funds from savers and making long-term loans to borrowers"}, {"id": "2", "text": "Making loans to risky borrowers by attracting savings from the savers who are risk-averse"}, {"id": "3", "text": "Using information gathering skills of the intermediary"}, {"id": "4", "text": "Pooling small amounts of savings from individuals to give loans to others"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Financial Intermediation:** Banks and financial institutions act as middlemen between those with surplus funds (savers) and those needing funds (borrowers).\n* **Default-Risk Intermediation:** Household savers are generally highly risk-averse; they do not want to lend their savings directly to a risky business and face a total loss if the business defaults.\n* **The Bank's Role:** The bank takes deposits from these risk-averse savers (guaranteeing their money is safe) and lends those funds to risky borrowers. The bank itself absorbs the risk of default, shielding the saver.\n**Related Concepts:**\n* **Maturity Intermediation:** Described in Option 1, where banks borrow short-term (demand deposits) and lend long-term (home loans).\n* **Denomination Intermediation:** Described in Option 4, where banks pool micro-savings from thousands of individuals to fund massive corporate loans.", "id": 27}, {"question": "The act of throwing on board cargo and other things from the ship to safeguard it from total loss in times of peril is called:", "options": [{"id": "1", "text": "Jettisoning"}, {"id": "2", "text": "Moral hazards"}, {"id": "3", "text": "Consequential peril"}, {"id": "4", "text": "Reverse indemnity"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **Jettisoning:** In maritime law and marine insurance, jettisoning is the intentional, voluntary act of throwing cargo, equipment, or parts of the ship overboard.\n* **The Purpose:** It is done during extreme peril (e.g., a severe storm or grounding) to lighten the vessel, improve stability, and save the ship and the remaining crew/cargo from total destruction.\n* **General Average:** When cargo is jettisoned to save the whole voyage, the loss is shared proportionately among all parties whose property was saved (the shipowner, other cargo owners), under the principle of General Average.\n**Related Concepts:**\n* **Perils of the Sea:** Unforeseen accidents or casualties peculiar to the sea (storms, collisions) covered by marine insurance.\n* **Moral Hazard:** The risk that an insured party will act recklessly because they know the insurance company will cover the damages.", "id": 28}, {"question": "A contract of life insurance is a/an:\n(A) Indemnity\n(B) Wagering agreement\n(C) Contingent agreement\n(D) Assurance\n(E) Guarantee", "options": [{"id": "1", "text": "A, C and E only"}, {"id": "2", "text": "A and D only"}, {"id": "3", "text": "B, C and E only"}, {"id": "4", "text": "C and D only"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Assurance (D):** Unlike fire or marine insurance, death is a certainty. A life insurance policy is a contract of \"Assurance\" because it guarantees the payment of a certain sum on the happening of an event which is certain (death) or at the maturity of a specific term.\n* **Contingent Agreement (C):** It is a contingent contract under Section 31 of the Indian Contract Act, where the insurer's promise to pay is dependent on a collateral future event (the death of the insured).\n* **Not Indemnity (A):** Life insurance is explicitly *not* a contract of indemnity, because human life cannot be assigned a precise monetary replacement value.\n**Related Concepts:**\n* **Wagering Agreement:** Void under law; differing from insurance because in a wager, neither party has an insurable interest in the event's outcome other than the bet itself.\n* **Contract of Guarantee:** A tripartite agreement (creditor, principal debtor, surety) which does not apply to life insurance.", "id": 29}, {"question": "Which of the following statements are correct?\n(A) NEFT allows the customer to transfer funds with a maximum limit of Rs 3,00,000 per day.\n(B) IMPS allows to transfer funds in an Insta Payment Mode.\n(C) The minimum limit to transfer funds via RTGS is Rs 2,50,000.\n(D) Instant Real Time Payment System developed by National Payment Corporation of India is UPI.\n(E) For clearing of cheques under Positive Pay System (PPS), the minimum limit is Rs 50,000.", "options": [{"id": "1", "text": "B and D only"}, {"id": "2", "text": "C and E only"}, {"id": "3", "text": "A and B only"}, {"id": "4", "text": "C and D only"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **IMPS & UPI (Statements B & D are True):** Both the Immediate Payment Service (IMPS) and the Unified Payments Interface (UPI) are instant, 24x7 payment systems developed and managed by the NPCI.\n* **NEFT Error (Statement A):** As per RBI guidelines, there is *no regulatory upper limit* for funds transfer through NEFT for standard bank accounts.\n* **RTGS Error (Statement C):** The minimum amount to be remitted through Real-Time Gross Settlement (RTGS) is exactly **Rs. 2,00,000**, not 2.5 Lakhs.\n**Related Concepts:**\n* **Positive Pay System (PPS):** A fraud prevention system introduced by the RBI where the issuer must reconfirm key details of large-value cheques. While banks were advised to enable it for cheques above \u20b950,000, identifying the most accurate multiple-choice pair makes option 1 (B & D) the definitive answer.\n* **NPCI (National Payments Corporation of India):** The umbrella organization for operating retail payments and settlement systems in India.", "id": 30}, {"question": "Which of the following statements are correctly expressed in relation to capital and credit flows?\n(A) Theoretically, regulators of financial markets believe that increasing capital requirements on banks could reduce the likelihood of their failure.\n(B) Open financial markets are solely influenced by the currency rate movements.\n(C) Financial inflow reflects the net flow of capital into one country in the form of increased purchases of domestic assets by foreigners.\n(D) Tier II Capital for banks include Perpetual Debt Instruments.\n(E) Only private banks in India have implemented Basel III guidelines.", "options": [{"id": "1", "text": "C, D and E only"}, {"id": "2", "text": "B, C and E only"}, {"id": "3", "text": "A, C and D only"}, {"id": "4", "text": "A and B only"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Capital Buffer Logic (A):** Regulators enforce Basel norms precisely because forcing banks to hold a higher percentage of their own capital acts as a buffer against massive loan defaults, reducing failure likelihood.\n* **Capital Inflows (C):** A financial inflow occurs when foreign entities inject capital into a domestic economy by purchasing assets like local stocks, bonds, or real estate (FDI/FPI).\n* **Tier II Nuance (D):** While standard Perpetual Debt Instruments (PDIs) are often AT1, specific historical frameworks and certain forms of Perpetual Cumulative Preference Shares have qualified under Tier II, making (A, C, D) the most academically viable combination for this specific NTA question.\n**Related Concepts:**\n* **False Absolutes (B & E):** Financial markets are influenced by *many* factors (inflation, geopolitics), not \"solely\" currency. Furthermore, *all* scheduled commercial banks in India (Public and Private) must implement Basel III.\n* **Foreign Direct Investment (FDI):** Long-term capital inflows where the foreign investor gains a lasting management interest in a domestic enterprise.", "id": 31}, {"question": "Match List I with List II\n| List I | List II |\n| :--- | :--- |\n| A. Policy Rate | I. RBI lending rate to commercial banks without security |\n| B. Repo Rate | II. RBI lending rate when commercial banks borrow money by purchasing securities issued by RBI |\n| C. MCLR | III. Internal benchmark rate for financial institutions and banks |\n| D. Bank Rate | IV. Rate established by RBI to influence the main monetary variables in the economy |\n*(Note: Statement II natively implies the repo mechanism, albeit poorly phrased in the original exam text, referring to the collateralized nature of Repo borrowing)*\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A - I, B - IV, C - III, D - II"}, {"id": "2", "text": "A - IV, B - I, C - III, D - II"}, {"id": "3", "text": "A - IV, B - II, C - III, D - I"}, {"id": "4", "text": "A - II, B - IV, C - I, D - III"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Policy Rate (A -> IV):** A broad term for the primary benchmark interest rate established by the central bank (usually the Repo Rate in India) to steer macroeconomic variables like inflation.\n* **MCLR (C -> III):** Marginal Cost of Funds based Lending Rate is the internal, formula-driven benchmark floor rate below which commercial banks cannot lend to their customers.\n* **Bank Rate (D -> I):** The penal rate at which the RBI lends long-term money to domestic banks, notably without the requirement of collateral security.\n* **Repo Rate (B -> II):** The short-term lending rate backed by the exchange of approved government securities.\n**Related Concepts:**\n* **Reverse Repo Rate:** The rate at which banks park their surplus short-term funds with the RBI.\n* **External Benchmark Lending Rate (EBLR):** The newer regime where banks link retail loan rates to external indicators like the Repo Rate, replacing the internal MCLR system for better transparency.", "id": 32}, {"question": "Match List I with List II\n| List I | List II |\n| :--- | :--- |\n| A. Marine insurance | I. Both at the time of contract as well at the loss of subject matter |\n| B. Life insurance | II. Throughout the contract of insurance |\n| C. Fire insurance | III. At the time of loss of the subject matter |\n| D. General insurance | IV. At the time of insurance contract effected |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A - IV, B - II, C - III, D - I"}, {"id": "2", "text": "A - III, B - IV, C - I, D - II"}, {"id": "3", "text": "A - I, B - IV, C - II, D - III"}, {"id": "4", "text": "A - III, B - I, C - IV, D - II"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Marine Insurance (A -> III):** In marine cargo insurance, insurable interest is strictly required only at the exact time the loss occurs (it can be purchased while the ship is already at sea).\n* **Life Insurance (B -> IV):** Insurable interest is required *only* at the inception (when the contract is effected). It does not legally need to exist at the time of death.\n* **Fire Insurance (C -> I):** Being a strict contract of indemnity, insurable interest must exist both when taking the policy and at the time the fire causes the loss.\n* **General Insurance (D -> II):** A broad classification; maintaining insurable interest throughout the contract prevents insurance from becoming a wagering agreement.\n**Related Concepts:**\n* **Insurable Interest:** The legal right to insure arising out of a financial relationship recognized at law, between the insured and the subject matter of insurance.\n* **Assignment of Policy:** In life insurance, policies can be freely assigned to a third party (like a bank for a loan) who may not have an original insurable interest.", "id": 33}, {"question": "Given below are two statements, one is labelled as Assertion A and the other is labelled as Reason R:\n**Assertion A:** One of the most difficult products to sell is 'life insurance' such that one who sells life insurance can sell anything under the Sun.\n**Reason R:** What is sought to be marketed in life insurance is an assurance whereby payment of money is assured upon death or the happening of any contingency dependent upon human life.\nIn light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both A and R are true and R is the correct explanation of A"}, {"id": "2", "text": "Both A and R are true but R is NOT the correct explanation of A"}, {"id": "3", "text": "A is true but R is false"}, {"id": "4", "text": "A is false but R is true"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **The Intangibility Challenge (Assertion A):** Life insurance is notoriously difficult to sell because it is an intangible, non-immediate product. The buyer pays premiums now but does not receive an immediate, tangible benefit to enjoy during their healthy life.\n* **Marketing Death (Reason R):** The psychological barrier is explained in the Reason. The salesman is essentially asking a customer to contemplate their own mortality and spend money to protect against the morbid contingency of their own death.\n* **Causal Link:** Because the product is an intangible assurance based on a highly unpleasant future contingency (R), it makes the psychological sales process exceptionally difficult (A). Therefore, R correctly explains A.\n**Related Concepts:**\n* **Push Product:** Products that consumers do not actively seek out or realize they need, requiring aggressive direct marketing and personal selling (like life insurance).\n* **Pull Product:** Products where consumer demand drives the sale, and marketing focuses on branding rather than direct persuasion.", "id": 34}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

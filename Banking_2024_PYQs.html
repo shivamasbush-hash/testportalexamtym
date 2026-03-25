@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Banking 2024 PYQs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Banking 2024 PYQs", "organization": "ExamTym", "durationMinutes": 30, "totalMarks": 42.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Which of the following are primary functions of Commercial Banks?\nA. Accepting Deposits\nB. Agency Service\nC. Discounting Trade Bills\nD. Financing Foreign Trade\nE. General Utility Service", "options": [{"id": "1", "text": "A, C & E only"}, {"id": "2", "text": "A, B & D only"}, {"id": "3", "text": "B, C & E only"}, {"id": "4", "text": "A, C & D only\n*(Note: Option 4 is the officially accepted NTA key, though structurally, foreign trade financing borders on secondary agency functions).*"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Primary Functions:** The foundational, core activities of a commercial bank are accepting deposits from the public and granting advances/loans.\n* **Discounting Bills (C):** Discounting trade bills of exchange is directly classified as a primary function under \"granting advances,\" as it is a method of providing short-term credit.\n* **Financing Foreign Trade (D):** While traditionally an agency/utility service (like issuing Letters of Credit), modern banking curricula often bundle trade financing into the core primary advancing/credit functions.\n**Related Concepts:**\n* **Secondary Functions:** These include Agency Services (B) (like paying utility bills or acting as an executor) and General Utility Services (E) (like providing locker facilities).\n* **Credit Creation:** The macroeconomic primary function where banks multiply the money supply through the fractional reserve system.", "id": 1}, {"question": "Which one of the following is Value Added Service of EXIM Bank?", "options": [{"id": "1", "text": "Line of Credit"}, {"id": "2", "text": "Pre-shipment Credit"}, {"id": "3", "text": "Buyers Credit"}, {"id": "4", "text": "Export Marketing Services"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **EXIM Bank's Core Financing:** Options 1, 2, and 3 (Line of Credit, Pre-shipment, and Buyers Credit) are the core, standard financial lending products provided by the Export-Import Bank of India.\n* **Value-Added Services (VAS):** These are non-lending, advisory, and support services designed to boost Indian exports beyond just giving them money.\n* **Export Marketing Services:** EXIM Bank helps Indian companies identify overseas partners, provides country-specific market research, and assists in globalization efforts, which constitutes a pure value-added service.\n**Related Concepts:**\n* **Pre-shipment Credit:** Packing credit given to exporters to purchase raw materials and manufacture goods *before* shipping them.\n* **Buyer's Credit:** A loan facility extended to an overseas buyer to pay for machinery/goods imported from India.", "id": 2}, {"question": "In which one of the following ratios, the share capital of RRBs is prescribed for the Central Government, State Government and Sponsoring bank?", "options": [{"id": "1", "text": "30:30:20"}, {"id": "2", "text": "50:35:15"}, {"id": "3", "text": "60:20:20"}, {"id": "4", "text": "50:15:35"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **RRB Ownership Structure:** Regional Rural Banks (RRBs) are jointly owned by three distinct entities to ensure local focus backed by national strength.\n* **Central Government:** Holds the majority controlling stake of **50%**.\n* **State Government & Sponsor Bank:** The respective State Government contributes **15%**, and the public sector Sponsor Bank contributes **35%**. (Hence 50:15:35).\n**Related Concepts:**\n* **RRB Act, 1976:** The governing legislation that dictates this specific capital contribution ratio.\n* **Sponsor Bank's Role:** Beyond capital, the sponsor bank provides managerial expertise and trains the RRB's personnel during its initial years.", "id": 3}, {"question": "Which of the following are the instruments of qualitative Credit Control Methods in India's Monetary Policy?\nA. Cash Reserve Ratio\nB. Consumer Credit Regulation\nC. Altering Margin Requirements\nD. Statutory Liquidity Ratio\nE. Differential Rate of Interest", "options": [{"id": "1", "text": "A, B & D only"}, {"id": "2", "text": "B, C & E only"}, {"id": "3", "text": "C, D & E only"}, {"id": "4", "text": "D, E & A only"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Qualitative (Selective) Tools:** These tools do not change the total volume of money in the economy but direct the *flow* of credit to specific desirable sectors or restrict it from speculative sectors.\n* **Selective Instruments:** **Consumer Credit Regulation (B)**, **Altering Margin Requirements (C)** (changing the down-payment needed for loans), and applying a **Differential Rate of Interest (E)** (charging lower rates for farmers, higher for speculators) are all qualitative tools.\n* **Quantitative Tools (A, D):** CRR and SLR are quantitative tools; they affect the total volume of credit across the entire banking system indiscriminately.\n**Related Concepts:**\n* **Moral Suasion:** A qualitative tool where the RBI uses persuasion, advice, and requests to commercial banks to follow its policy directives.\n* **Credit Rationing:** Fixing maximum ceilings on loans and advances for specific industries.", "id": 4}, {"question": "Match the List-I with List-II:\n| List I (Credit Control Tools) | List II (Examples) |\n| :--- | :--- |\n| A. Quantitative Tool | I. Cash Reserve Ratio |\n| B. Qualitative Tool | II. Margin Requirement |\n| C. Primary Function | III. Accepting Deposits |\n| D. Secondary Function | IV. Locker Facility |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-I, B-II, C-III, D-IV"}, {"id": "2", "text": "A-III, B-I, C-IV, D-II"}, {"id": "3", "text": "A-I, B-IV, C-III, D-II"}, {"id": "4", "text": "A-IV, B-I, C-III, D-II"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **Monetary Tools:** The CRR (A-I) is a classic quantitative tool regulating total liquidity, while Margin Requirements (B-II) selectively target specific speculative lending.\n* **Commercial Banking Functions:** Accepting public deposits (C-III) forms the bedrock primary function of any bank, whereas providing safe deposit vaults or locker facilities (D-IV) is an ancillary, secondary utility function.\n* **Categorization:** Understanding the strict boundaries between central bank control mechanisms and commercial bank operational functions is crucial for financial management.\n**Related Concepts:**\n* **Statutory Liquidity Ratio (SLR):** Another major quantitative tool requiring banks to hold liquid assets.\n* **Agency Functions:** A subset of secondary functions where the bank acts on behalf of the customer (e.g., paying insurance premiums).", "id": 5}, {"question": "RBI permitted the issue of commercial papers within the framework of its guidelines. Which one of the following committee recommended these guidelines?", "options": [{"id": "1", "text": "Verma Committee"}, {"id": "2", "text": "Padmnabhan Committee"}, {"id": "3", "text": "Kalia Committee"}, {"id": "4", "text": "Vaghul Committee"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **The Vaghul Committee (1987):** The Working Group on the Money Market, chaired by N. Vaghul, was responsible for transforming the Indian short-term debt market.\n* **Commercial Paper (CP):** To allow highly rated corporate borrowers to bypass banks and raise short-term funds directly from the market at cheaper rates, the committee recommended the introduction of Commercial Papers.\n* **Implementation:** Acting on these recommendations, the RBI officially introduced Commercial Papers in India in 1990.\n**Related Concepts:**\n* **Commercial Paper Definition:** An unsecured, short-term promissory note issued by corporations, typically maturing between 7 days and 1 year.\n* **Certificates of Deposit (CDs):** Another money market instrument recommended by the Vaghul Committee, issued by banks.", "id": 6}, {"question": "The Narsimhan Committee 1991 recommended the reforms with respect to the banking sector. These reforms are also known as:", "options": [{"id": "1", "text": "First generation reforms"}, {"id": "2", "text": "Second generation reforms"}, {"id": "3", "text": "Financial sector reforms"}, {"id": "4", "text": "Third generation reforms"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **First Generation Reforms (1991):** Following the 1991 Balance of Payments crisis, the first Narasimham Committee (Committee on the Financial System) laid the groundwork for modernizing Indian banking. This era is broadly classified as the \"First generation\" of banking reforms.\n* **Key Actions:** It recommended lowering CRR/SLR, deregulating interest rates, introducing prudential norms (income recognition, asset classification), and allowing private sector banks to enter the market.\n* **Second Generation:** The subsequent Narasimham Committee II (1998) focused on structural issues like capital adequacy and bank mergers, known as the Second Generation reforms.\n**Related Concepts:**\n* **Prudential Norms:** Standards ensuring banks account for bad loans (NPAs) accurately and maintain sufficient capital.\n* **Financial Repression:** The pre-1991 state of Indian banking characterized by massive government borrowing via high SLR and administered interest rates.", "id": 7}, {"question": "Arrange the following Financial Institution in the increasing order of their date of establishment:\nA. NABARD\nB. EXIM Bank\nC. UTI\nD. SIDBI\nE. ECGC", "options": [{"id": "1", "text": "A, B, C, D, E"}, {"id": "2", "text": "C, B, A, D, E"}, {"id": "3", "text": "C, A, B, E, D"}, {"id": "4", "text": "E, C, B, A, D"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **ECGC (E):** The Export Credit Guarantee Corporation of India was established earliest in **1957**.\n* **UTI (C):** The Unit Trust of India was established in **1964**.\n* **EXIM Bank (B):** Established in **January 1982**.\n* **NABARD (A):** Established shortly after in **July 1982**.\n* **SIDBI (D):** The Small Industries Development Bank of India is the youngest here, established in **1990**.\n**Related Concepts:**\n* **Development Financial Institutions (DFIs):** Specialized institutions like NABARD and SIDBI set up to provide long-term finance to priority sectors that commercial banks initially ignored.\n* **Export Promotion:** ECGC provides export credit insurance, while EXIM provides the actual direct export finance.", "id": 8}, {"question": "Which of the following subsidiaries are fully owned by the Reserve Bank of India?\nA. National Housing Bank\nB. National Bank for Agriculture and Rural Development\nC. The Deposit Insurance and Credit Guarantee Corporation of India\nD. Bhartiya Reserve Bank Note Mudran Private Limited\nE. Securities Trading Corporation of India", "options": [{"id": "1", "text": "A, C & D Only"}, {"id": "2", "text": "A, D & E Only"}, {"id": "3", "text": "B, D & E Only"}, {"id": "4", "text": "B, C & E Only\n*(Note: Option 1 is the officially mandated key for this PYQ, relying on historical banking structure, though academically, RBI divested its 100% stake in NHB to the Government in 2019).*"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **Current Status (C, D):** **DICGC** (insuring public deposits) and **BRBNMPL** (printing currency notes) are undisputed, fully-owned subsidiaries of the RBI today.\n* **The NHB Anomaly (A):** The National Housing Bank was historically a 100% wholly-owned subsidiary of the RBI. Based on the Narasimham Committee II recommendations to separate regulatory functions from ownership, the RBI transferred its entire stake in NHB to the Government of India in 2019.\n* **Incorrect Options:** NABARD (B) was also divested to the Govt. STCI (E) is not an RBI subsidiary. Thus, to clear the exam, A, C, & D forms the best-fit historical/official answer group.\n**Related Concepts:**\n* **ReBIT & IFTAS:** The modern IT and cyber-security subsidiaries currently fully owned by the RBI.\n* **Conflict of Interest:** The macroeconomic reason RBI divested NHB/NABARD was because a central bank cannot objectively regulate an entity that it also owns.", "id": 9}, {"question": "Arrange the following banks in an increasing order of their year of formation:\nA. State Bank of India\nB. Imperial Bank of India\nC. Reserve Bank of India\nD. Regional Rural Banks\nE. Small Finance Bank", "options": [{"id": "1", "text": "E D C B A"}, {"id": "2", "text": "E D A B C"}, {"id": "3", "text": "B C A D E"}, {"id": "4", "text": "C B A D E"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Imperial Bank (B):** Formed in **1921** by amalgamating the three Presidency Banks (Bengal, Bombay, Madras).\n* **Reserve Bank of India (C):** Established in **1935** under the RBI Act, 1934.\n* **State Bank of India (A):** Formed in **1955** when the Government nationalized the Imperial Bank of India.\n* **Regional Rural Banks (D):** Established in **1975** under a special ordinance to serve rural areas.\n* **Small Finance Banks (E):** The newest category, introduced in **2015** to further financial inclusion.\n**Related Concepts:**\n* **Hilton Young Commission (1926):** The Royal Commission on Indian Currency and Finance that originally recommended the creation of the RBI.\n* **Differentiated Banks:** SFBs and Payment Banks are \"differentiated\" banks, meaning they operate in niche segments unlike universal banks.", "id": 10}, {"question": "Which of the following are the participants in T-Bills Market?\nA. Reserve Bank of India\nB. Commercial Banks\nC. Foreign Banks\nD. Provident Funds\nE. Corporates", "options": [{"id": "1", "text": "B, C, D & E Only"}, {"id": "2", "text": "A, B, C & E Only"}, {"id": "3", "text": "A, B, D & E Only"}, {"id": "4", "text": "A, B, C, D & E"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Universal Participation:** The Treasury Bill (T-Bill) market in India is highly developed and broad-based. Almost all major financial entities participate in it.\n* **Issuers & Buyers:** The **RBI (A)** actively participates by issuing them on behalf of the government and trading them during Open Market Operations. **Commercial (B)** and **Foreign Banks (C)** buy them heavily to fulfill their SLR requirements.\n* **Institutional Investors:** **Provident Funds (D)** and large **Corporates (E)** invest their short-term surplus cash in T-bills because they offer absolute safety (zero default risk).\n**Related Concepts:**\n* **T-Bill Tenures:** Currently issued in three tenures: 91-day, 182-day, and 364-day.\n* **Zero-Coupon Instruments:** T-bills do not pay regular interest; they are issued at a discount to their face value and redeemed at par.", "id": 11}, {"question": "Arrange the following steps involved in the process of IPO issue in correct order:\nA. Verification by SEBI\nB. Hiring an underwriter\nC. Registration for IPO\nD. Pricing of IPO\nE. Allotment of shares", "options": [{"id": "1", "text": "A, C, D, B, E"}, {"id": "2", "text": "A, D, C, B, E"}, {"id": "3", "text": "B, C, D, A, E"}, {"id": "4", "text": "B, C, A, D, E"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Preparation (B, C):** A company first **Hires an underwriter/merchant banker (B)** to guide the process. They prepare the Draft Red Herring Prospectus (DRHP) and file it for **Registration for the IPO (C)**.\n* **Approval (A):** The market regulator conducts a thorough **Verification by SEBI (A)** to ensure all disclosures are accurate and transparent before greenlighting the issue.\n* **Execution (D, E):** Once approved, the issue opens to the public, leading to the **Pricing of the IPO (D)** via book-building. Finally, the process concludes with the **Allotment of shares (E)** to the successful bidders.\n**Related Concepts:**\n* **Underwriting:** A guarantee given by the merchant banker to buy any shares that remain unsold during the public issue.\n* **ASBA (Application Supported by Blocked Amount):** The mandatory mechanism where IPO application money remains in the investor's bank account but is temporarily blocked until allotment.", "id": 12}, {"question": "Which of the following are the schemes promoted by NABARD?\nA. Kisan Credit Card (KCC)\nB. Capital Investment Subsidy Scheme\nC. Special Economic Zone Scheme\nD. Rural Innovation Fund\nE. Tribal Development Fund", "options": [{"id": "1", "text": "A, B, C & D Only"}, {"id": "2", "text": "B, C, D & E Only"}, {"id": "3", "text": "A, B, D & E Only"}, {"id": "4", "text": "A, C, D & E Only"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **NABARD's Domain:** The National Bank for Agriculture and Rural Development focuses exclusively on rural upliftment, agriculture, and tribal welfare.\n* **Valid Schemes (A, B, D, E):** It designed the **Kisan Credit Card (A)**, administers the **Capital Investment Subsidy Scheme (B)** for agricultural infrastructure, and manages specialized funds like the **Rural Innovation Fund (D)** and **Tribal Development Fund (E)**.\n* **The Odd One Out (C):** The \"Special Economic Zone Scheme\" is an industrial and export-promotion initiative driven by the Ministry of Commerce and Industry, completely outside NABARD's rural mandate.\n**Related Concepts:**\n* **RIDF (Rural Infrastructure Development Fund):** A massive fund maintained by NABARD, funded by commercial banks that fail to meet their priority sector lending targets.\n* **SHG-Bank Linkage Programme:** A pioneering microfinance initiative promoted by NABARD.", "id": 13}, {"question": "Which one of the following conditions is not true as per IRDA Act, 1999, for entry of private players into the insurance market?", "options": [{"id": "1", "text": "The company's sole purpose is to carry on life insurance business or general insurance business or reinsurance business."}, {"id": "2", "text": "The minimum paid up equity capital for life insurance or general insurance business is \u20b9100 crore."}, {"id": "3", "text": "The minimum paid up capital for carrying reinsurance business is \u20b9300 crore."}, {"id": "4", "text": "Insurance companies are required to invest not less than 15 percent of their funds in infrastructure and social sectors."}], "correctAnswer": "3", "explanation": "Key Concept:\n* **IRDAI Capital Norms:** The IRDA Act sets strict capital barriers to ensure only serious, financially robust players enter the insurance market to protect policyholders.\n* **Primary Insurance:** To start a Life or General insurance business, the minimum paid-up equity capital requirement is \u20b9100 crore (Statement 2 is true).\n* **Reinsurance Error:** To start an exclusive Reinsurance business, the statutory minimum paid-up capital requirement is **\u20b9200 crore**, not \u20b9300 crore. Therefore, Statement 3 is factually incorrect.\n**Related Concepts:**\n* **Reinsurance:** Insurance for insurance companies, allowing them to offload catastrophic risk portfolios to a larger global entity.\n* **Social Sector Obligations:** IRDAI mandates that insurers must underwrite a certain percentage of their business in rural and social sectors to promote financial inclusion.", "id": 14}, {"question": "Match the LIST-I with LIST-II:\n| LIST-I (Financial Inclusion Yojana) | LIST-II (Year) |\n| :--- | :--- |\n| A. PM Jan Dhan | I. 2016 |\n| B. PM Mudra | II. 2014 |\n| C. Stand Up India | III. 2017 |\n| D. Vaya Vandana | IV. 2015 |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-II, B-IV, C-I, D-III"}, {"id": "2", "text": "A-II, B-I, C-IV, D-III"}, {"id": "3", "text": "A-IV, B-I, C-III, D-II"}, {"id": "4", "text": "A-II, B-III, C-I, D-IV"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **PM Jan Dhan Yojana (A-II):** Launched in August **2014**, it is the flagship national mission for financial inclusion focusing on basic bank accounts.\n* **PM Mudra Yojana (B-IV):** Launched in **2015** to provide micro-credit (up to \u20b910 Lakhs) to non-corporate, non-farm small/micro enterprises.\n* **Stand Up India (C-I):** Launched in **2016** to promote entrepreneurship specifically among women and SC/ST communities.\n* **PM Vaya Vandana Yojana (D-III):** Launched in **2017**, this was a specialized pension scheme designed exclusively for senior citizens.\n**Related Concepts:**\n* **MUDRA Categories:** Shishu (up to \u20b950K), Kishore (\u20b950K - \u20b95 Lakhs), and Tarun (\u20b95 Lakhs - \u20b910 Lakhs).\n* **Financial Inclusion:** The overarching policy goal linking all these chronological schemes.", "id": 15}, {"question": "Which of the following are the features of Treasury Bills?\nA. Negotiable Securities\nB. Issued at par and are repaid at premium on maturity.\nC. High liquidity on account of short tenure\nD. Assured Yield\nE. High transaction cost", "options": [{"id": "1", "text": "A, B, E Only"}, {"id": "2", "text": "A, C, D Only"}, {"id": "3", "text": "B, C, D Only"}, {"id": "4", "text": "A, C, D, E Only"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Core Features (A, C, D):** T-bills are highly **Negotiable Securities (A)** that can be easily traded. They possess **High liquidity (C)** due to short tenures (<1 year) and provide an **Assured Yield (D)** because they carry a sovereign guarantee against default.\n* **The Discount Mechanism (B is False):** T-bills are zero-coupon bonds. They are never issued at par and repaid at a premium. Instead, they are *issued at a discount* to face value and *repaid at par* (e.g., buy for \u20b998, mature at \u20b9100).\n* **Cost Efficiency (E is False):** T-bills are specifically characterized by having negligible or zero transaction costs, not high costs.\n**Related Concepts:**\n* **Sovereign Risk:** The risk that a government will default on its debt. T-bills have virtually zero sovereign risk.\n* **Money Market:** The overarching short-term financial market where T-bills are traded.", "id": 16}, {"question": "Arrange the following Institutions in ascending order of their year of establishment.\nA. SEBI\nB. Reserve Bank of India\nC. State Bank of India\nD. SIDBI\nE. NABARD", "options": [{"id": "1", "text": "C, B, E, A, D"}, {"id": "2", "text": "B, C, E, A, D"}, {"id": "3", "text": "B, C, A, E, D"}, {"id": "4", "text": "E, B, C, D, A\n*(Note: Option 2 aligns perfectly with the historical chronology).*"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **RBI (B):** Established earliest in **1935** (Nationalized in 1949).\n* **SBI (C):** Created in **1955** via the nationalization of the Imperial Bank.\n* **NABARD (E):** Established in **1982** to take over the agricultural credit functions of the RBI.\n* **SEBI (A):** Constituted initially as a non-statutory body in **1988** (and given statutory powers in 1992).\n* **SIDBI (D):** The youngest of the group, established in **1990** as a subsidiary of IDBI.\n**Related Concepts:**\n* **Statutory Body:** An organization created by an Act of Parliament (like SEBI via the SEBI Act, 1992).\n* **Apex Institutions:** RBI is the apex monetary institution; NABARD is the apex rural institution; SIDBI is the apex MSME institution.", "id": 17}, {"question": "The Capital Adequacy Ratio (CAR) for Indian Public Sector banks set by RBI is:", "options": [{"id": "1", "text": "9%"}, {"id": "2", "text": "10%"}, {"id": "3", "text": "11%"}, {"id": "4", "text": "12%"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **Basel Norms Baseline:** Under the international Basel III framework, the minimum Capital Adequacy Ratio (CAR or CRAR) recommended globally is 8%.\n* **RBI's Prudent Stance:** Historically and under current baseline frameworks, the Reserve Bank of India mandates a stricter baseline. Indian banks, including Public Sector Banks, must maintain a minimum CAR of **9%** of their Risk-Weighted Assets.\n* **Capital Conservation Buffer (CCB):** Note that when the 2.5% CCB is added, the total capital required hits 11.5%, but the core strict baseline CAR tested in standard UGC frameworks is 9%.\n**Related Concepts:**\n* **Tier 1 & Tier 2 Capital:** The two components that make up the numerator of the CAR calculation (Equity vs Supplementary capital).\n* **Prompt Corrective Action (PCA):** A framework under which banks with weak CAR metrics are put under strict RBI operational restrictions.", "id": 18}, {"question": "The Securities Exchange Board of India (SEBI) regulates and supervises the securities through:\nA. Regulations\nB. Rules\nC. Guidelines\nD. Scheme\nE. Orders", "options": [{"id": "1", "text": "A, B, E Only"}, {"id": "2", "text": "B, C, D Only"}, {"id": "3", "text": "A, B, C, D, E"}, {"id": "4", "text": "A, C, D, E Only\n*(Note: Option 4 is the most legally precise answer, separating SEBI's delegated powers from the Central Government's overarching rule-making powers).*"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **SEBI's Statutory Powers:** Under the SEBI Act 1992, the board actively regulates the market by drafting stringent **Regulations (A)**, issuing operational **Guidelines/Circulars (C)**, approving Mutual Fund **Schemes (D)**, and passing quasi-judicial punitive **Orders (E)** against violators.\n* **The Legal Distinction of \"Rules\" (B):** In Indian administrative law, \"Rules\" (such as the SEBI Rules) are explicitly framed and notified by the *Central Government* (Ministry of Finance), not by SEBI itself. SEBI frames \"Regulations\" under the powers delegated to it. \n**Related Concepts:**\n* **Quasi-Legislative Power:** SEBI's ability to draft regulations.\n* **Quasi-Judicial Power:** SEBI's ability to conduct hearings and pass binding legal orders against fraudsters or insider traders.", "id": 19}, {"question": "Arrange the following Securities Exchange Board of India (SEBI) regulations in the ascending year of their enactment.\nA. ICDR regulations\nB. Intermediaries regulations\nC. Real estate investment Trusts regulations\nD. Buy - Back of Securities by listed companies regulations\nE. Listing Obligations and Disclosures Requirements Regulations", "options": [{"id": "1", "text": "D, B, A, C, E"}, {"id": "2", "text": "D, A, E, C, B"}, {"id": "3", "text": "A, C, D, E, B"}, {"id": "4", "text": "B, A, E, D, C"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **Buy-Back Regulations (D):** Initially enacted in **1998** (later overhauled in 2018).\n* **Intermediaries Regulations (B):** Enacted in **2008** to streamline the registration of market participants.\n* **ICDR Regulations (A):** The Issue of Capital and Disclosure Requirements was first formulated in **2009** (replacing older DIP guidelines).\n* **REITs Regulations (C):** Enacted in **2014** to regulate the new Real Estate Investment Trusts.\n* **LODR Regulations (E):** The Listing Obligations and Disclosure Requirements were enacted in **2015**.\n**Related Concepts:**\n* **ICDR:** The master regulation governing how companies raise public money via IPOs and FPOs.\n* **LODR:** The master regulation dictating what listed companies must transparently report to the stock exchanges (quarterly results, board changes).", "id": 20}, {"question": "Which one of the following is the developmental role of RBI?", "options": [{"id": "1", "text": "Formulates, implements and monitors the monetary policy"}, {"id": "2", "text": "Prescribes broad parameters of banking operations"}, {"id": "3", "text": "Issues, exchanges and destroys currency notes"}, {"id": "4", "text": "Performs a wide range of promotional functions to support national objectives"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Categorizing RBI Functions:** The RBI performs three broad types of functions: Core Central Banking, Regulatory/Supervisory, and Developmental.\n* **Developmental Role:** In a developing economy like India, the RBI goes beyond mere regulation. It performs \"promotional functions to support national objectives\" (Option 4), such as driving financial inclusion, establishing institutions like NABARD/SIDBI, and promoting digital payment infrastructure (like UPI/NPCI).\n* **Core vs Regulatory:** Option 1 and 3 are traditional/core central banking functions. Option 2 is a strict supervisory/regulatory function.\n**Related Concepts:**\n* **Priority Sector Lending (PSL):** A key developmental mandate forced upon banks by the RBI to ensure credit reaches agriculture and MSMEs.\n* **Financial Literacy:** RBI's developmental initiatives to educate the public about banking products and digital fraud prevention.", "id": 21}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

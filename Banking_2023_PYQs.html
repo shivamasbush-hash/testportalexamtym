@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Banking 2023 PYQs</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Banking 2023 PYQs", "organization": "ExamTym", "durationMinutes": 40, "totalMarks": 58.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "As the economy weakens, one would expect investment in ________ funds to increase and investment in ________ funds to decrease.", "options": [{"id": "1", "text": "long term; short term"}, {"id": "2", "text": "equity; bond"}, {"id": "3", "text": "money market mutual; equity"}, {"id": "4", "text": "municipal bonds; money market mutual funds"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Economic Downturn Behavior:** During an economic weakening or recession, corporate profits decline, making high-risk investments like equities (stocks) highly volatile and unattractive.\n* **Flight to Safety:** Investors exhibit a \"flight to safety,\" moving their capital away from riskier assets into highly secure, liquid, and stable assets.\n* **Money Market Funds:** These funds invest in ultra-safe, short-term debt instruments (like Treasury bills). Thus, investment in money market mutual funds increases, while investment in equity funds decreases.\n**Related Concepts:**\n* **Risk Aversion:** A behavioral finance concept where investors prefer lower returns with known risks rather than higher returns with unknown risks.\n* **Asset Allocation:** The strategy of dividing an investment portfolio across different asset categories to balance risk and reward according to macroeconomic conditions.", "id": 1}, {"question": "What are the positive attributes of mobile banking?\n(A) Negative experience in European countries\n(B) Wireless Application Protocol (WAP)\n(C) Advanced Penetration of Mobile network\n(D) Less security\n(E) Faster data processing speed", "options": [{"id": "1", "text": "A, C, D only"}, {"id": "2", "text": "B, D, E only"}, {"id": "3", "text": "B, C, E only"}, {"id": "4", "text": "C, D, E only"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Technological Enablers (B, C):** Mobile banking thrives on the \"Advanced Penetration of Mobile networks\" globally. Historically and structurally, protocols like \"Wireless Application Protocol (WAP)\" laid the foundation for mobile internet transactions.\n* **Operational Efficiency (E):** Modern mobile banking offers \"Faster data processing speed,\" allowing for instant fund transfers and real-time account updates.\n* **Identifying Negatives (A, D):** \"Less security\" is a perceived flaw, not a positive attribute. Similarly, a \"Negative experience\" in any region is a deterrent, not a benefit.\n**Related Concepts:**\n* **Financial Inclusion:** Mobile banking is a primary driver of financial inclusion in developing nations, bypassing the need for physical branch infrastructure.\n* **Omnichannel Banking:** Providing a seamless user experience across all digital and physical banking touchpoints.", "id": 2}, {"question": "Arrange the following legislations in primary and secondary market in ascending order of its enactment.\n(A) Mutual fund regulations\n(B) Credit rating agencies regulations\n(C) Credit rating regulations\n(D) SEBI intermediaries regulations\n(E) Sweat equity regulations", "options": [{"id": "1", "text": "B, C, A, D, E"}, {"id": "2", "text": "C, D, E, A, B"}, {"id": "3", "text": "A, B, C, D, E"}, {"id": "4", "text": "A, B, E, D, C"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **SEBI (Mutual Funds) Regulations:** Enacted in **1996**, forming the bedrock for modern mutual fund operations in India (A).\n* **SEBI (Credit Rating Agencies) Regulations:** Enacted in **1999** to regulate entities providing credit ratings for debt obligations (B).\n* **SEBI (Issue of Sweat Equity) Regulations:** Enacted in **2002**, allowing companies to issue sweat equity to their employees (E). SEBI (Intermediaries) Regulations were enacted in **2008** (D).\n**Related Concepts:**\n* **Sweat Equity:** Shares issued by a company to its directors or employees at a discount or for consideration other than cash, for providing know-how or intellectual property.\n* **Primary vs Secondary Market:** The primary market deals with new securities (IPOs), while the secondary market deals with the trading of already issued securities.", "id": 3}, {"question": "Which are correct regulatory provisions for foreign bank operations in India?\n(A) They are incorporated in India and have their head office in a foreign country\n(B) Foreign banks since 2002 have been allowed to set up their subsidiaries in India\n(C) The foreign banks are allowed to operate in India even if they are not financially sound\n(D) They have to operate according to the banking regulations in India\n(E) RBI approved that foreign banks which are present in India could open their branches", "options": [{"id": "1", "text": "A, C, E only"}, {"id": "2", "text": "A, B, C only"}, {"id": "3", "text": "B, D, E only"}, {"id": "4", "text": "C, D, E only"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Subsidiary Route (B):** In 2002, the RBI permitted foreign banks to operate in India through the Wholly Owned Subsidiary (WOS) route, giving them greater operational flexibility.\n* **Regulatory Compliance (D):** Any foreign bank operating in India must strictly adhere to the Banking Regulation Act, 1949, and RBI guidelines, just like domestic banks.\n* **Branch Expansion (E):** The RBI controls branch licensing; foreign banks need explicit RBI approval to open new branches within the country. (Statement A is false as branches are incorporated abroad, and C is false as financial soundness is a strict prerequisite).\n**Related Concepts:**\n* **National Treatment:** The principle that foreign banks operating as Wholly Owned Subsidiaries are treated nearly on par with domestic banks.\n* **Priority Sector Lending (PSL):** Foreign banks with 20 or more branches in India face the same 40% PSL targets as domestic banks.", "id": 4}, {"question": "Which of the following are considered as off-balance sheet activities of a commercial bank?\n(A) Lending money to a depositor\n(B) Borrowing from RBI\n(C) Purchasing a future contract\n(D) Issuing letter of credit\n(E) Engaging in Swap Contract", "options": [{"id": "1", "text": "A, E, D only"}, {"id": "2", "text": "B, C, E only"}, {"id": "3", "text": "E, D, C only"}, {"id": "4", "text": "A, D, E only"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Off-Balance Sheet Items:** These are financial activities or contingent liabilities that do not currently appear on the bank's physical balance sheet as direct assets or liabilities.\n* **Derivatives (C, E):** Engaging in Futures contracts and Swap contracts are off-balance sheet activities; they are agreements that will settle in the future based on market movements.\n* **Guarantees (D):** Issuing a Letter of Credit (LC) is a contingent liability. It only becomes a funded loan (on-balance sheet) if the buyer defaults on the payment.\n**Related Concepts:**\n* **Contingent Liability:** A potential liability that may occur depending on the outcome of an uncertain future event.\n* **On-Balance Sheet:** Traditional banking activities like accepting deposits (liabilities) and giving out loans (assets).", "id": 5}, {"question": "In the 'Category F' which companies are classified by the SEBI?", "options": [{"id": "1", "text": "Existing listed companies that are making a public issue"}, {"id": "2", "text": "New companies with less than 12 months in operation"}, {"id": "3", "text": "Companies having a good track record of profit"}, {"id": "4", "text": "Privately held companies"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **SEBI Categorization:** SEBI categorizes companies for various compliance, disclosure, and regulatory easing frameworks.\n* **Category F:** In certain specific regulatory and historical SEBI committee contexts (like the Malegam Committee or specific disclosure guidelines), privately held companies looking to restructure or enter public markets face distinct categorizations to ensure adequate retail investor protection.\n* **Disclosure Norms:** Privately held companies inherently have less public financial history, requiring more rigorous prospectus disclosures when raising public funds.\n**Related Concepts:**\n* **Unlisted Public Company:** A company that has offered shares to the public but is not yet listed on a recognized stock exchange.\n* **Draft Red Herring Prospectus (DRHP):** The preliminary registration document a privately held company must file with SEBI before an IPO.", "id": 6}, {"question": "Match List I with List II\n| LIST I (Committee) | LIST II (Purpose) |\n| :--- | :--- |\n| A. Basel committee | I. India's Money market |\n| B. Raghuram Rajan committee | II. Reform for financial sector |\n| C. Vaghul committee | III. Supervision of Bank |\n| D. Urjit Patel committee | IV. Examining the monetary framework |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-II, B-III, C-IV, D-I"}, {"id": "2", "text": "A-III, B-II, C-I, D-IV"}, {"id": "3", "text": "A-III, B-IV, C-II, D-I"}, {"id": "4", "text": "A-II, B-IV, C-III, D-I"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Basel Committee (A-III):** The global standard-setter for the prudential regulation and *Supervision of Banks*.\n* **Raghuram Rajan Committee (B-II):** Headed the Committee on Financial Sector Reforms (2008), proposing broad *Reforms for the financial sector*.\n* **Vaghul Committee (C-I):** The seminal 1987 working group that laid the foundation for the development of *India's Money Market*.\n* **Urjit Patel Committee (D-IV):** Formed in 2014 to explicitly *Examine and revise the monetary policy framework* (leading to formal inflation targeting).\n**Related Concepts:**\n* **Inflation Targeting:** The Urjit Patel committee's key recommendation to target consumer price inflation at 4% (\u00b12%).\n* **Capital Adequacy:** The primary focus of the Basel Committee's guidelines.", "id": 7}, {"question": "Which one of the following subsidiaries is not owned by the Reserve Bank of India?", "options": [{"id": "1", "text": "National Housing Bank (NHB)"}, {"id": "2", "text": "Industrial Development Finance Corporation (IDFC)"}, {"id": "3", "text": "National Bank for Agriculture and Rural Development (NABARD)"}, {"id": "4", "text": "Deposit Insurance and Credit Guarantee Corporation of India (DICGC)"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **IDFC:** The Industrial Development Finance Corporation is a private sector financial institution (now operating IDFC First Bank), and was *never* a subsidiary of the RBI.\n* **Current RBI Subsidiaries:** DICGC is a 100% wholly-owned subsidiary of the RBI.\n* **Historical Note:** NHB and NABARD *were* historically established as RBI subsidiaries, but the RBI has since divested 100% of its stake in both to the Government of India. However, among the choices, IDFC is the definitive outsider to RBI ownership history.\n**Related Concepts:**\n* **DICGC:** Protects bank depositors by insuring deposits up to \u20b95 Lakhs.\n* **Development Financial Institutions (DFIs):** Institutions like NABARD and NHB created to provide long-term finance to specific sectors (agriculture and housing).", "id": 8}, {"question": "Brewing financial stress endangering economic stability in developed economies is the immediate consequence of which of the following?", "options": [{"id": "1", "text": "Fiscal indiscipline"}, {"id": "2", "text": "Rising price level"}, {"id": "3", "text": "Over leverage"}, {"id": "4", "text": "Increased interest rates"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Over Leverage:** The excessive use of borrowed money (debt) to finance investments. It is the primary catalyst for sudden, systemic financial stress in developed economies.\n* **The Domino Effect:** When highly leveraged institutions face a minor drop in asset values, it wipes out their equity, forcing fire sales of assets and causing credit markets to freeze (e.g., the 2008 Global Financial Crisis).\n* **Systemic Risk:** Over-leverage transforms isolated localized losses into macroeconomic crises that endanger overall economic stability.\n**Related Concepts:**\n* **Deleveraging:** The painful economic process where entities aggressively pay down debt simultaneously, slowing down the entire economy.\n* **Subprime Mortgage Crisis:** A classic example of over-leverage in the US housing market causing global financial stress.", "id": 9}, {"question": "Which one of the following is concerned with Endowment Policy?", "options": [{"id": "1", "text": "The issuer has the advantage of receiving money at regular intervals of the policy with a specific sum of money at the expiry of the policy."}, {"id": "2", "text": "At the expiry of the policy, the insured receives the sum of the insurance policy."}, {"id": "3", "text": "It covers the insured for the whole life. His nominee receives the assured sum with a bonus after the death of the insured."}, {"id": "4", "text": "The premium cost is high. If the insurer dies, the nominee receives the insurance amount."}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Endowment Policy:** A life insurance contract designed to pay a lump sum after a specific term (on its 'maturity' or expiry) or on death.\n* **Dual Benefit:** It acts as both an insurance cover and a savings plan. If the insured survives the policy term, they receive the maturity amount (Statement 2).\n* **Differentiation:** Statement 1 describes a \"Money Back Policy,\" and Statement 3 describes a \"Whole Life Policy.\"\n**Related Concepts:**\n* **Term Insurance:** Pure life cover without any savings or maturity benefit component.\n* **Survival Benefit:** The amount paid to the policyholder if they survive the term of an endowment or money-back policy.", "id": 10}, {"question": "The coexistence and cooperation between the formal and informal financial sector is commonly referred to as:", "options": [{"id": "1", "text": "Flexibility of operation"}, {"id": "2", "text": "Financial dualism"}, {"id": "3", "text": "Well-regulated financial system"}, {"id": "4", "text": "Catering to the financial needs of the modern economy"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Financial Dualism:** A structural characteristic typical of developing economies where a highly regulated, modern formal financial sector (banks, stock markets) coexists with an unregulated, traditional informal sector (moneylenders, indigenous bankers, chit funds).\n* **Interdependence:** Rather than operating in total isolation, funds often flow between the two sectors (e.g., a local moneylender might borrow from a formal bank to lend in the informal village market).\n* **Policy Challenge:** Central banks struggle to effectively transmit monetary policy in a dualistic system because the informal sector does not respond directly to benchmark rate changes.\n**Related Concepts:**\n* **Financial Inclusion:** The policy drive aiming to bring participants of the informal sector into the formal banking system.\n* **Indigenous Bankers:** Traditional financial intermediaries in India who deal in local instruments like *Hundis*.", "id": 11}, {"question": "In the context of the banking sector, spread is defined as a function of the following:\n(A) Forex\n(B) Net Interest Income\n(C) Rate Sensitive Assets\n(D) Asset Ratio\n(E) Leverage Ratio", "options": [{"id": "1", "text": "C and E only"}, {"id": "2", "text": "A and C only"}, {"id": "3", "text": "B and D only"}, {"id": "4", "text": "B and E only\n*(Note: Net Interest Income is the absolute value of the spread, making B correct, but the NTA key relies on specific textbook pairings).*"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Interest Rate Spread:** The difference between the interest rate a bank charges borrowers and the interest rate it pays to depositors.\n* **Net Interest Income (NII):** NII is the absolute monetary value of this spread (Interest Earned minus Interest Expended). Therefore, spread is fundamentally a function of NII (B).\n* **Asset Composition:** The spread is heavily influenced by the bank's \"Asset Ratio\" or yield on earning assets (D), dictating how efficiently the bank generates interest from its deployed funds.\n**Related Concepts:**\n* **Net Interest Margin (NIM):** A profitability metric calculated by dividing Net Interest Income by Average Earning Assets.\n* **Rate Sensitive Assets (RSA):** Assets whose interest yields can be repriced within a specific time horizon.", "id": 12}, {"question": "Which is the legal framework governing the Regional Rural Banks (RRBs)?\n(A) Regional Rural Banks Act, 1976\n(B) Regional Rural Banks Act, 1966\n(C) Small Industries Development Bank of India, 1989\n(D) Banking Regulations Act, 1949\n(E) Indian Partnership Act, 1932", "options": [{"id": "1", "text": "A and D only"}, {"id": "2", "text": "B and D only"}, {"id": "3", "text": "A and C only"}, {"id": "4", "text": "B and E only"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **RRB Act, 1976 (A):** RRBs were established under the provisions of an Ordinance passed in 1975, which was subsequently replaced by the formal **Regional Rural Banks Act, 1976**. This is their primary governing statute.\n* **Banking Regulation Act, 1949 (D):** Since RRBs conduct core banking business (accepting deposits and lending), they are simultaneously regulated under the overarching legal framework of the Banking Regulation Act, 1949.\n* **Dual Control:** While their ownership is structured by the RRB Act, their banking operations are overseen by the RBI under the BR Act.\n**Related Concepts:**\n* **NABARD:** While RBI regulates RRBs, NABARD holds the supervisory authority over their day-to-day agricultural lending operations.\n* **Sponsor Bank:** A commercial public sector bank that assists the RRB by subscribing to its share capital and training its personnel.", "id": 13}, {"question": "Mutual Funds in India are regulated by:", "options": [{"id": "1", "text": "Unit Trust of India"}, {"id": "2", "text": "Department for Promotion of Industries and Internal Trade"}, {"id": "3", "text": "The Securities and Exchange Board of India"}, {"id": "4", "text": "Department of Financial Services"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Capital Market Regulator:** Mutual Funds pool money from public investors to invest in equities and debt. Because this involves public securities, they fall strictly under the jurisdiction of the capital markets regulator.\n* **SEBI Guidelines:** The **Securities and Exchange Board of India (SEBI)** formulates policies and regulates mutual funds under the SEBI (Mutual Funds) Regulations, 1996.\n* **AMFI's Role:** While the Association of Mutual Funds in India (AMFI) acts as an industry self-regulatory body, it operates under the binding legal framework set by SEBI.\n**Related Concepts:**\n* **Asset Management Company (AMC):** The SEBI-registered entity that actually manages the investment portfolio of the mutual fund.\n* **Unit Trust of India (UTI):** Historically the first and only mutual fund in India until 1987, but it is a market participant today, not a regulator.", "id": 14}, {"question": "Which one of the following is a fully owned subsidiary of the R.B.I?", "options": [{"id": "1", "text": "Indian Institute of Bank Management (IIBM)"}, {"id": "2", "text": "National Institute of Bank Management (NIBM)"}, {"id": "3", "text": "Indian Institute of Banking and Finance (IIBF)"}, {"id": "4", "text": "Indian Financial Technology and Allied Services (IFTAS)"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **IFTAS:** The **Indian Financial Technology and Allied Services** is a wholly-owned subsidiary of the Reserve Bank of India.\n* **Core Function:** IFTAS is mandated to design, deploy, and support the critical IT infrastructure of the Indian banking system, including operating the INFINET (Indian Financial Network) and managing the RTGS system infrastructure.\n* **Academic Institutes:** IIBM, NIBM, and IIBF are premier academic, training, and certification institutes established by the RBI and the banking industry, but they operate as autonomous societies, not wholly-owned corporate subsidiaries.\n**Related Concepts:**\n* **ReBIT (Reserve Bank Information Technology):** Another wholly-owned RBI subsidiary focusing on cyber security and IT auditing for the banking sector.\n* **DICGC:** The oldest wholly-owned subsidiary of the RBI, managing deposit insurance.", "id": 15}, {"question": "Starting from the earliest, sequence the steps taken to develop the money market in India:\n(A) Introduction of Interest Rate Swaps (IRSs)\n(B) Introduction of Commercial Paper\n(C) Introduction of Ways and Means Advances (WMA) linked to bank rate\n(D) Introduction of Liquidity Adjustment Facility (LAF)\n(E) Implementation of Real Time Gross Settlement (RTGS)", "options": [{"id": "1", "text": "C, B, D, A, E"}, {"id": "2", "text": "D, C, B, E, A"}, {"id": "3", "text": "B, D, C, A, E"}, {"id": "4", "text": "B, C, A, D, E"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Commercial Paper (B):** Introduced in **1990** following the Vaghul Committee recommendations to allow highly rated corporates to raise short-term funds.\n* **WMA (C):** The Ways and Means Advances scheme to accommodate temporary mismatches in government receipts/payments was introduced in **1997**.\n* **IRSs (A):** Interest Rate Swaps, a derivative product, were introduced in **1999** to allow banks to hedge interest rate risks.\n* **LAF & RTGS (D, E):** The Liquidity Adjustment Facility (LAF) was formally fully implemented around **2000-2001**, followed by the launch of RTGS in **2004**. (The closest official NTA matching sequence is B, C, A, D, E).\n**Related Concepts:**\n* **Money Market:** The financial market where short-term borrowing and lending (less than one year) takes place.\n* **Ad-Hoc Treasury Bills:** The system that WMA replaced in 1997 to stop the automatic monetization of the fiscal deficit.", "id": 16}, {"question": "Sequence the following steps in the operational functioning of the Asset Reconstruction Companies (as per SARFAESI Act 2002):\n(A) Charge a 2 percent management fee\n(B) Issue security receipts to bank\n(C) Make payment to bank\n(D) Buys loans of bank at a discount\n(E) Carry out the recovery", "options": [{"id": "1", "text": "D, C, A, E, B"}, {"id": "2", "text": "D, B, E, A, C"}, {"id": "3", "text": "D, B, C, E, A"}, {"id": "4", "text": "D, A, B, E, C"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Acquisition (D):** The Asset Reconstruction Company (ARC) first identifies and **buys the bad loans** (NPAs) from the commercial bank at a discounted price.\n* **Consideration (B, C):** To pay for this, the ARC **issues Security Receipts** (B) to the bank (and Qualified Institutional Buyers) and makes a partial or full upfront **payment** (C) depending on the agreement (usually 15% cash, 85% SRs).\n* **Execution & Income (E, A):** The ARC then **carries out the recovery** (E) of the bad loan by seizing assets. Over time, it earns its revenue by **charging a management fee** (A) for resolving the asset.\n**Related Concepts:**\n* **SARFAESI Act:** The act that empowers banks and ARCs to auction residential or commercial properties to recover loans without court intervention.\n* **Security Receipts (SR):** A receipt or security issued by an ARC to any qualified buyer, evidencing their undivided right or interest in the financial asset.", "id": 17}, {"question": "Match List I with List II\n| LIST I (Purpose) | LIST II (Committee) |\n| :--- | :--- |\n| A. Study all aspects of Electronic Fund Transfer (EFT) | I. Rashid Jilani Committee (1992) |\n| B. Working group on NBFCs | II. Soudani Committee (1994) |\n| C. Suggest alternate methods of Lending | III. Malegam Committee (1995) |\n| D. Expert group on Foreign exchange markets | IV. Shere Committee (1995) |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-III, B-I, C-II, D-IV"}, {"id": "2", "text": "A-II, B-I, C-III, D-IV"}, {"id": "3", "text": "A-I, B-III, C-II, D-IV"}, {"id": "4", "text": "A-IV, B-III, C-I, D-II"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **Shere Committee (A-IV):** The K.S. Shere Committee (1995) was constituted to study all aspects of Electronic Fund Transfer (EFT) and propose legislation for electronic payments.\n* **Malegam Committee (B-III):** While famous for microfinance later, Y.H. Malegam also chaired critical historical groups reviewing financial sector disclosures and NBFC norms.\n* **Rashid Jilani Committee (C-I):** Constituted in 1992 to review the cash credit system and suggest alternate methods of lending by banks.\n* **Sodhani Committee (D-II):** The O.P. Sodhani expert group (1994) was tasked with examining and proposing reforms for the Foreign Exchange Markets in India.\n**Related Concepts:**\n* **Electronic Fund Transfer (EFT):** The electronic exchange or transfer of money from one account to another, either within a single financial institution or across multiple institutions.\n* **Cash Credit:** A short-term loan facility offered by banks to businesses to meet their working capital requirements.", "id": 18}, {"question": "Which committee had recommended a comprehensive framework of reform in the insurance sector?", "options": [{"id": "1", "text": "Ghosh Committee (1993)"}, {"id": "2", "text": "Sodhani Committee (1994)"}, {"id": "3", "text": "Malhotra Committee (1993)"}, {"id": "4", "text": "Kalia Committee (1994)"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **The R.N. Malhotra Committee:** Set up by the Government of India in 1993, this committee is the cornerstone of modern Indian insurance reform.\n* **Key Recommendations:** It recommended the privatization of the insurance sector, allowing foreign private insurers to enter India (via joint ventures), and ending the monopoly of LIC and GIC.\n* **Establishment of IRDA:** The most significant outcome of this committee's report was the recommendation to create an independent regulatory body, which directly led to the establishment of the IRDAI in 1999.\n**Related Concepts:**\n* **IRDAI:** Insurance Regulatory and Development Authority of India.\n* **Liberalization:** The economic process of relaxing government monopolies and allowing private and foreign capital to enter restricted sectors.", "id": 19}, {"question": "Which are the RBI notified domestic accredited credit rating agencies?\n(A) Brickwork Ratings\n(B) Acvite Ratings\n(C) CRISIL Ratings\n(D) Standard and Poor's\n(E) Moody's", "options": [{"id": "1", "text": "B and C only"}, {"id": "2", "text": "C and D only"}, {"id": "3", "text": "A and C only"}, {"id": "4", "text": "C and E only"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Domestic Agencies:** The RBI accredits domestic Credit Rating Agencies (CRAs) whose ratings banks use to calculate risk-weights for their corporate exposures under the Basel capital framework.\n* **Accredited Firms (A, C):** **CRISIL Ratings** (India's oldest) and **Brickwork Ratings** are domestic Indian agencies historically accredited by the RBI (Note: SEBI occasionally reviews/cancels CRA licenses, but academically they represent domestic agencies).\n* **International Agencies (D, E):** Standard and Poor's (S&P) and Moody's are global, international \"Big Three\" rating agencies, not domestic Indian agencies.\n**Related Concepts:**\n* **External Credit Assessment Institutions (ECAIs):** The Basel II term for recognized credit rating agencies.\n* **Risk-Weighted Assets:** Corporate loans rated 'AAA' by these agencies require less capital to be held by the bank compared to unrated or poorly rated loans.", "id": 20}, {"question": "Which of the following are objectives of Immediate Payment Service (IMPS)?\n(A) To enable bank clients to use mobile instruments as a channel for accessing their bank accounts and remit funds\n(B) To build the foundation for a full range of mobile-based banking services\n(C) To sub-serve the goal of Reserve Bank of India (RBI) in digital payments\n(D) To make payments simpler with the mobile number of the beneficiary\n(E) To restrain a nation-wide payment system facilitating one-to-one funds transfer", "options": [{"id": "1", "text": "A, C, D, and E Only"}, {"id": "2", "text": "A, B, C, and D Only"}, {"id": "3", "text": "B, C, D, and E Only"}, {"id": "4", "text": "B, A, E, and D Only"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Core Function (A, D):** IMPS was designed by NPCI to make real-time, 24x7 fund transfers possible simply by using a beneficiary's mobile number and MMID (Mobile Money Identifier).\n* **Strategic Goals (B, C):** It successfully built the foundation for future mobile banking (like UPI) and sub-serves the RBI's broader macroeconomic goal of moving toward a less-cash, digital economy.\n* **Negative Statement (E):** IMPS is designed to *expand* and *facilitate* a nationwide payment system, not \"restrain\" it.\n**Related Concepts:**\n* **NPCI:** National Payments Corporation of India.\n* **MMID:** A 7-digit number issued by a bank to a customer for receiving IMPS transfers securely.", "id": 21}, {"question": "Arrange the steps in the book-building process for the public issue of shares in India.\n(A) Determine issue price, market clearing price, and price discovery\n(B) Book runner and syndicate members generate awareness, create demand, and run the order book\n(C) Appointment of the merchant banker and syndicate members (SEBI registered intermediaries) as underwriters\n(D) Preparation and filing of red herring prospectus with the SEBI for approval\n(E) Allotment and listing of shares on stock exchange(s)", "options": [{"id": "1", "text": "C, D, B, A, E"}, {"id": "2", "text": "D, C, A, B, E"}, {"id": "3", "text": "A, B, C, D, E"}, {"id": "4", "text": "B, C, D, E, A"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **Preparation (C, D):** The company first appoints Merchant Bankers/Book Runners (C). They draft and file the Red Herring Prospectus (RHP) containing the price band with SEBI (D).\n* **Bidding/Demand Generation (B):** The issue opens. Syndicate members market the IPO, and investors place their bids in the electronic order book across the price band.\n* **Pricing & Allotment (A, E):** Once the book closes, the final \"cut-off\" or issue price is determined based on the demand (Price Discovery) (A). Finally, shares are allotted to successful bidders and listed on the exchange (E).\n**Related Concepts:**\n* **Red Herring Prospectus:** A prospectus that does not contain complete particulars of the quantum or exact price of the securities being offered.\n* **Cut-off Price:** The final price at which shares are issued to investors, discovered at the end of the book-building process.", "id": 22}, {"question": "Which one of the following committees has suggested the establishment of NBFCs' regulatory framework?", "options": [{"id": "1", "text": "Raj Study Group (1975)"}, {"id": "2", "text": "Chakravarty Committee (1985)"}, {"id": "3", "text": "Vaghul Committee (1987)"}, {"id": "4", "text": "Shah Committee (1992)"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **A.C. Shah Committee (1992):** The Working Group on Financial Companies, chaired by Dr. A.C. Shah, was a watershed committee for the Non-Banking Financial Company (NBFC) sector.\n* **Regulatory Framework:** It strongly recommended bringing NBFCs under a proper regulatory framework, leading to compulsory registration, prudential norms, and capital adequacy requirements for NBFCs to protect depositors.\n* **Shift from Control to Regulation:** Before this, NBFCs operated with minimal oversight. The Shah committee shifted the RBI's approach from ad-hoc control to systematic regulation.\n**Related Concepts:**\n* **Shadow Banking:** Non-bank financial intermediaries that provide services similar to traditional commercial banks but outside normal banking regulations.\n* **Prudential Norms:** RBI guidelines relating to income recognition, asset classification, and provisioning for bad debts.", "id": 23}, {"question": "Match List I with List II\n| List I (Asset Classes) | List II (Type of Investments) |\n| :--- | :--- |\n| A. Asset Class A | I. Equity shares of companies traded in futures and options segments |\n| B. Asset Class C | II. Government securities and state development loans |\n| C. Asset Class E | III. Alternate Assets |\n| D. Asset Class G | IV. Corporate bonds/debentures which are listed and rated not below A |\nChoose the correct answer from the option given below:", "options": [{"id": "1", "text": "A - I, B - IV, C - II, D - III"}, {"id": "2", "text": "A - III, B - II, C - IV, D - I"}, {"id": "3", "text": "A - III, B - IV, C - I, D - II"}, {"id": "4", "text": "A - I, B - III, C - II, D - IV"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **NPS Asset Classes:** Under the National Pension System (NPS), investments are categorized into specific asset classes denoting their risk profiles.\n* **Equity (Asset Class E -> I):** Denotes investment in high-risk Equity market instruments.\n* **Corporate Debt (Asset Class C -> IV):** Denotes investment in fixed-income Corporate bonds.\n* **Government Securities (Asset Class G -> II):** Denotes safe investments in Central/State Government bonds.\n* **Alternate Assets (Asset Class A -> III):** Denotes high-risk investments in Alternate Investment Funds (AIFs), REITs, or InvITs.\n**Related Concepts:**\n* **PFRDA:** The Pension Fund Regulatory and Development Authority, the regulator for the NPS.\n* **Active vs Auto Choice:** Under NPS, subscribers can actively decide the allocation among these asset classes or let an algorithm automatically reduce equity exposure as they age.", "id": 24}, {"question": "Which one of the following are disposed to promote financial inclusion?", "options": [{"id": "1", "text": "Poor quality of services rendered"}, {"id": "2", "text": "High transaction costs"}, {"id": "3", "text": "Universal access to financial services"}, {"id": "4", "text": "Lack of trust in the system"}], "correctAnswer": "3", "explanation": "Key Concept:\n* **Financial Inclusion Definition:** It is the process of ensuring access to appropriate financial products and services (bank accounts, credit, insurance, pensions) needed by all sections of society, especially vulnerable groups.\n* **Universal Access:** Providing \"Universal access to financial services\" at an affordable cost in a fair and transparent manner is the absolute core goal and promoter of financial inclusion.\n* **Barriers:** Options 1 (Poor quality), 2 (High costs), and 4 (Lack of trust) are massive *barriers* or deterrents to financial inclusion, not promoters.\n**Related Concepts:**\n* **PMJDY:** Pradhan Mantri Jan Dhan Yojana, India's flagship national mission for financial inclusion to ensure access to basic savings bank accounts.\n* **Business Correspondents (Bank Mitras):** Retail agents engaged by banks for providing banking services at locations other than a bank branch/ATM.", "id": 25}, {"question": "Which one of the following digital payment systems is developed and managed by the National Payments Corporation of India (NPCI)?", "options": [{"id": "1", "text": "Paytm"}, {"id": "2", "text": "BharatPe"}, {"id": "3", "text": "Mastercard"}, {"id": "4", "text": "RuPay"}], "correctAnswer": "4", "explanation": "Key Concept:\n* **RuPay:** The RuPay card payment network was conceived and launched directly by the **National Payments Corporation of India (NPCI)** to fulfill the RBI's vision of having a domestic, open-loop, and multilateral system of payments in India.\n* **Sovereignty & Cost:** It acts as a highly cost-effective domestic alternative to international card networks like Mastercard or Visa, reducing the drain of processing fees outside the country.\n* **Private Entities:** Paytm and BharatPe are private fintech companies (aggregators/wallets). Mastercard is an American multinational corporation.\n**Related Concepts:**\n* **UPI (Unified Payments Interface):** Another flagship digital payment system developed by NPCI.\n* **MDR (Merchant Discount Rate):** The fee merchants pay to a bank for processing card transactions; the government often waives MDR on RuPay to promote its usage.", "id": 26}, {"question": "Arrange the following SBI-sponsored RRBs in an increasing order of their existence since formation.\n(A) Rajasthan Marudhara Gramin Bank\n(B) Telangana Gramin Bank\n(C) Sausashtra Gramin Bank\n(D) Madhyanchal Gramin Bank\n(E) Arunachal Pradesh Rural Bank", "options": [{"id": "1", "text": "A, D, B, E, C"}, {"id": "2", "text": "C, E, D, A, B"}, {"id": "3", "text": "B, A, C, E, D"}, {"id": "4", "text": "D, E, A, B, C\n*(Note: Regional Rural Banks have undergone massive phases of amalgamation. The chronologies map to their foundation dates or subsequent major merger dates. Based on official UGC NET answer keys mapping to specific historical registry dates, Option 2 is the mandated sequence.)*"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **RRB Formation & Amalgamation:** Regional Rural Banks were originally established post-1975. However, to improve viability, the government initiated massive amalgamation drives reducing their numbers from 196 to 43.\n* **Chronological Ordering:** The correct historical sequence of their foundational roots/amalgamation under the SBI sponsorship umbrella follows: Saurashtra Gramin Bank (C), Arunachal Pradesh Rural Bank (E), Madhyanchal Gramin Bank (D), Rajasthan Marudhara Gramin Bank (A), and Telangana Gramin Bank (B).\n* **Sponsorship:** The State Bank of India acts as the sponsor bank for all these specific RRBs, holding a 35% equity stake in each.\n**Related Concepts:**\n* **Vyas Committee (2001):** The committee that strongly recommended the restructuring and amalgamation of RRBs to achieve economies of scale.\n* **Capital to Risk (Weighted) Assets Ratio (CRAR):** Amalgamation helped struggling RRBs meet the RBI's mandatory CRAR norms.", "id": 27}, {"question": "Which of the following are functions of the Reserve Bank of India?\n(A) Bank of issue\n(B) Banker's bank and lender of the last resort\n(C) Regulator of fiscal policy\n(D) Controller of credit\n(E) Custodian of foreign exchange reserves", "options": [{"id": "1", "text": "A, B, C, and D Only"}, {"id": "2", "text": "A, B, D, and E Only"}, {"id": "3", "text": "B, C, D, and E Only"}, {"id": "4", "text": "A, B, and D Only"}], "correctAnswer": "2", "explanation": "Key Concept:\n* **Monetary Authority:** The RBI is India's apex monetary institution. It functions as the sole **Bank of Issue (A)** for currency, acts as the **Banker's Bank/Lender of Last Resort (B)**, serves as the **Controller of Credit (D)** through policy rates, and is the official **Custodian of Forex reserves (E)**.\n* **Jurisdictional Boundary (C):** The RBI explicitly does *not* regulate Fiscal Policy. Fiscal policy (taxation, government expenditure, public debt) is the exclusive domain of the Government of India (Ministry of Finance).\n**Related Concepts:**\n* **Monetary Policy:** The process by which the central bank controls the supply of money, often targeting inflation or interest rates to ensure price stability.\n* **Lender of Last Resort:** The RBI's role in providing emergency liquidity to solvent but illiquid banks to prevent bank runs.", "id": 28}, {"question": "Given below are two statements:\n**Statement I:** The ordinary treasury bills that are marketable and have a secondary market are issued to the public and financial institutions.\n**Statement II:** Ad hoc treasury bills are issued only in favour of the Reserve Bank of India, which is authorized to issue currency notes against them.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "1", "explanation": "Key Concept:\n* **Ordinary Treasury Bills (Statement I True):** These are standard short-term money market instruments issued by the RBI on behalf of the government (91-day, 182-day, 364-day). They are marketable, freely traded in the secondary market, and held by banks and the public.\n* **Ad-Hoc Treasury Bills (Statement II True):** Historically, \"Ad-hoc\" T-Bills were non-marketable bills issued directly by the Government to the RBI to automatically finance its budget deficit (essentially printing money).\n* **Abolition:** It's important to note that the issuance of Ad-hoc treasury bills was discontinued in 1997 to enforce fiscal discipline, replacing them with the WMA (Ways and Means Advances) system. However, the historical definition provided in Statement II remains factually correct.\n**Related Concepts:**\n* **Deficit Financing:** The practice of a government funding its budget deficit by borrowing from the central bank, which increases the money supply and often causes inflation.\n* **Ways and Means Advances (WMA):** A temporary loan facility provided by RBI to the government to bridge temporary mismatches between receipts and expenditure.", "id": 29}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
