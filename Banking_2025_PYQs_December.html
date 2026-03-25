@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Banking 2025 PYQs December</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Banking 2025 PYQs December", "organization": "ExamTym", "durationMinutes": 20, "totalMarks": 20.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Non-receipt of dividend by investors is categorised in which type of complaints received by SEBI?", "options": [{"id": "1", "text": "Type I"}, {"id": "2", "text": "Type II"}, {"id": "3", "text": "Type III"}, {"id": "4", "text": "Type IV"}], "correctAnswer": "2", "explanation": "Key Concepts:\n- SEBI classifies investor complaints into **four types**: Type I (non-receipt of refund orders/allotment letters), **Type II (non-receipt of dividend/interest/redemption proceeds)**, Type III (non-receipt of securities/share certificates), Type IV (other complaints).\n- Non-receipt of **dividend** falls under **Type II** \u2014 relates to monetary benefits due to investors after allotment.\n- SEBI's SCORES (Securities and Exchange Board of India Complaint Redress System) is the online platform for lodging and tracking investor complaints.\n- SEBI receives thousands of Type II complaints annually \u2014 most relate to listed companies failing to credit dividends to shareholder accounts.\n**Related Concepts:**\n- SEBI SCORES Platform: Allows investors to lodge complaints online; companies must respond and resolve within 30 days; SEBI monitors resolution rate.\n- Investor Education and Protection Fund (IEPF): Unclaimed dividends transferred to IEPF after 7 years \u2014 investors can claim back through IEPF Authority.", "id": 1}, {"question": "Which one of the following is NOT a method of New Issues?", "options": [{"id": "1", "text": "Public Issue through Prospectus"}, {"id": "2", "text": "Right Issue"}, {"id": "3", "text": "Bonus Issue"}, {"id": "4", "text": "Book Building"}], "correctAnswer": "3", "explanation": "Key Concepts:\n- **Methods of New Issues** in Primary Market: Public Issue (through Prospectus or Book Building), Rights Issue, Private Placement, Preferential Allotment, Offer for Sale.\n- **Bonus Issue** (Capitalisation Issue) is NOT a method of raising NEW funds \u2014 it converts existing reserves/profits into equity shares and allots them FREE to existing shareholders. No fresh capital is raised.\n- Public Issue through Prospectus: Shares offered to general public via a detailed offer document.\n- Book Building: Price discovery mechanism where investors bid within a price band; final price determined by demand.\n**Related Concepts:**\n- Rights Issue vs Bonus Issue: Rights Issue offers new shares to existing shareholders at a discounted price (raises new capital); Bonus Issue gives free shares from reserves (no new capital) \u2014 frequently confused in exam questions.\n- Green Shoe Option (Over-Allotment Option): Allows underwriter to issue additional shares (up to 15% of issue size) to stabilise post-listing price \u2014 available only in Book Building issues.", "id": 2}, {"question": "Process of ensuring access to appropriate financial products and services needed by all sections of the society in general and vulnerable groups such as weaker sections and low-income groups in particular at an affordable cost in a fair and transparent manner by mainstream institutional players is referred to as:", "options": [{"id": "1", "text": "Financial Integration"}, {"id": "2", "text": "Financial Instability"}, {"id": "3", "text": "Financial Inclusion"}, {"id": "4", "text": "Monetary Instability"}], "correctAnswer": "3", "explanation": "Key Concepts:\n- The definition precisely describes **Financial Inclusion** \u2014 the RBI's and government's key policy objective to bring unbanked/underbanked populations into formal financial system.\n- Key elements: ALL sections of society + vulnerable groups + affordable cost + fair & transparent + mainstream institutional players (banks, NBFCs, MFIs).\n- Financial Inclusion Initiatives in India: Jan Dhan Yojana (PMJDY), Pradhan Mantri Mudra Yojana, Atal Pension Yojana, PM Jeevan Jyoti Bima Yojana, PM Suraksha Bima Yojana.\n- Financial Integration \u2260 Financial Inclusion: Integration refers to linking financial markets globally; Inclusion refers to bringing individuals into the financial system.\n**Related Concepts:**\n- Business Correspondent (BC) Model: Banks use BCs (authorised agents) to extend banking services to remote areas \u2014 key delivery mechanism for financial inclusion.\n- Financial Inclusion Index (FI-Index): RBI publishes annual FI-Index measuring extent of financial inclusion across three dimensions: Access, Usage, and Quality.", "id": 3}, {"question": "The right of the insurer to stand in the place of insured after the settlement of a claim and it gives the insurer right to recover from an alternative source; the principle involved is called:", "options": [{"id": "1", "text": "Principle of Insurable Interest"}, {"id": "2", "text": "Principle of Subrogation"}, {"id": "3", "text": "Principle of Causa Proxima"}, {"id": "4", "text": "Principle of Contribution"}], "correctAnswer": "2", "explanation": "Key Concepts:\n- **Principle of Subrogation**: After settling a claim, the insurer \"steps into the shoes\" of the insured and acquires the right to recover the loss from a third party responsible for the damage.\n- Example: Car insurance \u2014 insurer pays the insured for accident damage caused by a third party, then sues the third party to recover the amount paid.\n- Prevents the insured from profiting doubly (from insurance + from the third party responsible).\n- Applies mainly to fire and marine insurance; NOT applicable to life insurance (non-indemnity contracts).\n**Related Concepts:**\n- Principle of Insurable Interest: Insured must have a financial stake in the subject matter of insurance \u2014 prevents wagering; applies at the time of taking the policy.\n- Principle of Causa Proxima: When multiple causes lead to a loss, the nearest (proximate) and most efficient cause is considered for determining claim liability.\n- Principle of Contribution: When the same risk is insured with multiple insurers, each contributes proportionately to the claim \u2014 prevents over-insurance profit.", "id": 4}, {"question": "Charge collected from the investors by a Mutual Fund Scheme when it sells its units to investors is called:", "options": [{"id": "1", "text": "Exit Load"}, {"id": "2", "text": "Entry Load"}, {"id": "3", "text": "Switch"}, {"id": "4", "text": "Sale Price"}], "correctAnswer": "2", "explanation": "Key Concepts:\n- **Entry Load** = charge collected FROM investors AT THE TIME OF PURCHASE (when scheme sells units to investors) \u2014 expressed as a percentage of NAV.\n- **Exit Load** = charge collected when investors REDEEM (sell back) their units \u2014 commonly 1% if redeemed within 1 year.\n- Note: SEBI abolished Entry Load for all mutual funds in August 2009 \u2014 this is an important regulatory fact; Entry Load is now ZERO for all MF schemes in India.\n- **Switch** = transfer of investment from one scheme to another within the same AMC \u2014 NOT a charge type.\n**Related Concepts:**\n- NAV (Net Asset Value): MF unit price = (Market Value of all Assets \u2212 Liabilities) \u00f7 Total Units Outstanding; calculated daily at EOD.\n- Expense Ratio: Annual fee charged by MF for managing the fund (fund management, administration costs) \u2014 distinct from Entry/Exit Load; directly reduces NAV.", "id": 5}, {"question": "Which one of the following is NOT a component of the formal (organized) financial system?", "options": [{"id": "1", "text": "Financial Markets"}, {"id": "2", "text": "Financial Instruments"}, {"id": "3", "text": "Chit-fund Companies"}, {"id": "4", "text": "Financial Services"}], "correctAnswer": "3", "explanation": "Key Concepts:\n- The **Formal (Organized) Financial System** consists of four components: **Financial Markets** (money market, capital market), **Financial Instruments** (shares, bonds, derivatives), **Financial Intermediaries** (banks, NBFCs, MFs), and **Financial Services** (banking, insurance, merchant banking).\n- **Chit-fund Companies** belong to the **Informal (Unorganized) Financial System** \u2014 they operate outside the mainstream regulated banking system (though now regulated by state governments under Chit Funds Act 1982).\n- Formal system is supervised by RBI, SEBI, IRDAI, PFRDA; informal system includes moneylenders, chit funds, indigenous bankers.\n**Related Concepts:**\n- NBFC vs Bank: NBFCs can accept term deposits but cannot accept demand deposits; not part of payment & settlement system; not covered by DICGC insurance \u2014 operate in formal sector but have lesser regulatory requirements.\n- Financial Deepening: Increase in the ratio of financial assets to GDP \u2014 measure of how developed the formal financial system is in an economy.", "id": 6}, {"question": "Assertion (A): RTGS system is a funds transfer mechanism where transfer of money takes place from one bank to another on a real time and gross basis. Reason (R): There is no minimum ceiling for RTGS transactions.", "options": [{"id": "1", "text": "Both (A) and (R) are correct and (R) is the correct explanation of (A)"}, {"id": "2", "text": "Both (A) and (R) are correct but (R) is not the correct explanation of (A)"}, {"id": "3", "text": "(A) is correct but (R) is not correct"}, {"id": "4", "text": "(A) is not correct but (R) is correct"}], "correctAnswer": "3", "explanation": "Key Concepts:\n- **Assertion (A) is CORRECT**: RTGS (Real Time Gross Settlement) = funds transfer in real time (not batched) on a gross basis (each transaction settled individually, not netted) \u2014 perfectly accurate definition.\n- **Reason (R) is INCORRECT**: RTGS has a **minimum transaction limit of \u20b92 lakh** (updated from \u20b91 lakh) \u2014 there IS a minimum ceiling. There is no maximum limit, but there is definitely a minimum.\n- RTGS operates 24\u00d77\u00d7365 since December 2020 (RBI initiative) \u2014 previously only during banking hours.\n- RTGS vs NEFT: RTGS = real time, gross, minimum \u20b92L; NEFT = batch processing (hourly), no minimum, smaller amounts.\n**Related Concepts:**\n- IMPS (Immediate Payment Service): Real-time 24\u00d77 interbank transfer with no minimum limit \u2014 competes with RTGS for smaller amounts; operates on NPCI platform.\n- UPI (Unified Payments Interface): Instant real-time payment system on mobile; limit \u20b91 lakh per transaction (\u20b95L for specific categories) \u2014 fastest growing payment system in India.", "id": 7}, {"question": "Arrange the following Banking Committees as per their year of formation in ascending order:\nA. Narasimham Committee \u2013 I\nB. Padmanabhan Committee\nC. Verma Committee\nD. Saraf Committee\nE. Rashidi Jilani Committee", "options": [{"id": "1", "text": "A, B, C, D, E"}, {"id": "2", "text": "A, E, D, B, C"}, {"id": "3", "text": "A, E, B, D, C"}, {"id": "4", "text": "A, D, E, B, C"}], "correctAnswer": "2", "explanation": "Key Concepts:\n- **Narasimham Committee I (A)** \u2014 1991: Recommended banking sector reforms (deregulation, autonomy, capital adequacy).\n- **Rashidi Jilani Committee (E)** \u2014 1994: Related to Non-Performing Assets (NPA) management.\n- **Saraf Committee (D)** \u2014 1995: On Electronic Funds Transfer (EFT) system in banking.\n- **Padmanabhan Committee (B)** \u2014 1995-96: Review of RBI's inspection and supervision of banks.\n- **Verma Committee (C)** \u2014 1999: Restructuring of weak public sector banks.\n- Ascending: A(1991) < E(1994) < D(1995) < B(1995-96) < C(1999) \u2192 **A, E, D, B, C** \u2713\n**Related Concepts:**\n- Narasimham Committee II (1998): Follow-up on 1991 reforms; recommended capital adequacy norms, asset classification, provisioning requirements \u2014 both committees are frequently tested together.\n- Nayak Committee (1991-92): Recommended financing norms for working capital for SSI sector \u2014 sometimes confused with Narasimham in banking context.", "id": 8}, {"question": "Which of the following are the techniques of Monetary Control adopted by RBI?\nA. Loans and Advances to the Industries\nB. Cash Reserve Ratio\nC. Open Market Operations\nD. Statutory Liquidity Ratio\nE. Repo Rates", "options": [{"id": "1", "text": "A, B, C, D Only"}, {"id": "2", "text": "A, B, D, E Only"}, {"id": "3", "text": "B, C, D, E Only"}, {"id": "4", "text": "A, C, D, E Only"}], "correctAnswer": "3", "explanation": "Key Concepts:\n- **RBI's Monetary Control (Credit Control) Techniques**: Quantitative (CRR, SLR, Repo Rate, Reverse Repo, Bank Rate, OMOs) and Qualitative (selective credit control, moral suasion, margin requirements).\n- **B (CRR) \u2713, C (OMO) \u2713, D (SLR) \u2713, E (Repo Rate) \u2713** \u2014 all are standard RBI monetary control instruments.\n- **A (Loans & Advances to Industries) \u2717** \u2014 this is a commercial banking activity (credit deployment by banks to industry), NOT an RBI monetary control technique.\n- Repo Rate = rate at which banks borrow from RBI (short-term liquidity); Reverse Repo = rate at which banks park excess funds with RBI.\n**Related Concepts:**\n- CRR vs SLR: CRR = % of NDTL maintained as cash with RBI (currently ~4%); SLR = % of NDTL maintained in liquid assets \u2014 govt securities, cash, gold (currently ~18%); both are key quantitative tools.\n- Transmission Mechanism: Repo Rate change \u2192 bank lending rates \u2192 credit availability \u2192 investment \u2192 output and prices \u2014 the chain through which monetary policy affects the real economy.", "id": 9}, {"question": "Match List\u2013I (Financial Institutions) with List\u2013II (Primary Functions):\nList-I:\nA. EXIM Bank\nB. NHB\nC. IDBI\nD. NABARD\nI. Advancing Credit for agriculture and other economic activities in rural area\nII. Financing Exports and Imports\nIII. Promoting Housing Finance Institution\nIV. Financing, Promoting and Developing industries", "options": [{"id": "1", "text": "A-I, B-II, C-III, D-IV"}, {"id": "2", "text": "A-II, B-I, C-IV, D-III"}, {"id": "3", "text": "A-II, B-III, C-IV, D-I"}, {"id": "4", "text": "A-II, B-III, C-I, D-IV"}], "correctAnswer": "3", "explanation": "Key Concepts:\n- **A \u2192 II (EXIM Bank)**: Export-Import Bank of India \u2014 finances, facilitates, and promotes India's international trade (exports and imports); established 1982.\n- **B \u2192 III (NHB)**: National Housing Bank \u2014 apex institution for housing finance; promotes and regulates Housing Finance Companies (HFCs); established 1988 under NHB Act.\n- **C \u2192 IV (IDBI)**: Industrial Development Bank of India \u2014 provides long-term finance for industry; promotes and develops industrial growth; established 1964.\n- **D \u2192 I (NABARD)**: National Bank for Agriculture and Rural Development \u2014 apex body for agricultural and rural credit; refinances banks lending to farmers; established 1982.\n**Related Concepts:**\n- SIDBI (Small Industries Development Bank of India): Principal DFI for MSME sector \u2014 promotion, financing, and development of small industries; established 1990.\n- Differences between NABARD and RBI's rural banking role: NABARD handles refinancing and policy for agricultural credit; RBI handles monetary policy and banking regulation \u2014 both affect rural credit but through different channels.", "id": 10}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
