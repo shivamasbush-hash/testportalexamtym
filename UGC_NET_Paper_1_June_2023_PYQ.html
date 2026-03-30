@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>UGC NET Paper 1 June 2023 PYQ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "UGC NET Paper 1 June 2023 PYQ", "organization": "ExamTym", "durationMinutes": 60, "totalMarks": 100.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Data Interpretation Context (Applies to Q1 - Q5)\n**Directions:** The following table shows the number of males (M) and females (F) (in thousands) in Towns X and Y during the five years from 2018 to 2022. Based on the data in the table, answer the questions 1-5.\nWhat is the ratio of the average number of males in Town X to the average number of males in Town Y for the given period?**\n| Year | Town X (Males) | Town X (Females) | Town Y (Males) | Town Y (Females) |\n| :--- | :--- | :--- | :--- | :--- |\n| **2018** | 50 | 49 | 53 | 50 |\n| **2019** | 52 | 49 | 54 | 52 |\n| **2020** | 55 | 52 | 55 | 54 |\n| **2021** | 53 | 53 | 58 | 56 |\n| **2022** | 55 | 52 | 62 | 55 |", "options": [{"id": "1", "text": "269:282"}, {"id": "2", "text": "265:281"}, {"id": "3", "text": "265:283"}, {"id": "4", "text": "265:282"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Calculate the sum of males in Town X: 50 + 52 + 55 + 53 + 55 = 265.\n* Calculate the sum of males in Town Y: 53 + 54 + 55 + 58 + 62 = 282.\n* The ratio of their averages is mathematically identical to the ratio of their sums (since both are divided by 5 years): 265:282.\n*Related Concepts:*\n* Averaging grouped data.\n* Proportional ratios.", "id": 1}, {"question": "Data Interpretation Context (Applies to Q1 - Q5)\n**Directions:** The following table shows the number of males (M) and females (F) (in thousands) in Towns X and Y during the five years from 2018 to 2022. Based on the data in the table, answer the questions 1-5.\nFor town Y, the percentage increase in the number of females for a given year with reference to the previous year is maximum in the year:**\n| Year | Town X (Males) | Town X (Females) | Town Y (Males) | Town Y (Females) |\n| :--- | :--- | :--- | :--- | :--- |\n| **2018** | 50 | 49 | 53 | 50 |\n| **2019** | 52 | 49 | 54 | 52 |\n| **2020** | 55 | 52 | 55 | 54 |\n| **2021** | 53 | 53 | 58 | 56 |\n| **2022** | 55 | 52 | 62 | 55 |", "options": [{"id": "1", "text": "2022"}, {"id": "2", "text": "2021"}, {"id": "3", "text": "2020"}, {"id": "4", "text": "2019"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Calculate 2019 increase: (52 - 50) / 50 * 100 = 4.00%.\n* Calculate 2020 increase: (54 - 52) / 52 * 100 = 3.84%.\n* Calculate 2021 increase: (56 - 54) / 54 * 100 = 3.70%. 2022 shows a decrease. Therefore, 2019 has the maximum increase.\n*Related Concepts:*\n* Year-over-year percentage growth.\n* Fractional comparisons.", "id": 2}, {"question": "Data Interpretation Context (Applies to Q1 - Q5)\n**Directions:** The following table shows the number of males (M) and females (F) (in thousands) in Towns X and Y during the five years from 2018 to 2022. Based on the data in the table, answer the questions 1-5.\nThe population of Town X in 2018 and 2019 together is approximately ____ % of the population of Town Y in 2021 and 2022 together?**\n| Year | Town X (Males) | Town X (Females) | Town Y (Males) | Town Y (Females) |\n| :--- | :--- | :--- | :--- | :--- |\n| **2018** | 50 | 49 | 53 | 50 |\n| **2019** | 52 | 49 | 54 | 52 |\n| **2020** | 55 | 52 | 55 | 54 |\n| **2021** | 53 | 53 | 58 | 56 |\n| **2022** | 55 | 52 | 62 | 55 |", "options": [{"id": "1", "text": "86.6"}, {"id": "2", "text": "89.6"}, {"id": "3", "text": "81.6"}, {"id": "4", "text": "84.5"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Population of Town X (2018 + 2019) = (50 + 49) + (52 + 49) = 99 + 101 = 200.\n* Population of Town Y (2021 + 2022) = (58 + 56) + (62 + 55) = 114 + 117 = 231.\n* Calculate percentage: (200 / 231) * 100 = 86.58%, which rounds approximately to 86.6%.\n*Related Concepts:*\n* Aggregate population calculation.\n* Cross-sectional data comparisons.", "id": 3}, {"question": "Data Interpretation Context (Applies to Q1 - Q5)\n**Directions:** The following table shows the number of males (M) and females (F) (in thousands) in Towns X and Y during the five years from 2018 to 2022. Based on the data in the table, answer the questions 1-5.\nFind the number of years in which the number of females in Town X and Y is less than their respective average numbers in these two towns.**\n| Year | Town X (Males) | Town X (Females) | Town Y (Males) | Town Y (Females) |\n| :--- | :--- | :--- | :--- | :--- |\n| **2018** | 50 | 49 | 53 | 50 |\n| **2019** | 52 | 49 | 54 | 52 |\n| **2020** | 55 | 52 | 55 | 54 |\n| **2021** | 53 | 53 | 58 | 56 |\n| **2022** | 55 | 52 | 62 | 55 |", "options": [{"id": "1", "text": "One, two"}, {"id": "2", "text": "Two, two"}, {"id": "3", "text": "Three, two"}, {"id": "4", "text": "Two, one"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Average females in Town X = (49+49+52+53+52) / 5 = 255 / 5 = 51. The years below 51 are 2018 (49) and 2019 (49). Total = 2 years.\n* Average females in Town Y = (50+52+54+56+55) / 5 = 267 / 5 = 53.4. The years below 53.4 are 2018 (50) and 2019 (52). Total = 2 years.\n* Hence, the count is Two for Town X and Two for Town Y.\n*Related Concepts:*\n* Mean derivation.\n* Threshold data filtering.", "id": 4}, {"question": "Data Interpretation Context (Applies to Q1 - Q5)\n**Directions:** The following table shows the number of males (M) and females (F) (in thousands) in Towns X and Y during the five years from 2018 to 2022. Based on the data in the table, answer the questions 1-5.\nIn which of the following pairs of years, the difference in the number of males and females is maximum for town Y and minimum for Town X respectively?**\n| Year | Town X (Males) | Town X (Females) | Town Y (Males) | Town Y (Females) |\n| :--- | :--- | :--- | :--- | :--- |\n| **2018** | 50 | 49 | 53 | 50 |\n| **2019** | 52 | 49 | 54 | 52 |\n| **2020** | 55 | 52 | 55 | 54 |\n| **2021** | 53 | 53 | 58 | 56 |\n| **2022** | 55 | 52 | 62 | 55 |", "options": [{"id": "1", "text": "2018 and 2021"}, {"id": "2", "text": "2022 and 2018"}, {"id": "3", "text": "2022 and 2021"}, {"id": "4", "text": "2020 and 2022"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Calculate differences (|M - F|) for Town Y: 2018(3), 2019(2), 2020(1), 2021(2), 2022(7). Maximum is in 2022.\n* Calculate differences (|M - F|) for Town X: 2018(1), 2019(3), 2020(3), 2021(0), 2022(3). Minimum is in 2021.\n* The respective pair of years is 2022 and 2021.\n*Related Concepts:*\n* Absolute difference calculations.\n* Minimum/Maximum variable spotting.\n### **Teaching & Research Aptitude**", "id": 5}, {"question": "Which of the following is a major advantage of online learning over offline learning?", "options": [{"id": "1", "text": "Limited access"}, {"id": "2", "text": "Flexibility"}, {"id": "3", "text": "High cost"}, {"id": "4", "text": "Inter-activity"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Online learning provides unparalleled flexibility in terms of time, location, and pacing.\n* It allows learners to access educational materials asynchronously according to their personal schedules.\n* Offline learning typically demands rigid, synchronous physical attendance.\n*Related Concepts:*\n* Asynchronous vs Synchronous learning.\n* Distance education paradigms.", "id": 6}, {"question": "Which of the following are the benefits of collaborative learning environment?\n(A) Improved communication skills\n(B) Decreased understanding of different perspectives\n(C) Increased motivation\n(D) More opportunities for personal feedback\n(E) Enhanced problem solving abilities", "options": [{"id": "1", "text": "B, C & D only"}, {"id": "2", "text": "A & E only"}, {"id": "3", "text": "A, C, D & E only"}, {"id": "4", "text": "A, B & D only"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Collaborative learning involves groups of learners working together to solve a problem, complete a task, or create a product.\n* It naturally boosts communication skills (A), increases motivation through peer interaction (C), provides avenues for peer-feedback (D), and leverages group intelligence for better problem solving (E).\n* It *increases* rather than decreases understanding of different perspectives, making B false.\n*Related Concepts:*\n* Peer-to-peer learning.\n* Vygotsky\u2019s Social Constructivism.", "id": 7}, {"question": "Which of the following are the basic requirements for effective teaching?\n(A) Teaching only what is included in the curriculum\n(B) Good communication skills\n(C) Using a rigid teaching approach\n(D) Excellent subject knowledge\n(E) Ability to connect with students", "options": [{"id": "1", "text": "A & C only"}, {"id": "2", "text": "C & E only"}, {"id": "3", "text": "B, D & E only"}, {"id": "4", "text": "A, C & D only"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Effective teaching requires the educator to be a master of the subject matter (D) and possess the communication skills to articulate it clearly (B).\n* Connecting with students emotionally and cognitively ensures high engagement (E).\n* Rigid approaches (C) and strict adherence only to the curriculum (A) stifle creativity and adaptability.\n*Related Concepts:*\n* Pedagogical flexibility.\n* Teacher-student rapport.", "id": 8}, {"question": "Given below are two statements:\nStatement I: Choice Based Credit System (CBCS) has been adopted only in the central universities of India.\nStatement II: Choice Based Credit System (CBCS) assigns credits based on the learning outcomes of a course.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I is false because CBCS has been mandated and adopted across State, Deemed, and Private universities in India, not just Central universities.\n* Statement II is true as CBCS fundamentally relies on an outcome-based education approach, assigning credits relative to the effort and outcomes achieved.\n* It provides a \"cafeteria\" approach where students can take courses of their choice.\n*Related Concepts:*\n* Higher Education Reforms (UGC).\n* Outcome-Based Education (OBE).", "id": 9}, {"question": "Given below are two statements:\nStatement I: Moodle is an example of a Learning Management System (LMS)\nStatement II: Mentimeter is a tool used for creating online surveys.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Moodle (Modular Object-Oriented Dynamic Learning Environment) is one of the world's most widely used open-source Learning Management Systems.\n* Mentimeter is an interactive presentation software heavily used by educators and presenters to create live polls, quizzes, and online surveys.\n* Both statements accurately describe these digital tools.\n*Related Concepts:*\n* ICT integration in education.\n* Formative assessment tools.", "id": 10}, {"question": "Arrange the following steps involved in a research process in correct order\nA. Collecting the data\nB. Reviewing the literature\nC. Reporting the research outcome\nD. Identifying a research problem\nE. Analyzing and interpreting the data", "options": [{"id": "1", "text": "A, D, B, E, C"}, {"id": "2", "text": "D, A, B, C, E"}, {"id": "3", "text": "B, D, A, E, C"}, {"id": "4", "text": "D, B, A, E, C"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Research always begins with Identifying the research problem (D).\n* This is followed by Reviewing existing literature (B) to understand the gap.\n* Data is then Collected (A), Analyzed and Interpreted (E), and finally Reported (C).\n*Related Concepts:*\n* Scientific Method steps.\n* Research Methodology framework.", "id": 11}, {"question": "Given below are two statements: one is labelled as Assertion A and other is labelled as Reason R\nAssertion A: Experimental research allows you to eliminate the influence of many extraneous factors.\nReason R: In experimental research variables are actively manipulated and environment is as controlled as possible.\nIn the light of the above statements, Choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both A and R are true and R is the correct explanation of A"}, {"id": "2", "text": "Both A and R are true and R is NOT the correct explanation of A"}, {"id": "3", "text": "A is true but R is false"}, {"id": "4", "text": "A is false but R is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Experimental research aims to establish cause-and-effect relationships by isolating the independent variable.\n* The core mechanism to achieve this isolation is by actively manipulating the environment and controlling extraneous (confounding) variables.\n* Therefore, the strict control mentioned in the Reason directly explains why the Assertion is achievable.\n*Related Concepts:*\n* Independent and Dependent variables.\n* Internal Validity.", "id": 12}, {"question": "The property of data such that research results apply to situations beyond the particular sample of individuals/items observed in a single research setting, refers to:", "options": [{"id": "1", "text": "Internal Validity"}, {"id": "2", "text": "Convergent Validity"}, {"id": "3", "text": "Divergent Validity"}, {"id": "4", "text": "External Validity"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* External validity is the extent to which the results of a study can be generalized to and across other situations, people, stimuli, and times.\n* If a study has high external validity, its findings are applicable in real-world contexts outside the laboratory.\n* Internal validity, in contrast, concerns whether the experiment itself was conducted flawlessly without confounds.\n*Related Concepts:*\n* Population generalizability.\n* Ecological validity.", "id": 13}, {"question": "Given below are two statements:\nStatement I: The purpose of a blind study is to prevent the participants from figuring out what the experimental wants.\nStatement II: Interaction between the experimenter and the participants is always beneficial in social science research.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* A blind study prevents participants from knowing which group (control or experimental) they are in, eliminating the placebo effect and demand characteristics (Statement I is true).\n* Interaction between the experimenter and participant is NOT always beneficial; it can introduce \"Experimenter Bias\" where subtle cues influence the subject's behavior (Statement II is false).\n*Related Concepts:*\n* Double-blind studies.\n* Hawthorne Effect.", "id": 14}, {"question": "A researcher computes sample correlation coefficients r1, r2, r3 and r4 from four different samples and obtains their p-values 0.99, 0.999, 0.05 and 0.005, respectively. Correlation coefficient significant at 1% level is:", "options": [{"id": "1", "text": "r1"}, {"id": "2", "text": "r2"}, {"id": "3", "text": "r3"}, {"id": "4", "text": "r4"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* A significance level of 1% means that the p-value must be less than or equal to 0.01 (p < 0.01) to be considered statistically significant.\n* Comparing the given p-values: 0.99 (not sig), 0.999 (not sig), 0.05 (sig at 5%, but not 1%), and 0.005 (sig at 1%).\n* Only 0.005 is strictly less than 0.01, correlating to r4.\n*Related Concepts:*\n* Alpha levels in hypothesis testing.\n* Null hypothesis rejection.\n### **Communication & ICT**", "id": 15}, {"question": "Vladimir Zworykin was associated with the invention of:", "options": [{"id": "1", "text": "Colour printing"}, {"id": "2", "text": "Radio"}, {"id": "3", "text": "Television"}, {"id": "4", "text": "Internet"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Vladimir Zworykin was a Russian-American inventor, engineer, and pioneer of television technology.\n* He invented a television transmitting and receiving system employing cathode ray tubes (the iconoscope and kinescope).\n* These inventions were fundamental to the practical development of modern electronic television.\n*Related Concepts:*\n* History of mass media.\n* Electronic broadcasting pioneers.", "id": 16}, {"question": "Feedback is immediate in _____ communication.", "options": [{"id": "1", "text": "Print"}, {"id": "2", "text": "Broadcast"}, {"id": "3", "text": "Top-down"}, {"id": "4", "text": "Face-to-face"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Face-to-face communication is a synchronous, two-way interaction where both verbal and non-verbal cues (like facial expressions) are exchanged instantly.\n* This allows for immediate clarification and feedback.\n* Print and broadcast are mass communication mediums characterized by heavily delayed or absent feedback.\n*Related Concepts:*\n* Synchronous vs Asynchronous communication.\n* Communication feedback loops.", "id": 17}, {"question": "What are the advantages of digital media?\n(A) Network communication is avoided.\n(B) People can create and distribute media content.\n(C) The end-product can be delivered in real time.\n(D) Reproduction and distribution of information products are less expensive.\n(E) Online political involvement is of no importance.", "options": [{"id": "1", "text": "A, B, C only"}, {"id": "2", "text": "B, C, D only"}, {"id": "3", "text": "C, D, E only"}, {"id": "4", "text": "A, B, E only"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Digital media empowers users to become creators, democratizing content generation (B).\n* It allows for instantaneous, real-time global transmission of data (C).\n* Unlike physical media, copying and distributing digital files costs virtually nothing (D).\n* Statement (A) is false as it entirely relies on networks, and (E) is false as digital media is a massive political tool.\n*Related Concepts:*\n* Web 2.0 and User-Generated Content (UGC).\n* Marginal cost of digital reproduction.", "id": 18}, {"question": "Which of the following factors affect mediated persuasion?\n(A) Extended media reach\n(B) Round-the-clock communication\n(C) Media differences\n(D) Audience fragmentation\n(E) Message characteristics", "options": [{"id": "1", "text": "A, B, C only"}, {"id": "2", "text": "B, C, D only"}, {"id": "3", "text": "C, D, E only"}, {"id": "4", "text": "A, B, E only"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Mediated persuasion is heavily influenced by the nature of the message itself (E), the specific channel/media used to deliver it (C), and the divided/fragmented nature of modern audiences (D).\n* Media differences dictate how a message is received (text vs video), and audience fragmentation forces persuaders to niche their targeting.\n* These three structural and content-based factors are primary influencers in communication theory models.\n*Related Concepts:*\n* Elaboration Likelihood Model (ELM).\n* Mass Media Audience Targeting.", "id": 19}, {"question": "Given below are two statements:\nStatement I: Propagandic communication at the National level is supposed to recognize the fact that truth need not be separated from falsehood.\nStatement II: The mediated propaganda process blurs truth and falsehood in order to be persuasive.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Propaganda is fundamentally about persuasion and manipulation, not objective truth.\n* State-level propaganda often relies on a mix of half-truths and falsehoods (disinformation) to construct a compelling narrative, rendering the boundary between truth and lie intentionally blurred.\n* This blurring makes the propaganda harder to debunk and highly persuasive to the masses.\n*Related Concepts:*\n* Disinformation vs. Misinformation.\n* Mass manipulation tactics.\n### **Mathematical Reasoning & Logic**", "id": 20}, {"question": "What number would replace question mark (?) in the series below?\n1.5, 4, 7.5, 12, 17.5, 24, 31.5, ?", "options": [{"id": "1", "text": "55.5"}, {"id": "2", "text": "38"}, {"id": "3", "text": "40"}, {"id": "4", "text": "45"}], "correctAnswer": "3", "explanation": "", "id": 21}, {"question": "If man invested \u20b920,000 in some shares in the ratio 2:3:5 which pay dividends of 10%, 30% and 20%, respectively, on the investments in that year. Find the total dividend income of the man.", "options": [{"id": "1", "text": "\u20b94200"}, {"id": "2", "text": "\u20b94500"}, {"id": "3", "text": "\u20b94800"}, {"id": "4", "text": "\u20b95000"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Divide \u20b920,000 into the ratio 2:3:5. The total parts = 10. Value per part = \u20b92,000.\n* Investments are \u20b94,000, \u20b96,000, and \u20b910,000.\n* Calculate dividends: 10% of 4000 = \u20b9400; 30% of 6000 = \u20b91800; 20% of 10000 = \u20b92000.\n* Total dividend = 400 + 1800 + 2000 = \u20b94200.\n*Related Concepts:*\n* Ratios and Proportions.\n* Percentage yield.", "id": 22}, {"question": "The simple interest on a certain principal amount for 4 years at 10% per annum is half of the compound interest on \u20b91000 for 2 years at 20% per annum. Find the principal amount", "options": [{"id": "1", "text": "\u20b9500"}, {"id": "2", "text": "\u20b9450"}, {"id": "3", "text": "\u20b9650"}, {"id": "4", "text": "\u20b9550"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* First, find the Compound Interest (CI): $CI = P(1 + r/100)^t - P$. $CI = 1000(1.20)^2 - 1000 = 1440 - 1000 = \u20b9440$.\n* The Simple Interest (SI) is half of this: SI = 440 / 2 = \u20b9220.\n* Using SI formula: $SI = (P \\times R \\times T) / 100 \\implies 220 = (P \\times 10 \\times 4) / 100 \\implies 220 = 0.4P \\implies P = \u20b9550$.\n*Related Concepts:*\n* Simple Interest (SI) vs Compound Interest (CI).\n* Algebraic substitution.", "id": 23}, {"question": "In a certain coded languages:\nA. 'Best way to win' is written as 'bau mau shau sa'\nB. 'The way to hell' is written as 'tau mau sa hau'\nC. 'Win of the day' is written as 'shau fau tau dau'", "options": [{"id": "1", "text": "hau"}, {"id": "2", "text": "mau"}, {"id": "3", "text": "shau"}, {"id": "4", "text": "tau"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Compare sentences A and B: Common words are 'way', 'to'. Common codes are 'mau', 'sa'.\n* Compare sentences B and C: Common word is 'The'. Common code is 'tau'.\n* In sentence B ('The way to hell' -> 'tau mau sa hau'), 'The' is 'tau', and 'way to' are 'mau sa'.\n* The only remaining word is 'hell', which must map to the remaining code 'hau'.\n*Related Concepts:*\n* Common-word elimination coding.\n* Deductive logical reasoning.", "id": 24}, {"question": "A man travels from his home to his office at a speed of 4 km/h and reaches his office 30 minutes late. If his speed had been 6 km/h he would have reached office 5 minutes early. Find the distance of his office from his home.", "options": [{"id": "1", "text": "8.5 km"}, {"id": "2", "text": "7 km"}, {"id": "3", "text": "8 km"}, {"id": "4", "text": "9 km"}], "correctAnswer": "2", "explanation": "*Key Concept:*\n* Let distance be D. Let exact required time be T hours.\n* Case 1: $D / 4 = T + (30/60)$\n* Case 2: $D / 6 = T - (5/60)$\n* Subtract equations: $(D/4) - (D/6) = (30/60) + (5/60) \\implies (3D - 2D)/12 = 35/60 \\implies D/12 = 7/12 \\implies D = 7$ km.\n*Related Concepts:*\n* Time, Speed, and Distance relations.\n* Linear equations with time differentials.", "id": 25}, {"question": "Given below are two statements:\nStatement I: 'The jar does not exist' is common to all kinds of non-existence.\nStatement II: 'The jar will exist' refers to previous non-existence.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* In Nyaya philosophy, Abhava (non-existence) has four types. \"The jar does not exist\" is not common to all, as forms like mutual non-existence (Anyonyabhava - a jar is not a cloth) are specific. (Statement I is false).\n* \"The jar will exist\" describes Pragabhava (antecedent/previous non-existence), referring to the state of a thing before its production. (Statement II is true).\n*Related Concepts:*\n* Abhava in Nyaya philosophy.\n* Types of non-existence.", "id": 26}, {"question": "In the light of nature of reasoning and argument pick out the incorrect statement(s).\nA. An invalid argument can have any combinations of truth or falsity in the premise or conclusion\nB. No valid argument can have true premises and a false conclusion\nC. Deductive arguments can be 'almost valid'\nD. Valid does not mean true.", "options": [{"id": "1", "text": "A & B"}, {"id": "2", "text": "B & C"}, {"id": "3", "text": "C"}, {"id": "4", "text": "D"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* Deductive logic is strictly binary; an argument is either completely valid or completely invalid based on its logical structure. There is no such thing as \"almost valid.\"\n* Statement B is the exact definition of validity (truth-preservation).\n* Statement D highlights the difference between structural validity and factual truth.\n*Related Concepts:*\n* Validity vs Soundness.\n* Deductive reasoning principles.", "id": 27}, {"question": "Identify the fallacy committed in the following argument:\n\"Capital punishment is morally wrong because it is ethically impermissible to inflict death as punishment for crime\"", "options": [{"id": "1", "text": "Two wrongs make a right"}, {"id": "2", "text": "Look who is talking"}, {"id": "3", "text": "Begging the question"}, {"id": "4", "text": "Scare tactics"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The fallacy of \"Begging the Question\" (Petitio Principii) occurs when an argument's premises assume the truth of the conclusion, instead of supporting it.\n* Saying something is \"morally wrong\" because it is \"ethically impermissible\" is simply restating the conclusion using synonyms. It offers no actual proof.\n*Related Concepts:*\n* Circular reasoning.\n* Informal logical fallacies.", "id": 28}, {"question": "Match List I with List II\n| LIST I (Concept) | LIST II (Definition) |\n| :--- | :--- |\n| A. Argument | I. A deductive argument that either is invalid or has at least one false premise |\n| B. Strong argument | II. An inductive argument in which the conclusion does not follow probably from the premises |\n| C. Unsound argument | III. An inductive argument in which the conclusion follows probably from the premises |\n| D. Weak argument | IV. A set of statements in which a claim (conclusion) is defended with reason (premise) |", "options": [{"id": "1", "text": "A-I, B-II, C-III, D-IV"}, {"id": "2", "text": "A-II, B-IV, C-III, D-I"}, {"id": "3", "text": "A-III, B-I, C-II, D-IV"}, {"id": "4", "text": "A-IV, B-III, C-I, D-II"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* An Argument (A) is structurally defined as premises defending a conclusion (IV).\n* A Strong argument (B) is a successful inductive structure where the conclusion is highly probable (III).\n* An Unsound argument (C) fails deductive logic either by invalid structure or a false premise (I).\n* A Weak argument (D) is an inductive failure (II).\n*Related Concepts:*\n* Deductive vs Inductive evaluation.\n* Soundness and Cogency.", "id": 29}, {"question": "According to S\u00e4mkhya school of thought a word signifies:", "options": [{"id": "1", "text": "Vyakti"}, {"id": "2", "text": "Akriti"}, {"id": "3", "text": "Jati"}, {"id": "4", "text": "Vyakti-Akriti-Jati"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* In classical Indian philosophy, different schools debate what a word inherently signifies (the individual, the form, or the universal class).\n* The Samkhya school traditionally posits that words primarily signify the 'Vyakti' (the specific, concrete individual object).\n* In contrast, Mimamsa argues for Jati/Akriti, and Nyaya argues for a combination (Vyakti-Akriti-Jati).\n*Related Concepts:*\n* Indian epistemology (Pramanas).\n* Philosophy of Language (Shabda Bodha).\n### **ICT, Environment, and Higher Education**", "id": 30}, {"question": "A computer processor will operate fastest when the data that it wants is in the:", "options": [{"id": "1", "text": "Cache Memory"}, {"id": "2", "text": "Hard Disk"}, {"id": "3", "text": "Optical Disk"}, {"id": "4", "text": "Main Memory"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Cache memory is an extremely fast, small memory chip located directly on or very close to the CPU.\n* It stores frequently accessed data and instructions so the CPU doesn't have to wait to retrieve them from the slower Main Memory (RAM).\n* Hard disks and optical disks are secondary storage and are drastically slower.\n*Related Concepts:*\n* Memory Hierarchy.\n* SRAM vs DRAM.", "id": 31}, {"question": "What is the binary equivalent of the decimal number 85.125?", "options": [{"id": "1", "text": "(1001001.111)"}, {"id": "2", "text": "(1010101.101)"}, {"id": "3", "text": "(1100101.001)"}, {"id": "4", "text": "(1010101.001)"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Convert the integer part (85): Divide by 2 repeatedly. 85 -> 42(1) -> 21(0) -> 10(1) -> 5(0) -> 2(1) -> 1(0) -> 0(1). Reverse the remainders: 1010101.\n* Convert the fractional part (0.125): Multiply by 2 repeatedly. 0.125 x 2 = 0.25 (0); 0.25 x 2 = 0.50 (0); 0.50 x 2 = 1.0 (1). Read top to bottom: 001.\n* Combine: 1010101.001.\n*Related Concepts:*\n* Number system conversion.\n* Fractional binary representation.", "id": 32}, {"question": "Given below are two statements:\nStatement I: Shareware is a software that the users can try out for a trial period only, before being charged.\nStatement II: Freeware is a software that the users can download free of charge, but they cannot modify the source code in any way.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Shareware operates on a \"try-before-you-buy\" model, locking features or expiring after a set time (Statement I is true).\n* Freeware is free to use indefinitely, but it remains proprietary, meaning the creator retains the copyright and hides the source code, unlike Open-Source software (Statement II is true).\n*Related Concepts:*\n* Software licensing models.\n* Open-Source software.", "id": 33}, {"question": "Danny is buying a new computer that has an LED display. Which of the following statements about LED displays are true?\n(A) It is a flat panel display\n(B) It creates images using red, green and blue diodes.\n(C) It is not very energy efficient and gives off heat\n(D) It can be used in mobile devices such as smartphones and tablets\n(E) It is always a front-lit display", "options": [{"id": "1", "text": "A, B & D only"}, {"id": "2", "text": "A, C & E only"}, {"id": "3", "text": "B, D & E only"}, {"id": "4", "text": "A, B, D & E only"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* LED screens are modern flat panel displays (A) commonly found in mobile devices (D).\n* They generate visuals using combinations of microscopic Red, Green, and Blue light-emitting diodes (B).\n* They are highly energy-efficient and run cool (C is false), and they use backlighting, not front-lighting (E is false).\n*Related Concepts:*\n* Display technologies (LCD vs LED vs OLED).\n* Hardware components.", "id": 34}, {"question": "Match List I with List II\n| LIST I (Data Transmission modes) | LIST II (Description) |\n| :--- | :--- |\n| A. Simplex | I. Data can be sent and received at the same time. |\n| B. Duplex | II. Data can only be sent or received. |\n| C. Half-duplex | III. Data can be sent and received but not at the same time. |", "options": [{"id": "1", "text": "A-III, B-I, C-II"}, {"id": "2", "text": "A-I, B-III, C-II"}, {"id": "3", "text": "A-II, B-III, C-I"}, {"id": "4", "text": "A-II, B-I, C-III"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Simplex (A) is a one-way street; data flows in only one direction (II).\n* Full-Duplex (B) is a two-way street; data flows simultaneously in both directions like a phone call (I).\n* Half-Duplex (C) allows two-way traffic, but only one direction at a time, like a walkie-talkie (III).\n*Related Concepts:*\n* Networking topologies.\n* Communication protocols.", "id": 35}, {"question": "Given below are two statements:\nStatement I: Volatile Organic Compounds (VOCs) are emitted from vehicles.\nStatement II: Volatile Organic Compounds are emitted from some trees.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* VOCs are anthropogenic (human-made) pollutants emitted heavily from vehicle exhaust, paints, and industrial solvents.\n* Surprisingly, they are also biogenic; certain trees and plants (like oaks and pines) naturally emit VOCs like isoprene to protect against heat.\n* Both sources contribute to the creation of ground-level ozone.\n*Related Concepts:*\n* Photochemical Smog.\n* Air pollution sources.", "id": 36}, {"question": "Light Water Reactors (LWR) are nuclear reactors:", "options": [{"id": "1", "text": "Which use heavy water as a coolant"}, {"id": "2", "text": "Which use graphite rod as moderator"}, {"id": "3", "text": "Which use ordinary water as moderator"}, {"id": "4", "text": "Which use steam as moderator"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* A Light Water Reactor (LWR) uses normal, ordinary water ($H_2O$) as both its coolant and neutron moderator.\n* This distinguishes it from Heavy Water Reactors (like PHWRs) which use deuterium oxide ($D_2O$).\n* Graphite is used in gas-cooled reactors or older designs like RBMK.\n*Related Concepts:*\n* Nuclear fission mechanics.\n* Thermal energy generation.", "id": 37}, {"question": "Given below are two statements:\nStatement I: Biomagnification occures when the toxic burden of large number of organisms at higher trophic level is accumulated and concentrated in the organisms at lower trophic level.\nStatement II: The effect of toxins are magnified in the environment through food webs.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false."}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Statement I has the process completely backward; biomagnification is the accumulation of toxins from *lower* trophic levels into *higher* trophic levels (e.g., small fish -> big fish -> eagles).\n* Statement II correctly summarizes the core threat of biomagnification, where toxins compound as they move up the food web.\n*Related Concepts:*\n* Trophic levels.\n* Persistent Organic Pollutants (POPs).", "id": 38}, {"question": "Given below are two statements:\nStatement I: Exposure to noise pollution adversely affects the physiological health of a person.\nStatement II: Exposure to noise pollution adversely affects the psychological health of a person.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Noise pollution triggers severe physiological responses, including elevated blood pressure, cardiovascular disease, and permanent hearing loss (Statement I).\n* It equally devastates psychological well-being, leading to chronic stress, sleep disruption, anxiety, and cognitive impairment in children (Statement II).\n*Related Concepts:*\n* Environmental health impacts.\n* Decibel thresholds for harm.", "id": 39}, {"question": "Most of the countries in International Solar Alliance lie:", "options": [{"id": "1", "text": "Above tropic of cancer"}, {"id": "2", "text": "Below tropic of cancer"}, {"id": "3", "text": "Between tropic of cancer and capricorn"}, {"id": "4", "text": "In the Southern hemisphere"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The International Solar Alliance (ISA) was originally formed by \"sunshine countries\" that lie either completely or partly between the Tropic of Cancer and the Tropic of Capricorn.\n* This equatorial belt receives the most direct sunlight globally, making these nations ideal for massive solar energy harvesting.\n*Related Concepts:*\n* Renewable energy geopolitics.\n* COP21 Paris Agreement initiatives.", "id": 40}, {"question": "Given below are two statements:\nStatement I: The Upanayana ceremony which marked the initiation of a child into a study of the Vedas was performed for boys as well as for girls.\nStatement II: Both boys and girls received education in 'Ashrams' and 'Gurukulas' in ancient India.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* During the early Vedic period, society was largely egalitarian. The Upanayana (sacred thread) ceremony, initiating formal education, was performed for both boys and girls.\n* Female scholars (Brahmavadinis) like Gargi and Maitreyi studied the Vedas in ancient educational setups alongside men.\n* This equality degraded in later historical periods, but the statements hold true for the classical \"ancient India\" standard.\n*Related Concepts:*\n* Vedic Education System.\n* Women's historical status in India.", "id": 41}, {"question": "Given below are two statements:\nStatement I: According to NEP 2020, at present the investment in research and innovation in India is only <1% of GDP.\nStatement II: NEP 2020 recommends the establishment of a National curriculum framework for Teacher Education.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* NEP 2020 explicitly highlights the stark underfunding of research in India (approx 0.69% of GDP), using this metric to justify the creation of the National Research Foundation (NRF).\n* It also mandates an overhaul of teacher prep via the formulation of a new and comprehensive National Curriculum Framework for Teacher Education (NCFTE).\n*Related Concepts:*\n* R&D expenditure metrics.\n* NEP 2020 institutional frameworks.", "id": 42}, {"question": "The first Education commission of India also adhered to:", "options": [{"id": "1", "text": "The one-language formula"}, {"id": "2", "text": "The two-language formula"}, {"id": "3", "text": "The three-language formula"}, {"id": "4", "text": "The four-language formula"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The Kothari Commission (1964-66), officially the First National Education Commission of independent India, strongly advocated for the \"Three-Language Formula\".\n* This policy aimed to balance regional identity, national integration, and global connectivity by teaching a regional language, Hindi, and English.\n*Related Concepts:*\n* Post-independence education policies.\n* Linguistic integration in education.", "id": 43}, {"question": "In the light of changes introduced to the existing universities under the Indian Universities Act 1904: which among the following is incorrect.\nA. An enlargement of the functions of the universities\nB. The introduction of the new principle of election to the senate\nC. Easier conditions for affiliation of colleges to a universities\nD. Definition of the territorial units of the universities\nE. Increase in the size of the universities senate", "options": [{"id": "1", "text": "A & B"}, {"id": "2", "text": "A & D"}, {"id": "3", "text": "B & D"}, {"id": "4", "text": "C & E"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* The Indian Universities Act of 1904 (Lord Curzon's era) actually *reduced* the size of the University Senate to tighten government control (making E incorrect).\n* It also implemented *stricter* conditions for the affiliation of private colleges to ensure quality control (making C incorrect).\n* Therefore, C and E represent the false statements.\n*Related Concepts:*\n* British colonial education reforms.\n* Lord Curzon's policies.", "id": 44}, {"question": "Given below are two statements: in the context of NEP 2020:\nStatement I: High performing Indian Universities will be encouraged to set up campuses in other countries.\nStatement II: Selected universities from among the top 500 universities in the world will be facilitated to operate in India.\nIn the light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* NEP 2020 emphasizes the \"Internationalization\" of higher education. Statement I is accurate; top Indian HEIs are pushed to expand globally.\n* Statement II is incorrect regarding the metric; the policy explicitly targets facilitating the top **100** universities in the world, not the top 500, to operate in India.\n*Related Concepts:*\n* Global expansion of HEIs.\n* Legislative frameworks for foreign universities.", "id": 45}, {"question": "Reading Comprehension Context (Applies to Q46 - Q50)\n**Directions:** Read the passage and answer the next five questions. Choose the most appropriate options from the options given:\nAs part of the great cultural renaissance generated during the post-independence period, there has occured a most meaningful encounter with tradition in various fields of creative activity. The return to and discovery of tradition was inspired by a search for roots and a quest for identity. This was a part of the whole process of decolonization of our lifestyle, values, social institutions, creative forms and cultural modes.\nThe modern Indian theatre, product of a colonial theatrical culture, felt the need to search for roots most intensely to match its violent dislocation from the traditional course. Directors like B.V. Karanth, K.N. Panikar and Ratan Thiyam have had a most meaningful encounter with tradition and, with their work, have reversed the colonial course of contemporary theatre and put it back on the track of the great Natyashastra tradition. It sounds paradoxical, but their theatre is both avant-garde in the context of conventional realistic theatre, and still belongs to the Natyashastra theatrical tradition. **Post-Independence cultural renaissance in Indian theatre focused on:**", "options": [{"id": "1", "text": "Development of Western theatre"}, {"id": "2", "text": "Return to traditional Western theatre"}, {"id": "3", "text": "Search for traditional Indian theatre"}, {"id": "4", "text": "Modern Western theatre"}], "correctAnswer": "3", "explanation": "*Key Concept:*\n* The passage explicitly links the post-independence renaissance to a \"meaningful encounter with tradition\" and a \"search for roots.\"\n* The focus was on rescuing Indian theatre from colonial dislocation and returning it to classical indigenous frameworks.\n*Related Concepts:*\n* Post-colonial cultural reclamation.\n* Thematic extraction in RC.", "id": 46}, {"question": "Reading Comprehension Context (Applies to Q46 - Q50)\n**Directions:** Read the passage and answer the next five questions. Choose the most appropriate options from the options given:\nAs part of the great cultural renaissance generated during the post-independence period, there has occured a most meaningful encounter with tradition in various fields of creative activity. The return to and discovery of tradition was inspired by a search for roots and a quest for identity. This was a part of the whole process of decolonization of our lifestyle, values, social institutions, creative forms and cultural modes.\nThe modern Indian theatre, product of a colonial theatrical culture, felt the need to search for roots most intensely to match its violent dislocation from the traditional course. Directors like B.V. Karanth, K.N. Panikar and Ratan Thiyam have had a most meaningful encounter with tradition and, with their work, have reversed the colonial course of contemporary theatre and put it back on the track of the great Natyashastra tradition. It sounds paradoxical, but their theatre is both avant-garde in the context of conventional realistic theatre, and still belongs to the Natyashastra theatrical tradition. **The return to and discovery of traditional in post-independence era was inspired by:**\n(A) Search for values\n(B) Search for roots\n(C) Search for realism\n(D) Search for identity", "options": [{"id": "1", "text": "A & B only"}, {"id": "2", "text": "D & C only"}, {"id": "3", "text": "B, C & D only"}, {"id": "4", "text": "B & D only"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* The passage explicitly states: \"The return to and discovery of tradition was inspired by a search for roots and a quest for identity.\"\n* This is a direct factual retrieval question. Roots (B) and Identity (D) are the only two inspirations listed.\n*Related Concepts:*\n* Keyword scanning.\n* Factual validation.", "id": 47}, {"question": "Reading Comprehension Context (Applies to Q46 - Q50)\n**Directions:** Read the passage and answer the next five questions. Choose the most appropriate options from the options given:\nAs part of the great cultural renaissance generated during the post-independence period, there has occured a most meaningful encounter with tradition in various fields of creative activity. The return to and discovery of tradition was inspired by a search for roots and a quest for identity. This was a part of the whole process of decolonization of our lifestyle, values, social institutions, creative forms and cultural modes.\nThe modern Indian theatre, product of a colonial theatrical culture, felt the need to search for roots most intensely to match its violent dislocation from the traditional course. Directors like B.V. Karanth, K.N. Panikar and Ratan Thiyam have had a most meaningful encounter with tradition and, with their work, have reversed the colonial course of contemporary theatre and put it back on the track of the great Natyashastra tradition. It sounds paradoxical, but their theatre is both avant-garde in the context of conventional realistic theatre, and still belongs to the Natyashastra theatrical tradition. **The most significant contribution of Directors like B. V Karanth, K. N. Panikkar and Ratan Thiyam was:**", "options": [{"id": "1", "text": "Making Indian theatre totally traditional"}, {"id": "2", "text": "Making Indian theatre backward"}, {"id": "3", "text": "Dislocating Indian theatre from the traditional Indian theatre"}, {"id": "4", "text": "Bringing about an amalgamation of the Indian theatrical tradition with Western realistic theatre"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* The text notes that their work reversed the colonial course, yet \"It sounds paradoxical, but their theatre is both avant-garde in the context of conventional realistic theatre, and still belongs to the Natyashastra theatrical tradition.\"\n* They didn't just regress to the past; they merged traditional Indian frameworks (Natyashastra) with modern/avant-garde implementations.\n*Related Concepts:*\n* Paradoxical statements in literature.\n* Avant-garde artistic movements.", "id": 48}, {"question": "Reading Comprehension Context (Applies to Q46 - Q50)\n**Directions:** Read the passage and answer the next five questions. Choose the most appropriate options from the options given:\nAs part of the great cultural renaissance generated during the post-independence period, there has occured a most meaningful encounter with tradition in various fields of creative activity. The return to and discovery of tradition was inspired by a search for roots and a quest for identity. This was a part of the whole process of decolonization of our lifestyle, values, social institutions, creative forms and cultural modes.\nThe modern Indian theatre, product of a colonial theatrical culture, felt the need to search for roots most intensely to match its violent dislocation from the traditional course. Directors like B.V. Karanth, K.N. Panikar and Ratan Thiyam have had a most meaningful encounter with tradition and, with their work, have reversed the colonial course of contemporary theatre and put it back on the track of the great Natyashastra tradition. It sounds paradoxical, but their theatre is both avant-garde in the context of conventional realistic theatre, and still belongs to the Natyashastra theatrical tradition. **The Natyasastra tradition refers to:**", "options": [{"id": "1", "text": "The colonial tradition"}, {"id": "2", "text": "Avant-garde theatre"}, {"id": "3", "text": "Conventional realistic theatre"}, {"id": "4", "text": "Indian theatrical tradition"}], "correctAnswer": "4", "explanation": "*Key Concept:*\n* Contextually, the Natyashastra is presented as the ancient, indigenous root of Indian performance arts.\n* The directors sought to reverse the \"colonial course\" by returning to the \"great Natyashastra tradition,\" positioning it as the ultimate classical Indian theatrical tradition.\n*Related Concepts:*\n* Historical cultural texts.\n* Contextual antonyms (Colonial vs Natyashastra).", "id": 49}, {"question": "Reading Comprehension Context (Applies to Q46 - Q50)\n**Directions:** Read the passage and answer the next five questions. Choose the most appropriate options from the options given:\nAs part of the great cultural renaissance generated during the post-independence period, there has occured a most meaningful encounter with tradition in various fields of creative activity. The return to and discovery of tradition was inspired by a search for roots and a quest for identity. This was a part of the whole process of decolonization of our lifestyle, values, social institutions, creative forms and cultural modes.\nThe modern Indian theatre, product of a colonial theatrical culture, felt the need to search for roots most intensely to match its violent dislocation from the traditional course. Directors like B.V. Karanth, K.N. Panikar and Ratan Thiyam have had a most meaningful encounter with tradition and, with their work, have reversed the colonial course of contemporary theatre and put it back on the track of the great Natyashastra tradition. It sounds paradoxical, but their theatre is both avant-garde in the context of conventional realistic theatre, and still belongs to the Natyashastra theatrical tradition.** Decolonization is the process of:**", "options": [{"id": "1", "text": "Becoming independent from"}, {"id": "2", "text": "Becoming dependent on"}, {"id": "3", "text": "Relying on"}, {"id": "4", "text": "Learning from"}], "correctAnswer": "1", "explanation": "*Key Concept:*\n* Decolonization fundamentally means dismantling the cultural, political, and systemic dependence imposed by colonial powers.\n* In the passage's context, it refers to becoming independent from \"colonial lifestyle, values, social institutions,\" and returning to native roots.\n*Related Concepts:*\n* Post-colonial theory.\n* Vocabulary in context.", "id": 50}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
