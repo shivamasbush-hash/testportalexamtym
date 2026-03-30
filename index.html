@@ -516,6 +516,16 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
       </div>
     </div>
 
+
+    <!-- ANNOUNCEMENT (optional - set via JS) -->
+    <div class="announce-banner" id="announceBanner" style="display:none">
+        <i class="fa-solid fa-bullhorn"></i>
+        <span id="announceText"></span>
+        <button class="announce-close" onclick="document.getElementById('announceBanner').style.display='none'">
+            <i class="fa-solid fa-xmark"></i>
+        </button>
+    </div>
+
     <!-- COUNTDOWN -->
     <div class="countdown-bar" id="cdBar">
       <div class="cd-inner">
@@ -536,6 +546,25 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
           <h1>Welcome back! 👋</h1>
           <p>Continue your preparation — everything in one place</p>
         </div>
+        <!-- Progress Rings -->
+        <div id="dashProgressRings"></div>
+        <!-- Activity Graph -->
+        <div class="activity-wrap">
+            <div class="activity-title">
+                <i class="fa-solid fa-fire" style="color:var(--orange)"></i>
+                Activity — Last 30 Days
+            </div>
+            <div class="activity-grid" id="activityGraph"></div>
+        </div>
+        <!-- Streak Calendar -->
+        <div style="background:var(--card);border:1.5px solid var(--border);border-radius:var(--r);padding:1.2rem;margin-bottom:1.2rem">
+            <div style="font-family:'Nunito',sans-serif;font-size:0.92rem;font-weight:900;margin-bottom:0.7rem;display:flex;align-items:center;gap:8px">
+                <i class="fa-solid fa-calendar-check" style="color:var(--green)"></i>
+                Study Streak — Last 4 Weeks
+                <span style="margin-left:auto;font-size:0.78rem;color:var(--muted);font-weight:600" id="streakDays"></span>
+            </div>
+            <div id="streakCalendar"></div>
+        </div>
         <!-- Stats -->
         <div class="dash-stats">
           <div class="dstat dstat-blue"><span class="dn" id="dsTotalTests">—</span><span class="dl">Total Tests</span></div>
@@ -549,7 +578,12 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
 
       <!-- ═══ SUBJECT DETAIL PAGE ═══ -->
       <div id="subjectPage" style="display:none">
-        <div class="subj-page-header" id="subjPageHeader"></div>
+        <div class="breadcrumb" id="breadcrumb">
+        <span class="bc-item" onclick="showDashboard(null)"><i class="fa-solid fa-house"></i> Dashboard</span>
+        <span class="bc-sep"><i class="fa-solid fa-chevron-right"></i></span>
+        <span class="bc-current" id="bcSubject">Subject</span>
+      </div>
+      <div class="subj-page-header" id="subjPageHeader"></div>
         <!-- Tabs -->
         <div class="subj-tabs" id="subjTabs">
           <button class="stab active" onclick="setSubjTab('tests',this)" id="tab-tests">
@@ -752,6 +786,33 @@ body{font-family:'Outfit',sans-serif;background:var(--bg);color:var(--text);min-
   <div class="vm-topbar"><span class="vm-title" id="vmTitle">Video</span><button class="vm-close" onclick="closeVideo()"><i class="fa-solid fa-xmark"></i></button></div>
   <iframe class="vm-frame" id="vmFrame" src="" allowfullscreen allow="autoplay"></iframe>
 </div>
+
+
+<!-- BOTTOM NAV (mobile) -->
+<nav class="bottom-nav" id="bottomNav">
+    <div class="bn-items">
+        <button class="bn-item active" id="bn-dash" onclick="bnNav('dash')">
+            <i class="fa-solid fa-house"></i>Home
+        </button>
+        <button class="bn-item" id="bn-tests" onclick="bnNav('tests')">
+            <i class="fa-solid fa-file-lines"></i>Tests
+        </button>
+        <button class="bn-item" id="bn-notes" onclick="bnNav('notes')">
+            <i class="fa-solid fa-book"></i>Notes
+        </button>
+        <button class="bn-item" id="bn-tracker" onclick="bnNav('tracker')">
+            <i class="fa-solid fa-chart-gantt"></i>Tracker
+        </button>
+        <button class="bn-item" id="bn-planner" onclick="bnNav('planner')">
+            <i class="fa-solid fa-calendar-days"></i>Plan
+        </button>
+    </div>
+</nav>
+
+<!-- SCROLL TO TOP -->
+<button class="scroll-top" id="scrollTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <i class="fa-solid fa-arrow-up"></i>
+</button>
 
 <div class="toast" id="toast"><span id="tIcon">✅</span><span id="tMsg">Done!</span></div>
 
@@ -1569,6 +1630,257 @@ function updatePomoDurs(){pomoDurs.focus=parseInt(document.getElementById('focus
 // ═══ TOAST ═══
 let tTimer;
 function toast(icon,msg){const el=document.getElementById('toast');document.getElementById('tIcon').textContent=icon;document.getElementById('tMsg').textContent=msg;el.classList.add('show');clearTimeout(tTimer);tTimer=setTimeout(()=>el.classList.remove('show'),2600)}
+
+// ═══════════════════════════════════════
+// UI UPGRADES JS
+// ═══════════════════════════════════════
+
+// ── PAGE TRANSITIONS ──
+function animatePage(id, cb) {
+    const el = document.getElementById(id);
+    if (!el) { cb && cb(); return; }
+    el.classList.remove('page-section');
+    void el.offsetWidth; // reflow
+    el.classList.add('page-section');
+    cb && cb();
+}
+
+// Override showPage to add transitions
+const _origShowPage = showPage;
+showPage = function(pageId) {
+    const pages = ['dashPage','subjectPage','allTestsPage','allNotesPage','plannerPage'];
+    pages.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.style.display = 'none';
+    });
+    const el = document.getElementById(pageId);
+    if (el) {
+        el.style.display = 'block';
+        el.classList.remove('page-section');
+        void el.offsetWidth;
+        el.classList.add('page-section');
+    }
+};
+
+// ── SCROLL TO TOP ──
+window.addEventListener('scroll', () => {
+    const btn = document.getElementById('scrollTopBtn');
+    const topbar = document.querySelector('.topbar');
+    if (btn) btn.classList.toggle('show', window.scrollY > 300);
+    if (topbar) topbar.classList.toggle('scrolled', window.scrollY > 10);
+}, { passive: true });
+
+// ── BOTTOM NAV ──
+function bnNav(tab) {
+    document.querySelectorAll('.bn-item').forEach(x => x.classList.remove('active'));
+    const el = document.getElementById('bn-' + tab);
+    if (el) el.classList.add('active');
+
+    if (tab === 'dash')    { showDashboard(null); document.getElementById('tbTitle').textContent = 'Dashboard'; }
+    if (tab === 'tests')   { showSection('allTests', null); document.getElementById('tbTitle').textContent = 'All Tests'; }
+    if (tab === 'notes')   { showSection('allNotes', null); document.getElementById('tbTitle').textContent = 'All Notes'; }
+    if (tab === 'tracker') {
+        // Show first subject tracker
+        const firstSubj = Object.keys(SUBJECTS)[0];
+        if (firstSubj) { openSubject(firstSubj, null); setSubjTab('tracker', null); }
+    }
+    if (tab === 'planner') { showSection('planner', null); document.getElementById('tbTitle').textContent = 'Study Planner'; }
+}
+
+// ── BREADCRUMB UPDATE ──
+const _origOpenSubject = openSubject;
+openSubject = function(subj, el) {
+    _origOpenSubject(subj, el);
+    const bc = document.getElementById('bcSubject');
+    if (bc) bc.textContent = subj;
+};
+
+// ── CONFETTI ──
+function launchConfetti() {
+    const colors = ['#4F46E5','#7C3AED','#10B981','#F59E0B','#EF4444','#06B6D4','#EC4899'];
+    for (let i = 0; i < 80; i++) {
+        setTimeout(() => {
+            const el = document.createElement('div');
+            el.className = 'confetti-piece';
+            el.style.cssText = `
+                left: ${Math.random() * 100}vw;
+                top: -10px;
+                background: ${colors[Math.floor(Math.random() * colors.length)]};
+                width: ${4 + Math.random() * 8}px;
+                height: ${4 + Math.random() * 8}px;
+                border-radius: ${Math.random() > 0.5 ? '50%' : '2px'};
+                animation-duration: ${1.5 + Math.random() * 2}s;
+                animation-delay: ${Math.random() * 0.5}s;
+            `;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 3500);
+        }, i * 20);
+    }
+}
+
+// Override toggleDone to add confetti
+const _origToggleDone = toggleDone;
+toggleDone = function(testId) {
+    const wasAttempted = !!attempted[testId];
+    _origToggleDone(testId);
+    if (!wasAttempted) launchConfetti(); // newly completed
+};
+
+// ── DASHBOARD ACTIVITY GRAPH ──
+function renderActivityGraph() {
+    const wrap = document.getElementById('activityGraph');
+    if (!wrap) return;
+
+    const today = new Date();
+    let html = '';
+    for (let i = 29; i >= 0; i--) {
+        const d = new Date(today); d.setDate(today.getDate() - i);
+        const ds = dateStr(d);
+        const tasks = plannerTasks[ds] || [];
+        const done = tasks.filter(t => t.done).length;
+        const testsDone = Object.entries(attempted).filter(([k, v]) => {
+            if (!v || v === true) return false;
+            const dt = new Date(v);
+            return dt.toISOString().split('T')[0] === ds;
+        }).length;
+        const total = done + testsDone;
+        const lvl = total === 0 ? '' : total <= 1 ? 'l1' : total <= 3 ? 'l2' : total <= 5 ? 'l3' : 'l4';
+        const isT = ds === todayStr();
+        const label = d.toLocaleDateString('en-IN', {day:'numeric',month:'short'}) + ': ' + total + ' activities';
+        html += `<div class="act-cell ${lvl} ${isT ? 'today' : ''}" data-tip="${label}"></div>`;
+    }
+    wrap.innerHTML = html;
+}
+
+// ── ENHANCED DASHBOARD ──
+const _origRenderDashboard = renderDashboard;
+renderDashboard = function() {
+    _origRenderDashboard();
+    renderProgressRings();
+    renderActivityGraph();
+    renderStreakCalendar();
+};
+
+function renderProgressRings() {
+    const wrap = document.getElementById('dashProgressRings');
+    if (!wrap) return;
+
+    const total = allTests.length;
+    const done = Object.keys(attempted).length;
+    const testPct = total > 0 ? Math.round(done / total * 100) : 0;
+
+    const totalUnits = syllabusData.length;
+    const doneUnits = syllabusData.filter(s => getStatus(s.subject, s.unit) === 'Completed').length;
+    const unitPct = totalUnits > 0 ? Math.round(doneUnits / totalUnits * 100) : 0;
+
+    const totalNotes = allNotes.length;
+    const readNotes = Object.keys(noteRead).length;
+    const notePct = totalNotes > 0 ? Math.round(readNotes / totalNotes * 100) : 0;
+
+    function ring(pct, color, size, stroke) {
+        const r = (size - stroke) / 2;
+        const C = 2 * Math.PI * r;
+        const off = C - (pct / 100) * C;
+        return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)">
+            <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="var(--border)" stroke-width="${stroke}"/>
+            <circle cx="${size/2}" cy="${size/2}" r="${r}" fill="none" stroke="${color}" stroke-width="${stroke}"
+                stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${off.toFixed(1)}"
+                stroke-linecap="round" class="prog-ring-circle"/>
+        </svg>`;
+    }
+
+    wrap.innerHTML = `
+        <div class="dash-ring-wrap">
+            <div class="dash-ring" style="width:64px;height:64px">
+                ${ring(testPct,'#4F46E5',64,6)}
+                <div class="dash-ring-pct" style="font-size:0.75rem;color:#4F46E5">${testPct}%</div>
+            </div>
+            <div class="dash-ring-info">
+                <h3>Tests Progress</h3>
+                <p>${done}/${total} tests attempted</p>
+            </div>
+            <div class="dash-ring" style="width:64px;height:64px;margin-left:1.5rem">
+                ${ring(unitPct,'#10B981',64,6)}
+                <div class="dash-ring-pct" style="font-size:0.75rem;color:#10B981">${unitPct}%</div>
+            </div>
+            <div class="dash-ring-info">
+                <h3>Syllabus Progress</h3>
+                <p>${doneUnits}/${totalUnits} units completed</p>
+            </div>
+            <div class="dash-ring" style="width:64px;height:64px;margin-left:1.5rem">
+                ${ring(notePct,'#EF4444',64,6)}
+                <div class="dash-ring-pct" style="font-size:0.75rem;color:#EF4444">${notePct}%</div>
+            </div>
+            <div class="dash-ring-info">
+                <h3>Notes Read</h3>
+                <p>${readNotes}/${totalNotes} PDFs read</p>
+            </div>
+        </div>`;
+}
+
+function renderStreakCalendar() {
+    const wrap = document.getElementById('streakCalendar');
+    if (!wrap) return;
+    const today = new Date();
+    let html = '';
+    // Day labels
+    ['S','M','T','W','T','F','S'].forEach(d => {
+        html += `<div style="font-size:0.55rem;font-weight:800;color:var(--muted);text-align:center;padding-bottom:2px">${d}</div>`;
+    });
+    // Fill empty cells for first day of week
+    const startDate = new Date(today); startDate.setDate(today.getDate() - 27);
+    const startDay = startDate.getDay();
+    for (let i = 0; i < startDay; i++) {
+        html += '<div></div>';
+    }
+    // Cells
+    for (let i = 27; i >= 0; i--) {
+        const d = new Date(today); d.setDate(today.getDate() - i);
+        const ds = dateStr(d);
+        const tasks = plannerTasks[ds] || [];
+        const hasDone = tasks.some(t => t.done);
+        const isT = ds === todayStr();
+        const label = d.toLocaleDateString('en-IN', {day:'numeric',month:'short'});
+        html += `<div class="streak-cell ${hasDone ? 'active' : ''} ${isT ? 'today' : ''}" data-date="${label}"></div>`;
+    }
+    wrap.innerHTML = `<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px">${html}</div>`;
+}
+
+// ── ANNOUNCEMENT (set from here) ──
+function showAnnouncement(text) {
+    const el = document.getElementById('announceBanner');
+    const t = document.getElementById('announceText');
+    if (el && t) { t.textContent = text; el.style.display = 'flex'; }
+}
+// Example: showAnnouncement('🎉 New tests added for Business Finance! Check it out.');
+
+// ── SMOOTH SCROLL ANIMATIONS (Intersection Observer) ──
+const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+        if (e.isIntersecting) {
+            e.target.style.opacity = '1';
+            e.target.style.transform = 'translateY(0)';
+            observer.unobserve(e.target);
+        }
+    });
+}, { threshold: 0.1 });
+
+function observeCards() {
+    document.querySelectorAll('.test-card, .note-card, .video-card, .tracker-unit-card').forEach(el => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(12px)';
+        el.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
+        observer.observe(el);
+    });
+}
+
+// Auto-observe after renders
+const _origRenderSubjTab = renderSubjTab;
+renderSubjTab = function(tab) {
+    _origRenderSubjTab(tab);
+    setTimeout(observeCards, 50);
+};
+
 </script>
 </body>
 </html>
