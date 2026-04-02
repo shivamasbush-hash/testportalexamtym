@@ -172,11 +172,13 @@ img { max-width: 100%; display: block; }
 ══════════════════════════════════════ */
 .modal-backdrop {
   display: none; position: fixed; inset: 0;
-  background: rgba(0,0,0,.6); z-index: 8000;
+  background: rgba(0,0,0,.6); z-index: 9500;
   align-items: center; justify-content: center;
   backdrop-filter: blur(4px);
 }
 .modal-backdrop.open { display: flex; }
+#emailMO { z-index: 9999 !important; }
+#emailMO { z-index: 9999; }
 .em-card {
   background: var(--surface); border-radius: 20px;
   padding: 2rem; width: min(400px,92vw);
