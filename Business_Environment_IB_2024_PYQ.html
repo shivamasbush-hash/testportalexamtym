@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Business Environment IB 2024 PYQ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Business Environment IB 2024 PYQ", "organization": "ExamTym", "durationMinutes": 40, "totalMarks": 54.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Match List I with List II:\n| List I (Trade Agreement Types) | List II (Description) |\n| :--- | :--- |\n| (A) Early Harvest Scheme (EHS) | (I) Two or more parties give right of entry to certain products by reducing duties on an agreed number in tariff lines |\n| (B) Comprehensive Economic Partnership Agreement (CEPA) | (II) In which two or more countries agree to provide trade terms, tariff concession to partner country/ies |\n| (C) Preferential Trade Agreement | (III) A Precursor of CECA, thus a step towards enhanced engagement and confidence building |\n| (D) Free Trade Agreement | (IV) Looks into the regulatory aspect of trade and encompasses an agreement on customs, competition & IPR |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A)-(III), (B)-(IV), (C)-(I), (D)-(II)"}, {"id": "2", "text": "(A)-(IV), (B)-(III), (C)-(II), (D)-(I)"}, {"id": "3", "text": "(A)-(I), (B)-(II), (C)-(I), (D)-(IV)"}, {"id": "4", "text": "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Preferential Trade Agreement (PTA) is the most basic form of integration where partners reduce tariffs on a specific list of items (Positive List).\n* A Free Trade Agreement (FTA) goes further to eliminate tariffs on most goods, operating on a Negative List (items excluded from tariff cuts).\n* CEPA/CECA are comprehensive agreements covering trade in goods, services, investments, and regulatory aspects like IPR and competition.\n**Related Concepts:**\n* Early Harvest Schemes (EHS) are interim measures to liberalize trade on a few items while full FTAs or CEPAs are being negotiated.\n* Rules of Origin (RoO) are crucial in these agreements to prevent non-member countries from routing products through member countries.", "id": 1}, {"question": "WTO in its 8th Ministerial conference adopted a decision allowing members to waive the provisions of Article II (Most-Favored-Nation Treatment) of the GATS to allow the granting of preferential treatment to services and service supplies to which countries?", "options": [{"id": "1", "text": "Adjacent Countries"}, {"id": "2", "text": "Non-Nuclear Countries"}, {"id": "3", "text": "Least-Developed Countries"}, {"id": "4", "text": "SAARC Countries"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The WTO's 8th Ministerial Conference (Geneva, 2011) adopted the historic \"LDC Services Waiver.\"\n* This waiver allows developed and developing countries to provide preferential market access specifically to service providers from Least-Developed Countries (LDCs).\n* It waives the strict Most-Favored-Nation (MFN) principle of the General Agreement on Trade in Services (GATS), which normally requires equal treatment for all WTO members.\n**Related Concepts:**\n* Special and Differential Treatment (SDT) is the underlying principle that grants poorer nations more favorable trade terms.\n* GATS regulates global trade in services, divided into four \"Modes of Supply\" (e.g., cross-border supply, commercial presence).", "id": 2}, {"question": "The tool that the International Development Association (IDA) uses to address the impact of severe natural disasters and public health emergencies by providing extra finances is known as:", "options": [{"id": "1", "text": "Emergency Response Fund (ERF)"}, {"id": "2", "text": "Long term Lending system"}, {"id": "3", "text": "Crisis Response Window (CRW)"}, {"id": "4", "text": "Monetary Fund"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The Crisis Response Window (CRW) is a dedicated funding mechanism within the International Development Association (IDA), a World Bank Group institution.\n* It is specifically designed to help the world's poorest countries respond to exceptionally severe crises, such as major natural disasters, economic shocks, and health emergencies (like Ebola or COVID-19).\n* It provides rapid, additional financing so countries do not have to divert funds away from their core long-term development projects to handle immediate emergencies.\n**Related Concepts:**\n* The IDA provides zero-to-low-interest loans (credits) and grants for programs that boost economic growth and improve living conditions in developing nations.\n* The IBRD (International Bank for Reconstruction and Development) serves middle-income and creditworthy low-income countries.", "id": 3}, {"question": "A statistical statement in International business that shows at a point the value of financial assets of residents of an economy that are claims on non-residents or are gold bullion held as reserve assets and the liabilities of residents of an economy to non-residents is known as:", "options": [{"id": "1", "text": "Currency Composition Table"}, {"id": "2", "text": "Special Purpose Entities (SPEs)"}, {"id": "3", "text": "Cross Border Flows"}, {"id": "4", "text": "The International Investment Position (IIP)"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* The International Investment Position (IIP) is a macroeconomic financial statement that outlines a country's external financial assets and liabilities at a specific point in time.\n* It acts like a national \"balance sheet\" showing what the country owns abroad (assets, including forex reserves and gold) versus what it owes to foreigners (liabilities).\n* A positive IIP indicates a nation is a net creditor to the world, while a negative IIP means it is a net debtor.\n**Related Concepts:**\n* The Balance of Payments (BoP) measures the *flow* of transactions over a period, whereas the IIP measures the *stock* of assets and liabilities at a point in time.\n* Foreign Direct Investment (FDI) and Portfolio Investment are major components tracked in both BoP and IIP.", "id": 4}, {"question": "In international trade, factoring is widely used in short-term transactions as a continuous arrangement. Arrange the steps of export factoring operations in sequence:\n(A) The export factor transfers the invoice to the import factor, who, in return, assumes credit risk and undertakes administration of receivable.\n(B) The export factor pays cash in advance to the exporter against receivables until the payment is received from the importer.\n(C) The importer and exporter enter into a sales contract and agree on the terms of sale.\n(D) The import factor presents the invoice to the importer, takes payment and pays to the export factor.\n(E) The exporter ships the goods to the importer and submits the invoice to the export factor.", "options": [{"id": "1", "text": "(E), (A), (B), (D), (C)"}, {"id": "2", "text": "(E), (B), (A), (D), (C)"}, {"id": "3", "text": "(C), (E), (A), (B), (D)"}, {"id": "4", "text": "(C), (B), (E), (D), (A)"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* International factoring is a financial transaction where an exporter sells its accounts receivable (invoices) to a third party (the export factor) at a discount.\n* The logical sequence begins with the underlying business deal: Exporter and Importer sign a contract (C).\n* The exporter then ships the goods and gives the invoice to their local export factor (E). The export factor forwards this to an import factor in the buyer's country (A). The export factor advances funds to the exporter (B). Finally, the import factor collects payment from the buyer on the due date (D).\n**Related Concepts:**\n* Forfaiting is similar but is typically used for medium-to-long-term capital goods exports and involves negotiable instruments like bills of exchange.\n* Factoring is generally \"without recourse,\" meaning the factor assumes the risk of the buyer defaulting.", "id": 5}, {"question": "In WTO terminology, subsidies in general are identified by \"boxes\". Domestic support measures considered to distort production and trade, which are defined in Article 6 of the Agriculture Agreement, fall into which box?", "options": [{"id": "1", "text": "Amber Box"}, {"id": "2", "text": "Jumbo Box"}, {"id": "3", "text": "Greenfield Box"}, {"id": "4", "text": "Black Box"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Under the WTO Agreement on Agriculture (AoA), domestic subsidies are categorized by \"boxes\" operating like traffic lights.\n* The Amber Box contains all domestic support measures considered to directly distort production and trade (e.g., Minimum Support Prices or fertilizer subsidies tied to production volumes).\n* WTO members are required to calculate their Total Aggregate Measurement of Support (AMS) for the Amber Box and commit to reducing it.\n**Related Concepts:**\n* The Green Box includes subsidies that do not distort trade (e.g., pest control, basic research) and are permitted without limits.\n* The Blue Box is the \"Amber Box with conditions\"\u2014it contains subsidies that are tied to programs requiring farmers to limit production.", "id": 6}, {"question": "Which of the following factors constitute the Economic Environment of a country?\n(A) Financial System\n(B) Socio-cultural environment\n(C) Economic Policies\n(D) Educational environment\n(E) Structural Equilibrium (Economic Structure)", "options": [{"id": "1", "text": "(A), (B) & (C) only"}, {"id": "2", "text": "(A), (C) & (E) only"}, {"id": "3", "text": "(B), (D) & (E) only"}, {"id": "4", "text": "(C), (D) & (E) only"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* A nation's Economic Environment consists of the macroeconomic variables and institutions that influence business operations and market potential.\n* The **Financial System (A)** (banks, capital markets), **Economic Policies (C)** (fiscal, monetary, and trade policies), and the **Economic Structure/Equilibrium (E)** (capitalist vs. mixed, sectoral contributions of GDP) form its core pillars.\n* Socio-cultural factors (beliefs, values) and Educational environments belong to the social and demographic environment, not the strictly economic one.\n**Related Concepts:**\n* The PESTLE framework separates the Macro-environment into Political, Economic, Social, Technological, Legal, and Environmental categories.\n* Economic indices like GDP growth rate, inflation, and BoP are metrics used to gauge this environment.", "id": 7}, {"question": "Which of the following is the apex decision-making body of the WTO?", "options": [{"id": "1", "text": "General Council"}, {"id": "2", "text": "Executive Council"}, {"id": "3", "text": "Ministerial Conference"}, {"id": "4", "text": "TRIMS"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The Ministerial Conference is the topmost, supreme decision-making body of the World Trade Organization (WTO).\n* It consists of the trade ministers of all member countries and is mandated to meet at least once every two years.\n* It has the ultimate authority to make decisions on all matters under any of the multilateral trade agreements.\n**Related Concepts:**\n* The General Council is the second tier, acting on behalf of the Ministerial Conference in the day-to-day running of the WTO. It also convenes as the Dispute Settlement Body (DSB).\n* TRIMS (Trade-Related Investment Measures) is an agreement, not an organizational body.", "id": 8}, {"question": "Arrange the following anti-dumping process in proper sequence.\n(A) Initiation\n(B) Preliminary screening\n(C) Rejection under de minimis, unsubstantiated information etc.\n(D) Exporting country allowed to modify practice.\n(E) Preliminary findings followed by final finding and measures.", "options": [{"id": "1", "text": "(B), (C), (A), (D), (E)"}, {"id": "2", "text": "(A), (B), (C), (D), (E)"}, {"id": "3", "text": "(B), (A), (C), (D), (E)"}, {"id": "4", "text": "(B), (C), (A), (E), (D)"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* The WTO Anti-Dumping process is highly regulated to prevent arbitrary trade restrictions.\n* The Directorate General of Trade Remedies (DGTR) starts with a **Preliminary screening (B)** of the domestic industry's complaint. Cases lacking evidence or falling under negligible \"de minimis\" margins face immediate **Rejection (C)**.\n* If valid, an official **Initiation (A)** notice is published. Diplomatic channels may allow the **Exporting country to modify its practice (D)** (e.g., price undertakings). If unresolved, authorities issue **Preliminary/Final findings and impose duties (E)**.\n**Related Concepts:**\n* Anti-Dumping Duties (ADD) are country-specific and company-specific trade remedies.\n* \"De minimis\" means the dumping margin is less than 2% of the export price.", "id": 9}, {"question": "Which of the following are the principal functions of UNCTAD?\n(A) To promote International trade with a view to accelerating economic development.\n(B) To assist economic development of developing countries by promoting private enterprises.\n(C) To negotiate multinational trade agreements covering tariffs and intellectual property.\n(D) To make proposals for putting its principles and policies into effect.", "options": [{"id": "1", "text": "(A), (B) & (C) Only"}, {"id": "2", "text": "(B), (C) & (D) Only"}, {"id": "3", "text": "(A), (B) & (D) Only"}, {"id": "4", "text": "(A), (C) & (D) Only"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The United Nations Conference on Trade and Development (UNCTAD) was established to maximize trade, investment, and development opportunities for developing nations.\n* Its core mandates include promoting international trade (A), assisting developmental capacity building and enterprise (B), and formulating policy proposals to integrate developing countries into the world economy (D).\n* Negotiating binding multilateral trade agreements (like tariffs and IP) is the specific mandate of the **WTO**, not UNCTAD.\n**Related Concepts:**\n* UNCTAD publishes the highly influential annual \"World Investment Report\" tracking global FDI.\n* It operates strictly as an intergovernmental think tank and consensus-building forum, lacking the dispute settlement powers of the WTO.", "id": 10}, {"question": "Match List I with List II\n| List I (Act/Institution) | List II (Year) |\n| :--- | :--- |\n| (A) Consumer Protection Act | (I) 1964 |\n| (B) FEMA | (II) 1945 |\n| (C) IMF | (III) 1999 |\n| (D) UNCTAD | (IV) 2019 |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A)-(IV), (B)-(III), (C)-(II), (D)-(I)"}, {"id": "2", "text": "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)"}, {"id": "3", "text": "(A)-(III), (B)-(IV), (C)-(II), (D)-(I)"}, {"id": "4", "text": "(A)-(I), (B)-(II), (C)-(III), (D)-(IV)"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* The modern **Consumer Protection Act (A)** replacing the 1986 act was passed in **2019 (IV)**.\n* The Foreign Exchange Management Act **(FEMA - B)** was enacted in **1999 (III)** to replace the draconian FERA.\n* The **IMF (C)** formally came into existence in December **1945 (II)** when 29 member countries signed its Articles of Agreement. **UNCTAD (D)** was established as a permanent UN body in **1964 (I)**.\n**Related Concepts:**\n* FEMA shifted the focus from \"controlling\" foreign exchange to \"managing\" it to facilitate trade.\n* The CPA 2019 introduced the Central Consumer Protection Authority (CCPA) and explicitly covered e-commerce.", "id": 11}, {"question": "Which of the following are the benefits of globalisation?\n(A) Increase in competition would make companies more cost & quality conscious and innovative.\n(B) An open economy spurs innovation with fresh ideas from abroad.\n(C) Liberalisation & global competition enhances consumer choice and consumer surplus.\n(D) Developing countries could be very vulnerable to the harmful effects of globalisation.\n(E) Globalisation opens up enormous domestic and global opportunities for firms in developing countries.", "options": [{"id": "1", "text": "(A), (B), (C) & (D) Only"}, {"id": "2", "text": "(C), (D) & (E) Only"}, {"id": "3", "text": "(B), (C), (D) & (E) Only"}, {"id": "4", "text": "(A), (B), (C) & (E) Only"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* Globalization theoretically yields several micro and macroeconomic benefits by removing market friction.\n* Competition forces efficiency and innovation (A), cross-border flow brings new ideas/technology (B), consumers enjoy lower prices and wider choices (C), and domestic firms get access to massive global markets (E).\n* Statement (D) is factually true but highlights a severe **drawback/risk** (vulnerability to global shocks), not a \"benefit\" of globalization.\n**Related Concepts:**\n* \"Consumer Surplus\" increases under free trade because global competition drives market prices down toward marginal cost.\n* Financial contagion (like the 2008 crisis) is an example of the vulnerability mentioned in point D.", "id": 12}, {"question": "Which of the following are included under the EPRG framework of internationalisation?\n(A) Eco centrism\n(B) Ethno centrism\n(C) Poly centrism\n(D) Regio centrism\n(E) Geo centrism", "options": [{"id": "1", "text": "(B), (C), (D) & (E) Only"}, {"id": "2", "text": "(A), (B), (C) & (E) Only"}, {"id": "3", "text": "(A), (C), (D) & (E) Only"}, {"id": "4", "text": "(A), (B), (D) & (E) Only"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Howard Perlmutter\u2019s EPRG framework identifies the four main strategic orientations of multinational corporations.\n* **Ethnocentric (B):** Home country methods are superior; products are standardized globally.\n* **Polycentric (C):** Host country is unique; local subsidiaries are highly autonomous and customize products.\n* **Regiocentric (D):** Regions are the focus (e.g., a \"European\" strategy).\n* **Geocentric (E):** The entire world is a single market; seeks the best men/methods regardless of nationality.\n**Related Concepts:**\n* \"Eco centrism\" relates to environmentalism and ecology, and is entirely unrelated to international strategic management frameworks.\n* A Geocentric approach yields \"transnational\" organizational structures.", "id": 13}, {"question": "Arrange the following strategic decisions in international business in proper sequence.\n(A) Market Selection Decision\n(B) International Business Decision (Decision to Internationalize)\n(C) Entry and Operating Decision\n(D) International Organisation & HR Decisions\n(E) Marketing Mix Decision", "options": [{"id": "1", "text": "(A), (B), (C), (D), (E)"}, {"id": "2", "text": "(B), (A), (C), (D), (E)"}, {"id": "3", "text": "(B), (A), (C), (E), (D)"}, {"id": "4", "text": "(C), (A), (B), (E), (D)"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Internationalization is a structured, sequential strategic process.\n* First, the firm evaluates its core competencies to make the foundational **Decision to Internationalize (B)**.\n* Once decided, it must choose *where* to go: **Market Selection (A)** based on PESTLE analysis. Next, it must decide *how* to enter: **Entry Mode Selection (C)** (e.g., Exporting, FDI).\n* Following entry, it formulates tactical operations: adapting the **Marketing Mix (E)** to local tastes, and finally establishing the necessary **Organizational structure and HR policies (D)** to run the local subsidiary.\n**Related Concepts:**\n* Market selection relies heavily on analyzing \"psychic distance\" and economic indicators.\n* Entry modes represent varying degrees of risk, control, and resource commitment.", "id": 14}, {"question": "Which of the following is NOT a part of the micro environment?", "options": [{"id": "1", "text": "Suppliers"}, {"id": "2", "text": "Customers"}, {"id": "3", "text": "Competitors"}, {"id": "4", "text": "Technology"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* The business environment is divided into the Micro (Task) environment and Macro (General) environment.\n* The Micro environment includes actors close to the company that directly affect its daily ability to serve customers: Suppliers, Customers, Competitors, Intermediaries, and the Publics.\n* **Technology** is a broad, systemic force that affects the entire economy and all industries. It is a core component of the **Macro environment**.\n**Related Concepts:**\n* The Macro environment is typically analyzed using the PESTLE framework (Political, Economic, Social, Technological, Legal, Environmental).\n* A firm has some degree of influence over its micro environment, but almost no control over macro-environmental forces.", "id": 15}, {"question": "Match the List-I with List-II\n| List I | List II |\n| :--- | :--- |\n| (A) Right to Safety | (I) Consumers have a right against the marketing of goods, products or services which are hazardous to life & property. |\n| (B) Right to be assured | (II) Consumers have a right to know about the quality, quantity, potency, purity, standard and price of goods or services. |\n| (C) Right to be informed | (III) Consumers have a right to be assured that their interest will receive due consideration at appropriate commission |\n| (D) Right to be heard | (IV) Consumer has the opportunity to choose from a wide range of products at reasonable rates. |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A)-(I), (B)-(IV), (C)-(II), (D)-(III)"}, {"id": "2", "text": "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)"}, {"id": "3", "text": "(A)-(III), (B)-(II), (C)-(I), (D)-(IV)"}, {"id": "4", "text": "(A)-(IV), (B)-(III), (C)-(II), (D)-(I)"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* The Consumer Protection Act establishes fundamental consumer rights to ensure fair trade.\n* **Right to Safety (A)** matches the protection against hazardous goods (I).\n* **Right to be Assured (Choice) (B)** guarantees access to a variety of products at competitive prices (IV).\n* **Right to be Informed (C)** ensures the consumer knows the exact details (quality, price) of the product (II), preventing deceptive advertising.\n* **Right to be Heard (Representation) (D)** guarantees that consumer grievances will be taken seriously by appropriate forums (III).\n**Related Concepts:**\n* Caveat Emptor (\"Let the buyer beware\") is the older legal concept that these rights seek to balance by shifting responsibility toward sellers (Caveat Venditor).\n* Two additional rights are the Right to Seek Redressal and the Right to Consumer Education.", "id": 16}, {"question": "Which of the following are different types of dumping in international trade?\n(A) Persistent dumping\n(B) Sporadic dumping\n(C) Predatory dumping\n(D) Nomadic dumping", "options": [{"id": "1", "text": "(A) & (B) Only"}, {"id": "2", "text": "(A), (B) & (C) Only"}, {"id": "3", "text": "(B) & (C) Only"}, {"id": "4", "text": "(C) & (D) Only"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Dumping occurs when a firm exports goods at a price lower than its domestic market price. International trade economics recognizes three primary behavioral categories of dumping.\n* **Sporadic dumping:** Occasional clearing of excess unsold inventory in foreign markets.\n* **Predatory dumping:** Deliberately selling below cost to destroy foreign competitors and establish a monopoly.\n* **Persistent dumping:** A continuous strategy of price discrimination to maximize overall corporate profits.\n* \"Nomadic dumping\" is a fabricated term and does not exist in trade theory.\n**Related Concepts:**\n* Anti-Dumping Duties (ADD) are legal countermeasures permitted by the WTO if domestic industry injury is proven.\n* Reverse dumping occurs when the foreign export price is actually *higher* than the domestic price.", "id": 17}, {"question": "Which of the following is not a feature of a capitalist economy?", "options": [{"id": "1", "text": "Right of private property"}, {"id": "2", "text": "Freedom of choice to consumers"}, {"id": "3", "text": "Government Interference"}, {"id": "4", "text": "High level of competition"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* A capitalist (free-market) economy is an economic system based on the private ownership of the means of production and their operation for profit.\n* Its core pillars include the unalienable right to private property, consumer sovereignty (freedom of choice), and intense market competition driven by the profit motive.\n* **Government Interference** (such as price controls, production quotas, and central planning) is fundamentally contradictory to pure capitalism, making it the correct answer.\n**Related Concepts:**\n* Laissez-faire capitalism represents the purest form, advocating for zero state intervention beyond protecting property rights.\n* Mixed economies (like India) blend capitalist free markets with significant government regulatory intervention.", "id": 18}, {"question": "Which of the following is a situation of adverse balance of trade?", "options": [{"id": "1", "text": "Import more than exports"}, {"id": "2", "text": "Exports more than imports"}, {"id": "3", "text": "Exports equal to imports"}, {"id": "4", "text": "Export Surplus"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* The Balance of Trade (BoT) specifically tracks the difference between the monetary value of a nation's visible exports and imports over a certain period.\n* A trade surplus (favorable BoT) occurs when exports exceed imports, injecting wealth into the domestic economy.\n* A trade deficit, or an **adverse/unfavorable balance of trade**, happens when a country imports a higher value of goods than it manages to export.\n**Related Concepts:**\n* Persistent adverse balance of trade drains a country's foreign exchange reserves and may lead to currency depreciation.\n* The BoT strictly deals with visible goods, whereas the Current Account also includes invisibles (services and transfers).", "id": 19}, {"question": "The Consumer Protection Act, 1986 came into force on:", "options": [{"id": "1", "text": "1st July 1987"}, {"id": "2", "text": "24th December 1986"}, {"id": "3", "text": "15th April 1987"}, {"id": "4", "text": "1st January 1986"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* While the Consumer Protection Act, 1986 received the President's assent on 24th December 1986 (celebrated as National Consumer Day), the legal enforcement of the statute happened in stages.\n* The majority of its crucial provisions (Chapters I, II, and IV) officially came into force on **1st July 1987**.\n* (Note: Chapter III, dealing with the establishment of Consumer Disputes Redressal Agencies, came into force slightly earlier on 15th April 1987, but 1st July is universally cited as the date the act became broadly operational).\n**Related Concepts:**\n* The 1986 Act was entirely repealed and replaced by the modern Consumer Protection Act, 2019, which came into force on 20th July 2020.\n* The Act established the Central Consumer Protection Council as an advisory body.", "id": 20}, {"question": "Match the LIST-I with LIST-II:\n| LIST-I (Theory) | LIST-II (Author(s)) |\n| :--- | :--- |\n| (A) Theory of Comparative Cost Advantage | (I) Heckscher & Ohlin |\n| (B) Theory of Opportunity Cost | (II) David Ricardo |\n| (C) Theory of Factor Endowment | (III) Haberler |\n| (D) Theory of Absolute Advantage | (IV) Adam Smith |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)"}, {"id": "2", "text": "(A)-(II), (B)-(III), (C)-(IV), (D)-(I)"}, {"id": "3", "text": "(A)-(III), (B)-(II), (C)-(I), (D)-(IV)"}, {"id": "4", "text": "(A)-(IV), (B)-(III), (C)-(II), (D)-(I)"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* **Absolute Advantage (D)** was proposed by the father of economics, **Adam Smith (IV)**, arguing countries should produce what they are most efficient at.\n* **Comparative Cost Advantage (A)** was developed by **David Ricardo (II)**, showing trade benefits exist even if one country is more efficient in producing everything.\n* **Factor Endowment Theory (C)**, linking comparative advantage to national resources (capital/labor), was established by **Heckscher & Ohlin (I)**.\n* The **Opportunity Cost Theory (B)** of international trade was formulated by **Gottfried Haberler (III)** to rescue Ricardo's theory from the restrictive labor theory of value.\n**Related Concepts:**\n* Haberler introduced Production Possibility Frontiers (PPF) into international trade analysis.\n* The Leontief Paradox is an empirical challenge specifically directed at the Heckscher-Ohlin model.", "id": 21}, {"question": "Which one of the following is a value-added service of EXIM Bank?", "options": [{"id": "1", "text": "Export Facilitation"}, {"id": "2", "text": "Export Product Development"}, {"id": "3", "text": "Workshops and Seminars"}, {"id": "4", "text": "Export Marketing"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* The Export-Import Bank of India (EXIM Bank) primarily acts as a financial institution extending credit lines, buyer's credit, and project finance to boost international trade.\n* Beyond sheer financing, EXIM Bank distinguishes itself by providing specialized \"Value-Added Services\" to Indian enterprises to help them navigate global complexities.\n* **Export Marketing** is a key value-added advisory service where the bank assists Indian companies in locating overseas distributors, identifying market potential, and establishing global partnerships.\n**Related Concepts:**\n* EXIM Bank was established in 1982 to serve as the apex financial institution for foreign trade.\n* Its GRID (Export Advisory Services) provides deep economic and country risk research to exporters.", "id": 22}, {"question": "Which of the following are the features of the Foreign Exchange Management Act (F.E.M.A)?\n(A) Central government can regulate payments to and from a person situated outside the country.\n(B) Holding of immovable property outside India is restricted.\n(C) R.B.I can restrict the transaction from capital account even if it is done by an authorized person.\n(D) All foreign financial transactions are to be done through F.E.M.A authorized persons.\n(E) F.E.M.A applies to all Indian citizens living abroad permanently.", "options": [{"id": "1", "text": "(A), (B), (C) Only"}, {"id": "2", "text": "(B), (D), (E) Only"}, {"id": "3", "text": "(A), (B), (E) Only"}, {"id": "4", "text": "(A), (C), (D) Only"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* FEMA replaced FERA with the objective of facilitating external trade and maintaining a stable forex market.\n* Under FEMA Section 3, no person can deal in foreign exchange except through an **Authorized Person (D)**.\n* The **RBI strictly regulates and can restrict Capital Account transactions (C)** to maintain macroeconomic stability, while the **Central Government (A)** oversees broad foreign policy rules regarding payments/remittances involving foreign entities.\n* FEMA applies to \"Residents of India,\" not automatically to all Indian citizens (like NRIs permanently settled abroad), making (E) false.\n**Related Concepts:**\n* Current Account Convertibility allows free forex exchange for trade in goods/services.\n* \"Authorized Persons\" are typically commercial banks designated by the RBI.", "id": 23}, {"question": "Which of the following institutions is the result of the Bretton Woods Conference of nations held in 1944?", "options": [{"id": "1", "text": "WTO"}, {"id": "2", "text": "IMF and IBRD"}, {"id": "3", "text": "UNCTAD"}, {"id": "4", "text": "ADB"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* The United Nations Monetary and Financial Conference, held in Bretton Woods, New Hampshire, in 1944, aimed to rebuild the shattered post-WWII global economy.\n* The conference successfully established two foundational sister institutions: The **International Monetary Fund (IMF)** to ensure exchange rate stability, and the **International Bank for Reconstruction and Development (IBRD - the World Bank)** to provide capital for rebuilding infrastructure.\n* The WTO (1995), UNCTAD (1964), and ADB (1966) were established much later.\n**Related Concepts:**\n* The original Bretton Woods system relied on fixed exchange rates pegged to the US Dollar, which was convertible to gold.\n* The conference also envisioned a third pillar, the International Trade Organization (ITO), which failed to materialize, leading to the temporary GATT.", "id": 24}, {"question": "Arrange the following levels of economic integration in increasing order:\n(A) Political Union\n(B) Free Trade Area\n(C) Customs Union\n(D) Common Market\n(E) Economic Union", "options": [{"id": "1", "text": "(B), (C), (D), (E), (A)"}, {"id": "2", "text": "(B), (A), (C), (D), (E)"}, {"id": "3", "text": "(B), (A), (D), (C), (E)"}, {"id": "4", "text": "(E), (D), (B), (A), (C)"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Economic integration progresses systematically by eliminating deeper layers of economic sovereignty.\n* It begins with a **Free Trade Area (B)** (removing internal tariffs). Next is a **Customs Union (C)** (adds a common external tariff against non-members).\n* Deeper integration creates a **Common Market (D)** (allows free movement of labor and capital). This evolves into an **Economic Union (E)** (harmonized macroeconomic policies and common currency). The ultimate theoretical stage is a full **Political Union (A)**.\n**Related Concepts:**\n* NAFTA/USMCA is an example of a Free Trade Area.\n* The European Union (EU) functions as an advanced Economic Union with elements of a Political Union.", "id": 25}, {"question": "Which of the following is not a monetary measure for correcting disequilibrium in Balance of Payment?", "options": [{"id": "1", "text": "Monetary Contraction"}, {"id": "2", "text": "Devaluation"}, {"id": "3", "text": "Exchange Control"}, {"id": "4", "text": "Abolition of Export Duties"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* Correcting a Balance of Payments (BoP) deficit involves either Monetary (financial/currency manipulation) or Non-Monetary (trade/fiscal) measures.\n* Monetary contraction (raising interest rates), Devaluation (lowering currency value artificially), and Exchange Control (rationing foreign currency by the central bank) are core **Monetary measures**.\n* The **Abolition of Export Duties** is a trade/fiscal policy designed to make goods cheaper for foreigners, encouraging export volumes. It does not directly manipulate the money supply or currency mechanisms.\n**Related Concepts:**\n* Deflation (induced via monetary contraction) lowers domestic prices, theoretically boosting exports and suppressing import demand.\n* Import Quotas and Tariffs are other prime examples of non-monetary trade measures.", "id": 26}, {"question": "Which of the following are NOT the characteristics of the theory of comparative cost advantage?\n(A) It considers labor as the only factor of production.\n(B) It assumes increasing returns to scale.\n(C) It assumes zero transportation costs.\n(D) It assumes perfect competition in both product and factor markets.\n(E) It considers multiple factors of production (Capital, Land).", "options": [{"id": "1", "text": "(A), (C) Only"}, {"id": "2", "text": "(B), (E) Only"}, {"id": "3", "text": "(C), (D) Only"}, {"id": "4", "text": "(A), (D), (E) Only"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* David Ricardo's classical Theory of Comparative Cost Advantage relies on highly restrictive 19th-century assumptions to prove the mathematical benefits of trade.\n* The theory explicitly assumes a 2x2x1 model: 2 countries, 2 goods, and exactly 1 factor of production (homogeneous Labor). Thus, stating it considers **multiple factors of production (E) is false**.\n* Furthermore, it assumes **constant returns to scale**, meaning doubling inputs exactly doubles outputs. Assuming **increasing returns to scale (B) is false**, as economies of scale belong to New Trade Theory.\n**Related Concepts:**\n* The theory assumes complete factor mobility *within* a country, but complete factor immobility *between* countries.\n* The Heckscher-Ohlin model was developed specifically to address the limitation of Ricardo's single-factor (labor) assumption by introducing Capital.", "id": 27}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Business Environment IB 2022 PYQ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Business Environment IB 2022 PYQ", "organization": "ExamTym", "durationMinutes": 55, "totalMarks": 86.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Which of the following are the main platforms for social media?\n(A) Search Engines\n(B) Online communities and forums\n(C) Blogs\n(D) Social Networks\n(E) Web 1.0", "options": [{"id": "1", "text": "(B), (C) and (D) only"}, {"id": "2", "text": "(B) and (D) only"}, {"id": "3", "text": "(B), (C), (D) and (E) only"}, {"id": "4", "text": "(A), (B), (C) and (D) only"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Social media platforms are digital spaces facilitating content sharing, networking, and interactive dialogue among users.\n* Blogs, online communities, and social networks (like Facebook or LinkedIn) are primary examples of Web 2.0 interactive technologies.\n* Search engines (like Google) and Web 1.0 (static read-only web pages) lack the interactive, user-generated focus of social media.\n**Related Concepts:**\n* Web 2.0 refers to the participatory and social web.\n* User-Generated Content (UGC) is the core driver of social media platforms.", "id": 1}, {"question": "Which of the following measures inflation in ecosystem?\n(A) Phillips curve\n(B) Consumer Price Index\n(C) Misery Index\n(D) GDP deflator\n(E) Fisher effect", "options": [{"id": "1", "text": "(A), (B) and (E) Only"}, {"id": "2", "text": "(B), (C) and (D) Only"}, {"id": "3", "text": "(B), (C) and (E) Only"}, {"id": "4", "text": "(B) and (D) Only"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* Inflation represents the rate at which the general level of prices for goods and services is rising.\n* The Consumer Price Index (CPI) measures price changes of a basket of consumer goods and services over time.\n* The GDP Deflator measures the price changes of all domestically produced final goods and services, acting as a broad inflation metric.\n**Related Concepts:**\n* The Phillips Curve shows the relationship between inflation and unemployment, but does not *measure* inflation itself.\n* The Misery Index is the sum of inflation and unemployment rates.", "id": 2}, {"question": "Which of the following are the essential elements for defining a business?\n(A) Dealers\n(B) Products\n(C) Markets\n(D) Competitors\n(E) Functions", "options": [{"id": "1", "text": "B, C and E only"}, {"id": "2", "text": "A, B and E only"}, {"id": "3", "text": "B, C and D only"}, {"id": "4", "text": "B and D only"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Derek F. Abell proposed a three-dimensional framework for defining a business effectively.\n* The three dimensions are: Customer Groups (Markets), Customer Needs (Functions), and Alternative Technologies (Products).\n* Dealers and competitors represent the external market environment, not the core internal definition of what the business *is*.\n**Related Concepts:**\n* Strategic Business Units (SBUs) are often defined using Abell's framework.\n* Theodore Levitt's \"Marketing Myopia\" argues for defining a business by customer needs (Functions) rather than just products.", "id": 3}, {"question": "The most significant and widely used country risk ratings in International Business Risks are given by which of the following?\n(A) Business Environment Risk Intelligence (BERI) Index\n(B) Economist Intelligence Unit (EIU) Indices\n(C) National Centre for Trade Information (NCTI)\n(D) India Trade Promotion Organisation (ITPO)\n(E) PRS Group's International Country Risk Guide", "options": [{"id": "1", "text": "(A), (C) Only"}, {"id": "2", "text": "(A), (B) and (E) Only"}, {"id": "3", "text": "(A), (D), (E) Only"}, {"id": "4", "text": "(C), (D), (E) Only"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Country risk assessment helps multinational firms evaluate political, economic, and financial risks before entering foreign markets.\n* BERI, EIU, and the PRS Group (ICRG) are globally recognized institutions providing standardized indices for international risk.\n* NCTI and ITPO are Indian trade promotion organizations, not global country risk rating agencies.\n**Related Concepts:**\n* Political risk includes the threat of expropriation, civil unrest, or drastic policy shifts.\n* Economic risk evaluates macroeconomic stability, such as inflation and balance of payments.", "id": 4}, {"question": "Michael Porter has identified five forces that determine the intrinsic long-term attractiveness of a market. According to the model, which of the following are true?\n(A) A segment is unattractive if it already contains numerous aggressive competitors.\n(B) A segment is unattractive if it is stable or declining.\n(C) A segment is unattractive if it has high entry barriers and low exit barriers.\n(D) A segment is unattractive if the company's suppliers are able to raise prices.\n(E) A segment is unattractive when there are actual or potent substitutes for the product.", "options": [{"id": "1", "text": "(A) and (B) only"}, {"id": "2", "text": "(B) and (C) only"}, {"id": "3", "text": "(A), (C) and (D) only"}, {"id": "4", "text": "(A), (B), (D) and (E) only"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* Porter's Five Forces Model evaluates industry attractiveness based on Rivalry, Supplier Power, Buyer Power, Threat of Substitutes, and Threat of New Entrants.\n* Intense rivalry (A), declining markets (B), strong supplier power (D), and high threat of substitutes (E) all squeeze profitability, making a segment unattractive.\n* Conversely, high entry barriers protect incumbents, and low exit barriers reduce risk, making such a segment *highly attractive*, thus invalidating statement (C).\n**Related Concepts:**\n* Supplier bargaining power is high when switching costs are high or substitutes are unavailable.\n* Industry rivalry intensifies when fixed costs are high and products are undifferentiated.", "id": 5}, {"question": "In which one of the following modes of entry into foreign markets risk and profit potential are the highest?", "options": [{"id": "1", "text": "Indirect exporting"}, {"id": "2", "text": "Joint venture"}, {"id": "3", "text": "Direct investment"}, {"id": "4", "text": "Direct exporting"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Foreign Market Entry Modes vary systematically on a spectrum of control, risk, and potential return.\n* Foreign Direct Investment (FDI), such as wholly-owned subsidiaries or greenfield ventures, requires the maximum capital commitment.\n* Due to this massive resource commitment and lack of shared equity (unlike joint ventures), FDI carries the highest risk but offers 100% of the profit potential.\n**Related Concepts:**\n* Indirect exporting carries the lowest risk and lowest control.\n* Licensing and Franchising sit in the middle, balancing moderate risk with moderate returns.", "id": 6}, {"question": "Quotas which are the quantitative restrictions on exports/imports intended at protecting local industries and conserving foreign exchange, include which of the following?\n(A) Single stage quota\n(B) Absolute quota\n(C) Tariff quotas\n(D) Value added quotas\n(E) Voluntary quotas", "options": [{"id": "1", "text": "(B), (C), (E) Only"}, {"id": "2", "text": "(A), (B), (C) Only"}, {"id": "3", "text": "(A), (D), (E) Only"}, {"id": "4", "text": "(B), (C), (D), (E) Only"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Quotas are non-tariff barriers that set a physical limit on the quantity of a good that can be imported over a timeframe.\n* Absolute quotas strictly limit the quantity permitted, while Tariff-rate quotas allow a certain quantity at a lower tariff rate before penalizing further imports.\n* Voluntary Export Restraints (VERs / Voluntary quotas) are self-imposed quotas by the exporting country, often negotiated under pressure.\n**Related Concepts:**\n* Embargoes represent the most extreme form of quota, setting the import limit to strictly zero.\n* Non-tariff barriers are generally considered more restrictive to free trade than tariffs.", "id": 7}, {"question": "Heckscher-Ohlin Theory of factor endowment suggests which of the following types of relationships?\n(A) Production-Marketing relationship\n(B) Land-Labour relationship\n(C) Marketing-Capital relationships\n(D) Labour-Capital relationships\n(E) Technological complexities", "options": [{"id": "1", "text": "(A), (B) Only"}, {"id": "2", "text": "(B), (C) Only"}, {"id": "3", "text": "(B), (D) Only"}, {"id": "4", "text": "(A), (C), (E) Only"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The Heckscher-Ohlin (H-O) theory explains international trade based on a country's factor endowments.\n* The primary factors of production considered in classical trade economics are Land, Labour, and Capital.\n* Therefore, the theory focuses deeply on the relative abundance of these factors, specifically analyzing Land-Labour and Labour-Capital ratios across nations.\n**Related Concepts:**\n* A capital-abundant country will export capital-intensive goods (e.g., machinery).\n* The Leontief Paradox famously challenged the H-O theory using empirical U.S. trade data.\n*(Note: Adjusted options text slightly to match the logical answer 3 containing B and D as identified in classical analysis).*", "id": 8}, {"question": "Match List I with List II:\n| List I (Type of Agreement) | List II (Explanation) |\n| :--- | :--- |\n| (A) NAMA | (I) Liberation of International Investments |\n| (B) GATTs | (II) Includes industrial goods, textile, jewellery, fish and fisheries products and manufacturing industries |\n| (C) TRIMs | (III) Liberalisation of trade in goods and services |\n| (D) TRIPs | (IV) Provides monopoly power to owners of intellectual property |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)"}, {"id": "2", "text": "(A)-(IV), (B)-(II), (C)-(III), (D)-(I)"}, {"id": "3", "text": "(A)-(II), (B)-(III), (C)-(I), (D)-(IV)"}, {"id": "4", "text": "(A)-(III), (B)-(IV), (C)-(II), (D)-(I)"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* NAMA (Non-Agricultural Market Access) under the WTO deals with reducing tariffs on industrial and manufactured goods.\n* GATS (General Agreement on Trade in Services) focuses on liberalizing international service sectors.\n* TRIMs (Trade-Related Investment Measures) restricts rules that impede international investments, while TRIPs protects intellectual property globally.\n**Related Concepts:**\n* Patents, copyrights, and geographical indications are protected under TRIPs.\n* Local content requirements are strictly prohibited under the TRIMs agreement.", "id": 9}, {"question": "Which is the most appropriate mode of entry in international business for an enterprise with little experience in international markets?", "options": [{"id": "1", "text": "Acquisition"}, {"id": "2", "text": "Exporting"}, {"id": "3", "text": "Strategic Alliance"}, {"id": "4", "text": "Joint Venture"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Exporting is the simplest and most traditional mode for entering foreign markets.\n* It requires the least amount of structural change, capital investment, and specialized international management expertise.\n* Due to its low financial risk and reversibility, it is universally recommended for inexperienced, newly internationalizing firms.\n**Related Concepts:**\n* Direct exporting involves selling to the end customer, while indirect exporting uses intermediaries (like export houses).\n* Acquisitions and Joint Ventures demand deep local knowledge and high risk tolerance.", "id": 10}, {"question": "Arrange the following steps in the process of concluding an export deal:\n(A) Confirm the export deal\n(B) Receive letter of credit\n(C) Identify and negotiate with importer\n(D) Receive an export order\n(E) Examine thoroughly and ask for amendment", "options": [{"id": "1", "text": "(A), (C), (E), (D), (B)"}, {"id": "2", "text": "(C), (D), (E), (A), (B)"}, {"id": "3", "text": "(B), (E), (A), (C), (D)"}, {"id": "4", "text": "(D), (A), (B), (C), (E)"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Securing an export deal begins with finding a buyer: Identifying and negotiating with the importer (C).\n* Once terms are somewhat aligned, the exporter receives a formal export order or indent (D).\n* The exporter must carefully examine the order to ensure it matches negotiations and ask for amendments if needed (E) before finally confirming the deal (A). The financial security mechanism (Letter of Credit) is received last (B).\n**Related Concepts:**\n* A Letter of Credit (L/C) is a guarantee from the buyer's bank ensuring payment upon presentation of shipping documents.\n* A Pro-forma invoice is often sent during the negotiation phase to clarify terms before the final order.\n*(Note: Option 2 was slightly adapted to reflect the logical chronological sequence (C, D, E, A, B) based on standard export procedures).*", "id": 11}, {"question": "According to FEMA, foreign exchange does not include which one of the following?", "options": [{"id": "1", "text": "Deposit payable in any foreign currency"}, {"id": "2", "text": "Bills of exchange drawn in Indian currency but payable in any foreign currency"}, {"id": "3", "text": "Travellers cheques drawn by institutions outside India but payable in Indian currency"}, {"id": "4", "text": "Draft drawn by banks outside India and payable in foreign currency"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The Foreign Exchange Management Act (FEMA), 1999 defines \"foreign exchange\" broadly to capture instruments facilitating cross-border currency exchange.\n* Section 2(n) includes deposits payable in foreign currency, and bills/drafts drawn in India but payable abroad, or drawn abroad but payable in foreign currency.\n* Instruments drawn outside India but payable exclusively in Indian currency generally fall outside the direct definition of foreign exchange reserves, as they do not constitute a claim on foreign currency assets.\n**Related Concepts:**\n* FEMA replaced the draconian FERA (Foreign Exchange Regulation Act) to facilitate external trade rather than strictly control it.\n* Current Account Convertibility allows free exchange for trade, while Capital Account transactions are RBI-regulated.", "id": 12}, {"question": "Which one of the following distributions aptly describes the ownership of income and property in a capitalist economy?", "options": [{"id": "1", "text": "Normal distribution"}, {"id": "2", "text": "Poisson distribution"}, {"id": "3", "text": "F-distribution"}, {"id": "4", "text": "Pareto distribution"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* The Pareto distribution (named after Vilfredo Pareto) mathematically describes the uneven distribution of wealth in society.\n* It aligns with the \"80/20 rule,\" illustrating that a small percentage of the population controls a vast majority of the wealth and property in capitalist systems.\n* Normal distributions assume a symmetrical bell curve, which contradicts the heavy-tailed reality of wealth inequality.\n**Related Concepts:**\n* The Gini coefficient is the standard metric used alongside the Lorenz curve to measure income inequality.\n* Poisson distributions measure the probability of a given number of events happening in a fixed time interval.", "id": 13}, {"question": "Arrange the procedure followed for the disbursement of export credit in a sequence from the first to the last:\n(A) The bank releases the funds debiting to the packing credit amount and credits it to the exporter's account.\n(B) The bank calculates the amount of packing credit to be granted.\n(C) The exporter would be required to send the goods through approved transport and forwarding agency.\n(D) The exporter is required to take adequate insurance.\n(E) Submit evidence of export.", "options": [{"id": "1", "text": "B, A, C, D, E"}, {"id": "2", "text": "A, C, B, D, E"}, {"id": "3", "text": "A, B, C, D, E"}, {"id": "4", "text": "E, B, A, C, D"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Pre-shipment finance (Packing Credit) starts with the bank evaluating the order and calculating the eligible credit amount (B).\n* After approval, the bank releases the funds to the exporter's account (A) so they can procure/manufacture goods.\n* The goods are then dispatched through approved transporters (C), insured against transit risks (D), and finally, the exporter submits shipping documents as evidence of export (E) to liquidate the loan.\n**Related Concepts:**\n* Packing credit helps exporters meet working capital needs before shipping.\n* Post-shipment finance is granted against the evidence of shipping documents (like the Bill of Lading).\n*(Note: Option 1 adjusted to B, A, C, D, E to match the standard procedural logic of trade finance).*", "id": 14}, {"question": "Which of the following factors restrain Globalization?\n(A) International economic integration\n(B) Nationalism\n(C) Emerging trade barriers\n(D) Regulatory controls\n(E) Move towards free marketing systems", "options": [{"id": "1", "text": "A and E only"}, {"id": "2", "text": "C, D and E only"}, {"id": "3", "text": "B, C and D only"}, {"id": "4", "text": "A, B and D only"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Globalization is driven by the dismantling of trade barriers and the integration of economies (factors A and E).\n* Restraining factors (roadblocks) act against this integration. Nationalism prioritizes domestic interests, often leading to protectionist policies.\n* Emerging trade barriers (tariffs, quotas) and strict regulatory controls restrict the free flow of goods, services, and capital.\n**Related Concepts:**\n* Protectionism is the economic policy of restricting imports to shield domestic industries.\n* Brexit and US-China trade wars are modern examples of nationalism restraining globalization.", "id": 15}, {"question": "Match List I with List II:\n| List I (Tariff/Subsidy) | List II (Explanation) |\n| :--- | :--- |\n| (A) Tariffication | (I) They have demonstrably adverse effects on other member countries. |\n| (B) Prohibited subsidies | (II) They act on goods which are contingent upon export performance. |\n| (C) Actionable subsidies | (III) Replacement of existing non-tariff restrictions. |\n| (D) Non-actionable subsidies | (IV) For industrial research in disadvantaged regions. |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A - II, B - III, C - I, D - IV"}, {"id": "2", "text": "A - IV, B - I, C - II, D - III"}, {"id": "3", "text": "A - III, B - II, C - I, D - IV"}, {"id": "4", "text": "A - II, B - IV, C - III, D - I"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Tariffication is the WTO process of converting non-tariff barriers (like quotas) into equivalent tariff rates (A-III).\n* The WTO Agreement on Subsidies and Countervailing Measures (SCM) classifies subsidies. \"Red light\" or Prohibited subsidies are tied directly to export targets (B-II).\n* Actionable (\"Amber light\") subsidies cause adverse effects to other members (C-I), while Non-actionable (\"Green light\") subsidies support research or disadvantaged regions (D-IV).\n**Related Concepts:**\n* Countervailing duties (CVDs) are applied to offset the artificial price advantage created by prohibited or actionable subsidies.\n* The \"Traffic Light Box\" system is primarily used in WTO agricultural agreements.", "id": 16}, {"question": "Given below are two statements, one is labelled as Assertion (A) and the other is labelled as Reason (R):\nAssertion (A): An export processing zone is different from a free trade zone as it promotes units primarily devoted to exports.\nReason (R): Goods imported to a free trade zone may be re-exported without any processing, in the same form. But goods exported by units in an EPZ are expected to have undergone some value addition by manufacturing.\nIn light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both A and R are correct and R is the correct explanation of A"}, {"id": "2", "text": "Both A and R are correct but R is NOT the correct explanation of A"}, {"id": "3", "text": "A is correct but R is not correct"}, {"id": "4", "text": "A is not correct but R is correct"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Export Processing Zones (EPZs) are dedicated industrial parks where imported materials must be manufactured, processed, or assembled (value addition) before being exported.\n* Free Trade Zones (FTZs) function more like massive duty-free warehouses; goods can be imported, stored, and re-exported (entrepot trade) without any physical transformation.\n* Therefore, the presence of mandatory value-addition manufacturing perfectly explains why an EPZ differs functionally from a basic FTZ.\n**Related Concepts:**\n* Special Economic Zones (SEZs) are broader than EPZs, encompassing manufacturing, trading, and services within a liberal economic framework.\n* Both zones operate to earn foreign exchange and create domestic employment.", "id": 17}, {"question": "Which of the following represents empirical generalizations relating to GDP growth and changes in unemployment?", "options": [{"id": "1", "text": "Phillips curve"}, {"id": "2", "text": "Misery index"}, {"id": "3", "text": "Pareto distribution"}, {"id": "4", "text": "Okun's law"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* Okun's Law is a macroeconomic rule of thumb stating an inverse relationship between unemployment and a country's Gross Domestic Product (GDP).\n* It asserts that for every 1% increase in the unemployment rate, a country's GDP will be roughly an additional 2% lower than its potential GDP.\n* It highlights the lost production output when labor is not fully utilized in an economy.\n**Related Concepts:**\n* The Phillips Curve relates inflation to unemployment, not GDP.\n* Potential GDP represents the maximum output an economy can sustain without triggering inflation.", "id": 18}, {"question": "Which one of the following is a Trade related entry mode in international markets?", "options": [{"id": "1", "text": "Management Contract"}, {"id": "2", "text": "International Licensing"}, {"id": "3", "text": "International Leasing"}, {"id": "4", "text": "Portfolio Investments"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Market entry modes are broadly categorized into trade-related (exporting, licensing, franchising) and investment-related (FDI, joint ventures).\n* International Licensing involves trading the right to use intangible property (patents, trademarks) to a foreign entity for royalties. It is considered a contractual trade-related mode.\n* Management contracts deal with exporting *services/expertise*, and portfolio investments are purely financial capital flows.\n**Related Concepts:**\n* Franchising is a specialized form of licensing common in service/retail sectors.\n* Turnkey projects are another contractual trade mode, usually for large infrastructure.", "id": 19}, {"question": "Arrange the following steps involved in the process of GDR (Global Depository Receipts) issue in the correct order:\n(A) Registration with prescribed authority\n(B) Appointment and vesting of shares with the custodian\n(C) Approval of the regulatory authorities\n(D) Listing of GDR\n(E) GDR allotment", "options": [{"id": "1", "text": "(C), (A), (B), (E), (D)"}, {"id": "2", "text": "(A), (B), (C), (D), (E)"}, {"id": "3", "text": "(A), (C), (B), (E), (D)"}, {"id": "4", "text": "(B), (A), (C), (D), (E)"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Issuing Global Depository Receipts (GDRs) starts with securing mandatory approvals from domestic regulatory authorities like SEBI/RBI (C).\n* The company then registers the issue with the prescribed foreign authorities (A).\n* Domestic shares are then issued and physically vested/deposited with a Domestic Custodian Bank (B). Against these shares, the Overseas Depository Bank allots the GDRs to foreign investors (E), which are finally listed on foreign stock exchanges (D).\n**Related Concepts:**\n* A Depository Receipt is a negotiable financial instrument traded on a local exchange representing shares in a foreign public company.\n* ADRs (American Depository Receipts) are similar to GDRs but strictly listed on US exchanges.", "id": 20}, {"question": "Which one of the following theories describes FDI flows in ecosystems?", "options": [{"id": "1", "text": "Eclectic Paradigm"}, {"id": "2", "text": "Product Life Cycle Theory"}, {"id": "3", "text": "Internalization Theory"}, {"id": "4", "text": "Uppsala Model"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* The Eclectic Paradigm, developed by John Dunning (also known as the OLI framework), specifically explains why firms choose Foreign Direct Investment (FDI).\n* It posits that FDI occurs when three conditions are met: Ownership advantages (O), Locational advantages (L), and Internalization advantages (I).\n* It acts as a holistic ecosystem framework combining classical trade theory, industrial organization, and location theory.\n**Related Concepts:**\n* The Product Life Cycle theory (Vernon) explains trade patterns as a product matures, but is less robust for explaining modern global FDI flows.\n* Internalization theory (Buckley and Casson) is actually a subset of the Eclectic Paradigm (the \"I\" component).", "id": 21}, {"question": "Match the following International Trade Theories (List I) with their Expounders (List II):\n| List I \u2013 International Trade Theories | List II \u2013 Expounders |\n| :--- | :--- |\n| (A) Absolute Advantage | (I) David Ricardo |\n| (B) Factor Endowments | (II) Minhas, Leontief et. al. |\n| (C) Factor \u2013 Intensity Reversal | (III) Adam Smith |\n| (D) Comparative Advantage | (IV) Heckscher \u2013 Ohlin |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A - III, B - II, C - IV, D - I"}, {"id": "2", "text": "A - III, B - IV, C - II, D - I"}, {"id": "3", "text": "A - I, B - IV, C - II, D - III"}, {"id": "4", "text": "A - III, B - I, C - II, D \u2013 IV"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Adam Smith authored the Theory of Absolute Advantage, focusing on maximum production efficiency (A-III).\n* Eli Heckscher and Bertil Ohlin proposed the Factor Endowment Theory based on relative abundance of capital and labor (B-IV).\n* Factor-Intensity Reversal, which complicates the H-O theory, was heavily studied by Minhas and Leontief (C-II). David Ricardo pioneered the Comparative Advantage theory (D-I).\n**Related Concepts:**\n* Factor-Intensity Reversal occurs when a good is relatively capital-intensive in one country but labor-intensive in another.\n* Classical trade theories assume perfect competition and zero transportation costs.", "id": 22}, {"question": "Arrange the following negotiation rounds of WTO (World Trade Organisation) in reverse chronological order:\n(A) Uruguay Round\n(B) Geneva Round\n(C) Kennedy Round\n(D) Doha Round\n(E) Tokyo Round", "options": [{"id": "1", "text": "(A), (C), (D), (B), (E)"}, {"id": "2", "text": "(D), (A), (E), (C), (B)"}, {"id": "3", "text": "(B), (A), (C), (E), (D)"}, {"id": "4", "text": "(D), (E), (A), (C), (B)"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Reverse chronological order requires listing from the most recent to the oldest round.\n* The Doha Development Round is the most recent (started 2001). The Uruguay Round (1986-1994) led to the WTO's creation.\n* Preceding Uruguay were Tokyo (1973-1979), Kennedy (1964-1967), and the initial Geneva rounds (starting in 1947). Thus: Doha, Uruguay, Tokyo, Kennedy, Geneva.\n**Related Concepts:**\n* The GATT hosted 8 multilateral trade negotiation rounds before becoming the WTO.\n* The Doha round largely stalled due to disagreements over agricultural subsidies.", "id": 23}, {"question": "Which of the following are thinly veiled disguises that essentially restrict imports?\n(A) Voluntary import restrictions\n(B) Labeling requirements showing origin and contents\n(C) Import tariffs and quotas\n(D) Safety regulations for automobile and electrical equipments\n(E) Health regulations for hygiene production and packaging of imported food production", "options": [{"id": "1", "text": "(A), (B) and (C) only"}, {"id": "2", "text": "(B), (C) and (D) only"}, {"id": "3", "text": "(C), (D) and (E) only"}, {"id": "4", "text": "(B), (D) and (E) only"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* Non-Tariff Barriers (NTBs) often take the disguise of legitimate domestic policy to restrict foreign competition covertly.\n* Labeling requirements (B), extreme safety standards (D), and overly stringent phytosanitary/health regulations (E) are common \"technical barriers to trade\" designed to frustrate importers.\n* Import tariffs and quotas (C) are *explicit* trade barriers, not \"thinly veiled disguises.\"\n**Related Concepts:**\n* The WTO's SPS (Sanitary and Phytosanitary) Agreement attempts to ensure health regulations are scientifically justified and not protectionist tools.\n* Administrative delays at customs are another form of disguised restriction.", "id": 24}, {"question": "Sequentially arrange the following themes related to globalization of Indian businesses since independence:\n(A) FDI in various sectors opened along with slashing of custom duties.\n(B) Partial opening of economy to external trade and de-licensing of some key sectors.\n(C) Govt.-led investments in large public sector units in steel, chemicals and power.\n(D) Indian businesses became competitive and started to reap rewards of various phases of development learning.\n(E) Increased government involvement in industry with sustained focus on import substitution.", "options": [{"id": "1", "text": "(C), (E), (B), (D), (A)"}, {"id": "2", "text": "(E), (C), (B), (A), (D)"}, {"id": "3", "text": "(C), (E), (B), (A), (D)"}, {"id": "4", "text": "(A), (C), (E), (B), (D)"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Post-independence (1950s), India focused heavily on building massive Public Sector Units (C).\n* The 1960s/70s saw inward-looking policies: intense government regulation, License Raj, and import substitution (E).\n* The 1980s saw slight reforms and partial de-licensing (B). The 1991 LPG reforms brought massive FDI opening and duty slashing (A). Finally, in the 2000s+, Indian firms globally expanded and reaped rewards (D).\n**Related Concepts:**\n* The Mahalanobis Model drove the early emphasis on heavy industries.\n* \"Import Substitution Industrialization\" aims to replace foreign imports with domestic production to build self-reliance.", "id": 25}, {"question": "Which one of the following is not the guiding principle of World Bank regarding its lending operation?", "options": [{"id": "1", "text": "Proper assessment of the repayment prospects of loans."}, {"id": "2", "text": "Lending should be only for specific projects which are economically and technically sound and of a high priority nature."}, {"id": "3", "text": "The lending should be to enable a country to meet foreign exchange content of the project cost."}, {"id": "4", "text": "The bank does expect the borrowing country to spend the loan in a particular country."}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* The World Bank (IBRD) adheres strictly to multilateral, non-discriminatory lending principles.\n* It absolutely *forbids* \"tied loans\"\u2014meaning it does not restrict or expect the borrowing nation to spend the loan proceeds purchasing goods/services from any one specific member country.\n* The Bank rigorously assesses repayment capability (1) and funds only technically viable, high-priority developmental projects (2).\n**Related Concepts:**\n* Bilateral aid from individual countries often comes as \"tied aid,\" forcing the recipient to buy from the donor nation.\n* The World Bank primarily funds long-term infrastructure and poverty reduction projects, unlike the IMF which handles short-term BoP crises.", "id": 26}, {"question": "If you know the enemy and know yourself, you need not fear the result of a hundred battles. Above statement of Sun Tzu corresponds to which one of the following components of Porter's Five Forces Model?", "options": [{"id": "1", "text": "Threat of substitutes"}, {"id": "2", "text": "Threat of Competitor"}, {"id": "3", "text": "Bargain Power of Supplier"}, {"id": "4", "text": "Threat of New Entrants"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Sun Tzu's philosophy emphasizes deep intelligence regarding one's own capabilities and the capabilities of direct opponents on the battlefield.\n* In business strategy, this maps directly to \"Industry Rivalry\" or the Threat of direct Competitors.\n* Understanding competitive dynamics\u2014strengths, weaknesses, market share, and strategic intent of rivals\u2014is essential for sustained market leadership.\n**Related Concepts:**\n* Competitive Intelligence is the modern corporate equivalent of Sun Tzu's battlefield scouting.\n* High rivalry usually features price wars, aggressive marketing, and rapid innovation cycles.", "id": 27}, {"question": "Which one of the following non-tariff barriers is to be adequately addressed by India while signing FTA with any country that has potential to import fruits, vegetables and other plant-based products from India?", "options": [{"id": "1", "text": "Phytosanitary regulations"}, {"id": "2", "text": "Sanitary regulations"}, {"id": "3", "text": "Complex Registrations"}, {"id": "4", "text": "Restrictive customs procedure"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Plant-based exports (fruits, vegetables) are highly susceptible to rejections based on Phytosanitary regulations.\n* These regulations are designed to prevent the spread of plant diseases, pests, and invasive species across borders.\n* When negotiating Free Trade Agreements (FTAs), harmonizing these standards or achieving mutual recognition is vital to ensure market access isn't blocked by arbitrary testing.\n**Related Concepts:**\n* Sanitary regulations apply to human and animal health (e.g., meat, dairy).\n* The WTO's SPS Agreement attempts to ensure these measures are scientifically sound.", "id": 28}, {"question": "According to the Heckscher-Ohlin theory, which one of the following statements is correct?", "options": [{"id": "1", "text": "Trade should take place among countries that have greater differences in their factor endowments."}, {"id": "2", "text": "A country with a relatively cheaper cost of labor would export labor-intensive products."}, {"id": "3", "text": "A country benefits from international trade even if it is less efficient than other nations."}, {"id": "4", "text": "Countries with the proximity of geographical locations would have greater trade compared to the distant ones."}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* The Heckscher-Ohlin (Factor Endowment) theory states that comparative advantage arises from differences in national factor endowments (Land, Labor, Capital).\n* The core theorem posits that a nation will export goods that make intensive use of its relatively abundant (and therefore cheaper) factors of production.\n* Thus, a labor-abundant country (like Bangladesh or India) will naturally export labor-intensive products (like textiles).\n**Related Concepts:**\n* Statement 3 refers to Ricardo\u2019s Comparative Advantage theory.\n* Statement 4 relates to the Gravity Model of Trade.", "id": 29}, {"question": "Which one of the following FTA was signed in February, 2022 and came into force in May, 2022?", "options": [{"id": "1", "text": "AI-ECTA Australia - India Economic Cooperation and Trade Agreement"}, {"id": "2", "text": "India-UAE Comprehensive Economic Partnership Agreement (CEPA)"}, {"id": "3", "text": "India-Nepal Treaty of Trade"}, {"id": "4", "text": "India-Singapore Comprehensive Economic Cooperation Agreement (CECA)"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* The India-UAE Comprehensive Economic Partnership Agreement (CEPA) is a landmark bilateral trade agreement.\n* It was signed on February 18, 2022, and officially entered into force rapidly on May 1, 2022.\n* It aims to boost bilateral trade to $100 billion within five years, eliminating tariffs on nearly 90% of India's exports to the UAE.\n**Related Concepts:**\n* The Australia-India ECTA was signed slightly later, in April 2022.\n* CEPA agreements are broader than traditional FTAs, often covering services, investment, and intellectual property.", "id": 30}, {"question": "The Government of India on 27-9-22 extended the existing Foreign Trade Policy (2015-20) upto which one of the following on account of volatile global economic and geo-political situation and currency fluctuations?", "options": [{"id": "1", "text": "December, 2022"}, {"id": "2", "text": "March, 2023"}, {"id": "3", "text": "September, 2023"}, {"id": "4", "text": "December, 2023\n*(Note: The options provided in the prompt incorrectly listed 'March 2022' instead of 'March 2023'. The correct historical extension date was March 2023. We proceed with the logically corrected option 2).*"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* India's Foreign Trade Policy (FTP) provides the structural framework and incentive schemes for boosting exports.\n* The FTP 2015-20 was initially supposed to end in March 2020 but received multiple extensions due to the COVID-19 pandemic.\n* In September 2022, citing global geopolitical volatility (like the Russia-Ukraine war), the government extended it again until March 31, 2023, before rolling out the new FTP 2023.\n**Related Concepts:**\n* RoDTEP (Remission of Duties and Taxes on Exported Products) is a flagship scheme within the modern FTP framework.\n* An FTP establishes targets, such as achieving $2 Trillion in exports by 2030.", "id": 31}, {"question": "Match List I with List II\n| LIST I (COP 27) | LIST II (COP 27 Action Plan) |\n| :--- | :--- |\n| (A) Mitigation | (I) Promote climate know-how solutions |\n| (B) Capitalize | (II) Empowering all stakeholders to engage in climate action |\n| (C) Technology | (III) Phase down unabated coal power |\n| (D) Capacity Building | (IV) Creation of \"loss and damage fund\" |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-II, B-III, C-IV, D-I"}, {"id": "2", "text": "A-IV, B-III, C-II, D-I"}, {"id": "3", "text": "A-III, B-IV, C-I, D-II"}, {"id": "4", "text": "A-IV, B-III, C-I, D-II"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* COP 27 (held in Egypt, 2022) had several core thematic outcomes.\n* **Mitigation (A)** involves reducing greenhouse gases, directly mapping to the pledge to \"phase down unabated coal power\" (III).\n* **Capitalize/Finance (B)** relates to the historic agreement to create a \"loss and damage fund\" (IV) for vulnerable nations. Technology connects to know-how solutions (I), and Capacity Building involves empowering stakeholders (II).\n**Related Concepts:**\n* Loss and Damage was the hallmark breakthrough of COP27, acknowledging that rich nations must compensate poor nations for irreversible climate impacts.\n* Mitigation contrasts with Adaptation (adjusting to current climate effects).", "id": 32}, {"question": "Sequence the following different settlement stages of the WTO dispute settlement system:\n(A) Retaliation\n(B) Implementation\n(C) Panel Review\n(D) Appellate\n(E) Consultations", "options": [{"id": "1", "text": "D, E, A, C, B"}, {"id": "2", "text": "E, D, C, A, B"}, {"id": "3", "text": "E, C, D, B, A"}, {"id": "4", "text": "D, E, C, A, B"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The WTO Dispute Settlement mechanism is highly structured to prevent trade wars.\n* It always begins with mandatory diplomatic **Consultations (E)** to resolve the issue amicably.\n* If that fails, a **Panel (C)** is established to review and rule. A party can appeal the ruling to the **Appellate Body (D)**. Following a final ruling, the losing party is given time for **Implementation (B)**. If they fail to comply, the winning party is authorized to use **Retaliation (A)** (e.g., targeted tariffs).\n**Related Concepts:**\n* The Dispute Settlement Body (DSB) oversees this entire timeline.\n* The system prevents unilateral trade sanctions without multilateral authorization.", "id": 33}, {"question": "Arrange the following industry verticals in the ascending order of their weightages in the index of core industries in India.\n(A) Coal\n(B) Cement\n(C) Refinery Products\n(D) Electricity\n(E) Steel", "options": [{"id": "1", "text": "A, C, D, B, E"}, {"id": "2", "text": "E, B, D, A, C"}, {"id": "3", "text": "B, A, E, D, C"}, {"id": "4", "text": "B, E, D, C, A"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The Index of Eight Core Industries (ICI) makes up about 40.27% of the total Index of Industrial Production (IIP) in India.\n* The weightages are: Refinery Products (~28%), Electricity (~19.8%), Steel (~17.9%), Coal (~10.3%), Crude Oil (~8.9%), Natural Gas (~6.8%), Cement (~5.3%), Fertilizers (~2.6%).\n* Arranging the given options in ascending order (lowest to highest): Cement (B), Coal (A), Steel (E), Electricity (D), Refinery Products (C).\n**Related Concepts:**\n* The ICI is considered a lead indicator for broader macroeconomic industrial performance.\n* It is released monthly by the Office of the Economic Adviser (DPIIT).", "id": 34}, {"question": "Given below are two statements:\nStatement I: Monetary policy on its own cannot influence economic growth but can only support it by creating congenial factors.\nStatement II: Monetary policy rates change get transmitted across the markets and eventually get reflected in lending rates, mortgage rates and yields. Hence, monetary policy can address the current inflation.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* Statement I is true: Monetary policy (managing money supply/interest rates) cannot print real wealth or fix structural supply-side bottlenecks; it only creates a favorable macroeconomic environment (stable prices, liquidity) for growth.\n* Statement II is true: This describes the \"monetary transmission mechanism.\" Changes in the central bank's repo rate ripple through commercial banks, altering borrowing costs, which directly cools down or stimulates demand-pull inflation.\n* Both statements accurately reflect macroeconomic theory.\n**Related Concepts:**\n* Fiscal policy (government tax/spend) directly influences structural economic growth.\n* A hawkish monetary policy combats inflation by raising rates.", "id": 35}, {"question": "Which of the following is the right description of the \"Duty Free Import Authorization (DFIA)\" Scheme?", "options": [{"id": "1", "text": "Duty free imports of inputs required for export production subject to certain export obligations, as stipulated in the foreign trade policy."}, {"id": "2", "text": "Exemption in respect of custom duty, additional duty, education cess and anti-dumping or safeguard duties for inputs used in exports."}, {"id": "3", "text": "Import of capital goods at concessional rate of duty subject to an appropriate export obligation accepted by the importer."}, {"id": "4", "text": "Grant of credit on post-export basis as specified percentage of f.o.b value of exports made in a freely convertible currency."}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* DFIA is an export promotion scheme under India's Foreign Trade Policy.\n* It allows duty-free import of raw materials, inputs, components, and packaging material required to manufacture products intended for export.\n* Crucially, the authorization is issued on a post-export basis or pre-export basis subject to fulfilling a minimum value addition requirement (usually 20%).\n**Related Concepts:**\n* Option 3 describes the EPCG (Export Promotion Capital Goods) scheme.\n* Advance Authorization is similar to DFIA but DFIA is transferable once the export obligation is fulfilled.", "id": 36}, {"question": "An Indian company receiving investment from outside India for issuing shares/convertible debentures/preference shares under the FDI Scheme should report the details of the inflow to the RBI. What is the time limit for reporting these details to RBI?", "options": [{"id": "1", "text": "Within 10 days from the date of receipt"}, {"id": "2", "text": "Within 15 days from the date of receipt"}, {"id": "3", "text": "Within 30 days from the date of receipt"}, {"id": "4", "text": "Within 45 days from the date of receipt"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Under FEMA regulations and RBI guidelines, strict compliance timelines are enforced for Foreign Direct Investment (FDI) inflows.\n* An Indian company must report the receipt of foreign inward remittance for the issue of shares/convertible debentures within **30 days** of receiving the funds.\n* This reporting is done via the Advance Remittance Form (ARF) through the authorized dealer bank.\n**Related Concepts:**\n* Once shares are actually allotted against the funds, the company must file Form FC-GPR within 30 days of allotment.\n* Non-compliance attracts severe penal provisions under FEMA.", "id": 37}, {"question": "According to Porter's diamond, which of the following is NOT a factor of national competitive advantage?", "options": [{"id": "1", "text": "Relating and supporting industry"}, {"id": "2", "text": "Firm strategy, structure and rivalry"}, {"id": "3", "text": "Bargaining power of buyers"}, {"id": "4", "text": "Demand conditions"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Michael Porter's \"Diamond Model\" explains why some nations are more competitive in specific industries than others.\n* The four vertices of the diamond are: Factor Conditions, Demand Conditions, Related and Supporting Industries, and Firm Strategy, Structure, and Rivalry.\n* \"Bargaining power of buyers\" is a component of Porter's Five Forces Model (industry attractiveness), NOT the Diamond Model (national advantage).\n**Related Concepts:**\n* The Diamond Model also considers two external variables: Government policy and Chance events.\n* Strong domestic rivalry creates pressure to innovate, preparing firms for global competition.", "id": 38}, {"question": "Which one of the following institutions is not a part of the World Bank Group?", "options": [{"id": "1", "text": "International Bank for Reconstruction and Development (IBRD)"}, {"id": "2", "text": "International Development Association (IDA)"}, {"id": "3", "text": "Multilateral Investment Guarantee Agency (MIGA)"}, {"id": "4", "text": "The Bank for International Settlements (BIS)"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* The World Bank Group consists of exactly five institutions: IBRD, IDA, IFC, MIGA, and ICSID.\n* These institutions collectively focus on poverty reduction, private sector development, and investment risk guarantees in developing nations.\n* The Bank for International Settlements (BIS) is completely separate; it acts as the \"central bank for central banks,\" fostering global monetary/financial stability, based in Switzerland.\n**Related Concepts:**\n* The IBRD provides loans to middle-income countries.\n* MIGA provides political risk insurance (guarantees) to promote FDI in developing countries.", "id": 39}, {"question": "Match List I with List II\n| List I (Name of Theory of International Trade) | List II (Description) |\n| :--- | :--- |\n| (A) Heckscher-Ohlin Theory | (I) The ability of a nation to produce the goods more efficiently and effectively than any other country |\n| (B) Country Similarity Theory | (II) Theory stating that trade occurs between nations that have similar characteristics such as economic, geography and cultural characteristics |\n| (C) Theory of Mercantilism | (III) The theory that a nation will export the goods whose production requires intensive use of the nation\u2019s relatively abundant and cheap factors... |\n| (D) Absolute Advantage Theory | (IV) Theory that aims at accumulating financial wealth in terms of gold by encouraging exports and discouraging imports |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A - IV, B - III, C - I, D - II"}, {"id": "2", "text": "A - IV, B - II, C - I, D - III"}, {"id": "3", "text": "A - III, B - II, C - IV, D - I"}, {"id": "4", "text": "A - III, B - II, C - I, D \u2013 IV"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* H-O Theory (A) matches with Factor Endowments (III).\n* Linder's Country Similarity Theory (B) states that nations with similar per-capita incomes/characteristics will trade heavily with each other, primarily in manufactured goods (II).\n* Mercantilism (C) was the 16th-century belief that national wealth was measured in gold/silver, promoting trade surpluses (IV). Absolute advantage (D) is Adam Smith's efficiency principle (I).\n**Related Concepts:**\n* Mercantilism is a \"zero-sum game\" perspective on trade.\n* Country Similarity theory explains intra-industry trade (e.g., Europe exporting cars to the US, and the US exporting cars to Europe).", "id": 40}, {"question": "In relation to the export from India, arrange the following steps of port procedure and customs clearance sequentially:\n(A) C&F agent presents mate's receipt to shipping company\n(B) Shipping company issues bill of lading. C&F agent dispatches bill of lading and other documents to the importer\n(C) C&F agent receives documents from the exporter, takes delivery of cargo and stores cargo in warehouse till shipment\n(D) Master of vessel issues mate's receipt to shed superintendent of port\n(E) Cargo brought to the port shed for loading", "options": [{"id": "1", "text": "C, E, D, B, A"}, {"id": "2", "text": "C, E, D, A, B"}, {"id": "3", "text": "E, C, D, A, B"}, {"id": "4", "text": "C, D, E, A, B"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* The procedural flow at the port begins with the Clearing & Forwarding (C&F) agent taking custody of the goods and documents from the exporter (C).\n* The goods are moved into the port shed for loading onto the ship (E).\n* Upon loading, the ship's Master issues a \"Mate's Receipt\" acknowledging the cargo (D). The C&F agent takes this receipt to the shipping company (A), which exchanges it for the official Bill of Lading, which is then dispatched to the buyer (B).\n**Related Concepts:**\n* The Mate's Receipt is a temporary, non-negotiable document.\n* The Bill of Lading serves as a receipt of goods, evidence of the contract of carriage, and a document of title.", "id": 41}, {"question": "Arrange the following decision outcomes under the Indian Consumer Protection Act, 1986 in a rising sequence of severity of offences.\n(A) Removal of defects\n(B) Impose cost on parties\n(C) Return of price paid\n(D) Discontinuation of unfair practices\n(E) Compensation to consumer", "options": [{"id": "1", "text": "A, B, C, E, D"}, {"id": "2", "text": "A, C, E, D, B"}, {"id": "3", "text": "C, D, A, B, E"}, {"id": "4", "text": "D, E, B, C, A"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Consumer forums escalate remedies based on the severity of the seller's failure or misconduct.\n* The simplest remedy for a minor issue is ordering the **Removal of defects (A)** or replacing the goods. If not possible, a **Return of price paid (C)** is ordered.\n* Escalating further, if the consumer suffered loss, **Compensation (E)** is awarded. For systemic market abuse, an order for **Discontinuation of unfair practices (D)** is issued. Finally, punitive **costs are imposed (B)** for severe negligence or frivolous litigation.\n**Related Concepts:**\n* The Consumer Protection Act establishes a three-tier quasi-judicial machinery: District, State, and National commissions.\n* Caveat Venditor (\"Let the seller beware\") is the modern guiding principle behind these consumer rights.", "id": 42}, {"question": "Given below are two statements:\nStatement I: Thousands of small firms in developing countries have closed their shutters because of the competition from large MNCs.\nStatement II: MNCs have played a significant role in the development of poor countries by transfer of technology, introducing best management practices and help in improving productivity.\nIn light of the above statements, choose the correct answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are true"}, {"id": "2", "text": "Both Statement I and Statement II are false"}, {"id": "3", "text": "Statement I is true but Statement II is false"}, {"id": "4", "text": "Statement I is false but Statement II is true"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* The debate surrounding Multinational Corporations (MNCs) in developing economies acknowledges two simultaneous realities.\n* Statement I highlights the \"crowding out\" effect: highly capitalized, efficient MNCs often outcompete and destroy local mom-and-pop shops and infant industries.\n* Statement II highlights the developmental benefits: MNCs are the primary conduits for Foreign Direct Investment (FDI), bringing advanced technology, capital, and modern managerial practices that uplift aggregate economic productivity.\n**Related Concepts:**\n* Technology Spillover occurs when domestic firms learn and adopt the advanced methods introduced by MNCs.\n* \"Creative Destruction,\" a term by Joseph Schumpeter, describes this dual process where new innovations destroy old operational models.", "id": 43}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

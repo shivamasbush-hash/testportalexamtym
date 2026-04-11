@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Business Environment IB 2021 PYQ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Business Environment IB 2021 PYQ", "organization": "ExamTym", "durationMinutes": 40, "totalMarks": 56.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Sequence the following in increasing order of integration of member economies:\n(A) Free Trade Area\n(B) Economic Union\n(C) Custom Union\n(D) Preferential Trade Agreements\n(E) Common Market", "options": [{"id": "1", "text": "(A), (C), (E), (B), (D)"}, {"id": "2", "text": "(B), (E), (C), (A), (D)"}, {"id": "3", "text": "(D), (A), (C), (E), (B)"}, {"id": "4", "text": "(C), (E), (B), (D), (A)"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Economic integration involves eliminating tariff and non-tariff barriers to the flow of goods, services, and factors of production between nations.\n* It progresses in stages, starting from the least restrictive (Preferential Trade) to the most comprehensive (Political/Economic Union).\n* The correct evolutionary sequence is: Preferential Trade -> Free Trade Area -> Custom Union -> Common Market -> Economic Union.\n**Related Concepts:**\n* A Custom Union is essentially a Free Trade Area with a common external trade policy towards non-members.\n* A Common Market adds the free movement of factors of production (labor and capital) among member nations.", "id": 1}, {"question": "Corporate social responsibility is the continuing commitment by business to behave ethically and contribute to:\n(A) Political awareness, social security, and inclusion\n(B) Public health, education, and literacy\n(C) Maintaining ecological balances and protecting the environment\n(D) Gender diversity, profiteering, and market controlling\n(E) Rendering, sponsoring, and donating to social and charitable activities", "options": [{"id": "1", "text": "A, B, and D only"}, {"id": "2", "text": "B, C, and E only"}, {"id": "3", "text": "C, D, and E only"}, {"id": "4", "text": "A, B, and C only"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Corporate Social Responsibility (CSR) represents a business's duty to pursue long-term goals that are good for society, beyond legal and economic obligations.\n* The core pillars of CSR involve community welfare (health, education), environmental stewardship (ecological balance), and philanthropy (charitable activities).\n* Political awareness and profiteering/market control are strictly outside the ethical scope of CSR guidelines.\n**Related Concepts:**\n* The Triple Bottom Line concept is closely tied to CSR, focusing on Profit, People, and Planet.\n* Under the Companies Act 2013 in India, specific profitable companies must spend at least 2% of their average net profit on CSR initiatives.", "id": 2}, {"question": "Logically sequence the following in the process of entering international markets outlined in the Uppsala model:\n(A) Sporadic (Ad hoc) exports\n(B) Foreign production and manufacturing\n(C) Establishing a foreign sales subsidiary\n(D) Domestic operations and production\n(E) Exporting via independent representative", "options": [{"id": "1", "text": "(A), (B), (C), (D), and (E)"}, {"id": "2", "text": "(C), (B), (D), (A), and (E)"}, {"id": "3", "text": "(D), (A), (E), (C), and (B)"}, {"id": "4", "text": "(E), (B), (D), (C), and (A)"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The Uppsala Model explains how firms gradually intensify their activities in foreign markets based on acquired knowledge and risk management.\n* It proposes a sequential, stage-by-stage internationalization process driven by experiential learning.\n* The sequence is: Domestic Operations -> Ad hoc Exporting -> Independent Representatives -> Foreign Sales Subsidiary -> Foreign Production.\n**Related Concepts:**\n* \"Psychic distance\" is a core element of the Uppsala model, suggesting firms first enter culturally and geographically proximate markets.\n* Born Global firms directly challenge this model by operating internationally from their inception.", "id": 3}, {"question": "Factor conditions in Michael Porter's competitive advantage of Nations include:", "options": [{"id": "1", "text": "Market size"}, {"id": "2", "text": "Demand conditions"}, {"id": "3", "text": "Internationally competitive suppliers"}, {"id": "4", "text": "Skilled labour and scientific knowledge"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* Michael Porter's Diamond Model identifies four attributes that determine a nation's competitive advantage: Factor conditions, Demand conditions, Related/supporting industries, and Firm strategy/structure/rivalry.\n* Factor conditions refer to a nation's position in factors of production necessary to compete in a given industry.\n* These include advanced factors like skilled labor, scientific knowledge, and infrastructure, which are created and upgraded over time.\n**Related Concepts:**\n* Basic factors (like natural resources or climate) provide an initial advantage but are less critical than advanced factors.\n* Demand conditions refer to the nature of home-market demand, driving continuous innovation and quality improvement.", "id": 4}, {"question": "Which is the most potent driver of business transformation during Covid-19 pandemic?", "options": [{"id": "1", "text": "Ethical consciousness"}, {"id": "2", "text": "Scale economies and pricing power"}, {"id": "3", "text": "Technology adoption and innovation"}, {"id": "4", "text": "Supply chain logistics and government interventions"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The Covid-19 pandemic forced an unprecedented acceleration in digital transformation across all industries globally.\n* Restrictions on physical movement necessitated the rapid adoption of remote work tools, e-commerce platforms, and digital service delivery.\n* Technology adoption became a survival imperative rather than an optional strategic upgrade during the crisis.\n**Related Concepts:**\n* \"Agility\" became a critical success factor, allowing firms to pivot their operational models quickly using digital infrastructure.\n* The pandemic permanently shifted consumer behavior towards digital channels, ensuring the lasting impact of this tech adoption.", "id": 5}, {"question": "Which of the following institutions are included in the 'World Bank Group'?\n(A) International Finance Corporation\n(B) International Monetary Fund\n(C) World Trade Organization\n(D) Multilateral Investment Guarantee Agency\n(E) International Development Association", "options": [{"id": "1", "text": "A, B, and C only"}, {"id": "2", "text": "A, B, and D only"}, {"id": "3", "text": "A, B, D, and E only"}, {"id": "4", "text": "A, D, and E only"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* The World Bank Group (WBG) is a family of five international organizations that make leveraged loans to developing countries.\n* The five institutions are IBRD, IDA, IFC, MIGA, and ICSID. \n* The IMF and WTO are separate international organizations, not part of the World Bank Group.\n**Related Concepts:**\n* The IFC focuses on financing and providing advice to private sector ventures and projects in developing countries.\n* The IDA offers concessional loans and grants to the world's poorest developing countries.", "id": 6}, {"question": "Match List I with List II:\n| List I (Books) | List II (Authors) |\n| :--- | :--- |\n| (A) Wealth of Nations, 1776 | (I) Thomas Malthus |\n| (B) Principles of Political Economy and Taxation, 1817 | (II) Karl Marx |\n| (C) Principle of Population, 1798 | (III) Adam Smith |\n| (D) Das Capital, 1867 | (IV) David Ricardo |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A) - (I), (B) - (III), (C) - (IV), (D) - (II)"}, {"id": "2", "text": "(A) - (III), (B) - (IV), (C) - (I), (D) - (II)"}, {"id": "3", "text": "(A) - (III), (B) - (II), (C) - (IV), (D) - (I)"}, {"id": "4", "text": "(A) - (III), (B) - (IV), (C) - (II), (D) - (I)"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* \"The Wealth of Nations\" (1776) by Adam Smith laid the foundation for classical free-market economic theory.\n* David Ricardo's 1817 work introduced the theory of comparative advantage, crucial to international trade.\n* Thomas Malthus wrote the \"Principle of Population,\" warning of population growth outstripping food supply, while Karl Marx authored the critique of political economy, \"Das Capital.\"\n**Related Concepts:**\n* Adam Smith's concept of the \"Invisible Hand\" explains self-regulating market forces.\n* Ricardo's work shifted economic focus toward the distribution of income among landowners, workers, and capitalists.", "id": 7}, {"question": "Match List I with List II:\n| List I | List II (International Trade Theories) |\n| :--- | :--- |\n| (A) David Ricardo (1817) | (I) Theory of absolute advantage |\n| (B) Michael Porter (1990) | (II) Factor endowment theory |\n| (C) Adam Smith (1776) | (III) Theory of comparative advantage |\n| (D) Heckscher (1919) \u2013 Ohlin (1933) | (IV) Theory of competitive advantage |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A) \u2013 (I), (B) \u2013 (II), (C) \u2013 (III), (D) \u2013 (IV)"}, {"id": "2", "text": "(A) \u2013 (III), (B) \u2013 (IV), (C) \u2013 (I), (D) \u2013 (II)"}, {"id": "3", "text": "(A) \u2013 (IV), (B) \u2013 (III), (C) \u2013 (II), (D) \u2013 (I)"}, {"id": "4", "text": "(A) \u2013 (III), (B) \u2013 (IV), (C) \u2013 (I), (D) \u2013 (II)"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Adam Smith proposed the Theory of Absolute Advantage, suggesting a country should produce goods where it is absolutely most efficient.\n* David Ricardo developed the Theory of Comparative Advantage, proving that trade is beneficial even if one country is more efficient in producing all goods.\n* Heckscher-Ohlin linked comparative advantage to a nation's factor endowments (land, labor, capital).\n**Related Concepts:**\n* Michael Porter's National Competitive Advantage theory emphasizes continuous innovation and localized conditions over static comparative advantages.\n* The Leontief Paradox is an empirical finding that contradicted the basic Heckscher-Ohlin proposition regarding US exports.", "id": 8}, {"question": "Which of the following countries/territories is not a member of the WTO (World Trade Organization)?", "options": [{"id": "1", "text": "China"}, {"id": "2", "text": "Russia"}, {"id": "3", "text": "Iran"}, {"id": "4", "text": "Taiwan"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The WTO consists of over 160 member states that adhere to its multilateral trade agreements.\n* Iran currently holds \"Observer\" status and is not a full-fledged member of the WTO, largely due to prolonged geopolitical complexities and sanctions.\n* China joined in 2001, Taiwan (as Chinese Taipei) joined in 2002, and Russia formally joined in 2012.\n**Related Concepts:**\n* Observer status is usually the first step toward the accession process, which can take several years.\n* WTO accession requires a two-track negotiation process: bilateral negotiations with interested member states and multilateral negotiations on rules.", "id": 9}, {"question": "Which theory explains the effect of devaluation on the balance of trade?", "options": [{"id": "1", "text": "Phillips Curve theory"}, {"id": "2", "text": "Mundell \u2013 Tobin Hypothesis"}, {"id": "3", "text": "J Curve Theory"}, {"id": "4", "text": "K Curve Theory"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The J Curve Theory explains that a country's trade deficit will initially worsen after the depreciation of its currency before it improves.\n* This happens because import prices rise immediately, while export volumes take time to increase due to existing contracts and slow market adjustments.\n* The graphical representation of this initial dip and subsequent rise resembles the letter \"J\".\n**Related Concepts:**\n* The Marshall-Lerner condition must be satisfied for a devaluation to ultimately improve the trade balance over the long run.\n* The Phillips Curve, in contrast, illustrates the inverse relationship between inflation and unemployment.", "id": 10}, {"question": "Match List I with List II:\n| List I (Organization) | List II (Establishment Year) |\n| :--- | :--- |\n| (A) International Finance Corporation | (I) 1944 |\n| (B) International Development Association | (II) 1967 |\n| (C) World Intellectual Property Organization | (III) 1956 |\n| (D) International Bank for Reconstruction and Development | (IV) 1960 |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A) \u2013 (III), (B) \u2013 (IV), (C) \u2013 (II), (D) \u2013 (I)"}, {"id": "2", "text": "(A) \u2013 (II), (B) \u2013 (I), (C) \u2013 (III), (D) \u2013 (IV)"}, {"id": "3", "text": "(A) \u2013 (III), (B) \u2013 (I), (C) \u2013 (IV), (D) \u2013 (II)"}, {"id": "4", "text": "(A) \u2013 (II), (B) \u2013 (IV), (C) \u2013 (I), (D) \u2013 (III)"}], "correctAnswer": "1", "explanation": "**Key Concept:**\n* IBRD was the foundational institution of the World Bank, established at Bretton Woods in 1944.\n* IFC was created in 1956 to foster private sector growth in developing nations.\n* IDA was established in 1960 to provide \"soft loans\" (interest-free) to the poorest nations.\n**Related Concepts:**\n* WIPO was established in 1967 to promote the protection of intellectual property globally.\n* Knowing the Bretton Woods date (1944) for IBRD allows you to easily eliminate incorrect options in this specific match type.", "id": 11}, {"question": "Occasional sale of a commodity at a lower price abroad in order to unload an unforeseen and temporary surplus of the commodity without reducing domestic prices is called:", "options": [{"id": "1", "text": "Persistent dumping"}, {"id": "2", "text": "Predatory dumping"}, {"id": "3", "text": "Export subsidies"}, {"id": "4", "text": "Sporadic dumping"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* Dumping is an international price discrimination strategy where a firm exports a product at a lower price than it charges in its home market.\n* Sporadic dumping occurs occasionally to clear out unsold excess inventory without disrupting the domestic market pricing structure.\n* This type is temporary and driven by unforeseen market fluctuations rather than a long-term strategic intent to destroy foreign competitors.\n**Related Concepts:**\n* Predatory dumping is aggressive and deliberate, intended to drive foreign competitors out of business to establish a monopoly.\n* Persistent dumping involves consistently selling at a lower price abroad to maximize long-term profits through price discrimination.", "id": 12}, {"question": "Which of the following entity has recently been negotiated to replace NAFTA with effect from July 2020?", "options": [{"id": "1", "text": "Quad group of countries"}, {"id": "2", "text": "USMCA"}, {"id": "3", "text": "Shanghai Cooperation Organisation"}, {"id": "4", "text": "Trans Atlantic Organisation"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* The United States-Mexico-Canada Agreement (USMCA) officially replaced the North American Free Trade Agreement (NAFTA) on July 1, 2020.\n* USMCA modernized the previous trade pact by adding provisions on digital trade, labor rights, and stricter rules of origin for auto manufacturing.\n* It aims to create more balanced, reciprocal trade supporting high-paying jobs for Americans and growing the North American economy.\n**Related Concepts:**\n* The Quad is a strategic security dialogue between the US, India, Japan, and Australia, not a trade agreement.\n* NAFTA had been in effect since 1994 and heavily integrated the North American markets prior to this renegotiation.", "id": 13}, {"question": "FDI in Indian manufacturing has largely been:", "options": [{"id": "1", "text": "Resource seeking"}, {"id": "2", "text": "Efficiency seeking"}, {"id": "3", "text": "Market seeking"}, {"id": "4", "text": "Export-oriented"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Market-seeking FDI aims to penetrate new markets or maintain existing ones, driven by market size and per capita income.\n* Historically, foreign firms have invested in India's manufacturing sector primarily to cater to its vast domestic consumer base.\n* While the government pushes for export-oriented manufacturing (like \"Make in India\"), the primary draw remains domestic consumption demand.\n**Related Concepts:**\n* Efficiency-seeking FDI looks for cost savings, such as lower labor costs, often seen in supply chain setups in Southeast Asia.\n* Resource-seeking FDI goes after raw materials, like oil extraction investments in the Middle East or mining in Africa.", "id": 14}, {"question": "Arrange the following countries in the ascending order of their contribution to the WTO budget 2020:\n(A) China\n(B) Japan\n(C) Germany\n(D) United States of America\n(E) United Kingdom", "options": [{"id": "1", "text": "(A), (B), (D), (E) and (C)"}, {"id": "2", "text": "(D), (A), (B), (E) and (C)"}, {"id": "3", "text": "(E), (B), (C), (A) and (D)"}, {"id": "4", "text": "(D), (A), (B), (C) and (E)"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Contributions to the WTO budget are based on the member's share of international trade based on data from the previous three years.\n* The United States has historically been the largest single contributor, followed by China.\n* The ascending order based on roughly 2020 statistics is: UK < Japan < Germany < China < USA.\n**Related Concepts:**\n* The core principle of WTO funding ensures that countries dominating global trade bear the heaviest financial responsibility for the organization's upkeep.\n* Minimum contributions are established for the least developed countries (LDCs) to ensure fair participation.", "id": 15}, {"question": "Identify the principles of trade policy framework under the WTO:\n(A) Reciprocity and transparency\n(B) Beneficiary and resilient\n(C) Non-discriminatory\n(D) Binding and enforceable commitments\n(E) Protective and benevolent", "options": [{"id": "1", "text": "(A), (B) and (C) only"}, {"id": "2", "text": "(C), (D) and (E) only"}, {"id": "3", "text": "(A), (C) and (D) only"}, {"id": "4", "text": "(B), (D) and (E) only"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* The WTO trading system relies heavily on core foundational principles to ensure fair, predictable trade.\n* \"Non-discrimination\" includes Most-Favored-Nation (MFN) and National Treatment clauses.\n* \"Binding and enforceable commitments\" ensures that tariff ceilings are respected and disputes can be settled through the Dispute Settlement Body. \"Transparency\" and \"Reciprocity\" ensure predictable mutual benefits.\n**Related Concepts:**\n* \"Protective\" policies contradict the WTO's central aim of trade liberalization.\n* The Most-Favored-Nation (MFN) principle dictates that treating one member favorably requires extending that treatment to all members.", "id": 16}, {"question": "The rights of the consumer as enunciated under section 6 of the Consumer Protection Act, 1986 include:\n(A) To be protected against the marketing of goods and services which are hazardous to life and property\n(B) To be assured the competitive price and low-cost quality products and services\n(C) To be assured that consumers' interests will serve due consideration at appropriate forums\n(D) To be protected for multiple use of products, profits, diversity, and equity\n(E) To be informed about the quality, potency, purity, and price of goods or services", "options": [{"id": "1", "text": "(A), (B), and (C) only"}, {"id": "2", "text": "(B), (C), and (D) only"}, {"id": "3", "text": "(C), (D), and (E) only"}, {"id": "4", "text": "(A), (C), and (E) only"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* The CPA 1986 established six fundamental consumer rights: Right to Safety, Information, Choice, Representation (Right to be heard), Redressal, and Consumer Education.\n* Statement (A) defines the Right to Safety; Statement (E) defines the Right to Information; Statement (C) defines the Right to be Heard.\n* The act guarantees access to a variety of goods at \"competitive prices,\" but it does not guarantee inherently \"low-cost\" products as claimed in (B).\n**Related Concepts:**\n* The 1986 Act was updated and replaced by the Consumer Protection Act 2019, which added provisions for e-commerce and product liability.\n* Right to Redressal provides consumers with a legal remedy against unfair trade practices or unscrupulous exploitation.", "id": 17}, {"question": "Match List I with List II:\n| List I (Events) | List II (Year) |\n| :--- | :--- |\n| (A) Bretton Woods Conference | (I) 1948 |\n| (B) GATT established | (II) 1974 |\n| (C) Multi-fibre Agreement | (III) 1944 |\n| (D) WTO replaced GATT | (IV) 1995 |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A) \u2013 (II), (B) \u2013 (IV), (C) \u2013 (III), (D) \u2013 (I)"}, {"id": "2", "text": "(A) \u2013 (III), (B) \u2013 (I), (C) \u2013 (II), (D) \u2013 (IV)"}, {"id": "3", "text": "(A) \u2013 (III), (B) \u2013 (I), (C) \u2013 (IV), (D) \u2013 (II)"}, {"id": "4", "text": "(A) \u2013 (IV), (B) \u2013 (II), (C) \u2013 (I), (D) \u2013 (III)"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* The Bretton Woods Conference, occurring near the end of WWII in 1944, laid the architecture for modern international finance (IMF, World Bank).\n* The General Agreement on Tariffs and Trade (GATT) came into effect in 1948 to promote international trade.\n* The WTO officially replaced GATT on January 1, 1995, following the Uruguay Round.\n**Related Concepts:**\n* The Multi-Fibre Arrangement (MFA, 1974) governed the world trade in textiles and garments by imposing quotas on exports from developing countries.\n* The Marrakesh Agreement was the formal treaty that established the World Trade Organization.", "id": 18}, {"question": "Arrange the levels of economic integration from least integrated to most integrated:\n(A) Customs Union\n(B) Free Trade Area\n(C) Economic Union\n(D) Common Market\n(E) Political Union", "options": [{"id": "1", "text": "A, B, C, D, E"}, {"id": "2", "text": "B, A, D, C, E"}, {"id": "3", "text": "D, C, A, B, E"}, {"id": "4", "text": "E, D, C, A, B"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Economic integration progresses by removing deeper layers of economic barriers between sovereign states.\n* It starts with a Free Trade Area (no internal tariffs) and moves to a Customs Union (adds common external tariffs).\n* It advances to a Common Market (adds free movement of labor/capital), an Economic Union (adds common currency/macroeconomic policy), and finally a Political Union.\n**Related Concepts:**\n* NAFTA (now USMCA) is a prime example of a Free Trade Area.\n* The European Union (EU) represents the most advanced current form of integration, operating as an Economic Union with elements of Political integration.", "id": 19}, {"question": "The mode of joint venturing in international business that allows a company to conduct business in another country whose laws discourage foreign ownership is known as:", "options": [{"id": "1", "text": "Contract manufacturing"}, {"id": "2", "text": "International Franchising"}, {"id": "3", "text": "Joint ownership"}, {"id": "4", "text": "Licensing"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* Licensing is an arrangement where a licensor grants the rights to intangible property (patents, trademarks, processes) to a foreign licensee for a specified period, in return for a royalty fee.\n* It is highly effective in markets where foreign direct investment (FDI) or foreign ownership is heavily restricted by local laws or high capital costs.\n* The licensor does not bear the development costs and risks associated with opening a foreign market.\n**Related Concepts:**\n* Franchising is a specialized, longer-term form of licensing primarily used in service industries where strict operational guidelines are enforced.\n* Joint ownership (Joint Venture) implies equity participation, which is exactly what restrictive laws might seek to prevent.", "id": 20}, {"question": "Arrange the following economic regions in increasing order of FDI inflows according to the UNCTAD Report, 2020:\n(A) Developing economies\n(B) Transition economies\n(C) North America\n(D) Developed economies\n(E) Europe", "options": [{"id": "1", "text": "(A), (B), (C), (E), (D)"}, {"id": "2", "text": "(B), (A), (C), (E), (D)"}, {"id": "3", "text": "(B), (A), (D), (E), (C)"}, {"id": "4", "text": "(E), (B), (D), (C), (A)"}], "correctAnswer": "4", "explanation": "**Key Concept:**\n* The UNCTAD World Investment Report 2020 tracked the severe contraction of global FDI due to the COVID-19 pandemic.\n* Developed economies, particularly Europe, saw massive structural declines in FDI inflows.\n* Conversely, FDI to developing economies remained relatively resilient, accounting for a historic high share of global inflows, leading the order.\n**Related Concepts:**\n* Transition economies generally attract the smallest absolute share of global FDI due to market size and structural risks.\n* Developing Asia was the only major region to exhibit relative stability in FDI inflows during the 2020 shock.", "id": 21}, {"question": "Bretton Woods resolutions led to the formation of:", "options": [{"id": "1", "text": "GATT"}, {"id": "2", "text": "IMF"}, {"id": "3", "text": "UNCTAD"}, {"id": "4", "text": "WTO"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* The Bretton Woods Conference (officially the United Nations Monetary and Financial Conference) in 1944 aimed to rebuild the post-war global economic system.\n* It resulted in the creation of two sister institutions: The International Monetary Fund (IMF) and the International Bank for Reconstruction and Development (IBRD, part of the World Bank).\n* The goal was to secure international monetary cooperation and provide capital for post-war reconstruction.\n**Related Concepts:**\n* The original plan included a third pillar, the International Trade Organization (ITO), which failed to materialize, leading to the interim GATT.\n* The IMF's original mandate was to oversee a system of fixed exchange rates tied to the US dollar.", "id": 22}, {"question": "The term current account transaction is defined as a transaction other than a capital account transaction and without prejudice to the generality of the foregoing, such transaction includes:\nA. Overseas direct investment, (ODIs) from India\nB. Payment due as interest on loans and as net income from investments\nC. Remittances for living expenses of parents, spouse, and children residing abroad\nD. Borrowing or lending in foreign exchange and in Indian rupees", "options": [{"id": "1", "text": "A and B only"}, {"id": "2", "text": "A and D only"}, {"id": "3", "text": "B and C only"}, {"id": "4", "text": "D only"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Under the Foreign Exchange Management Act (FEMA), a Current Account Transaction involves short-term financial flows that do not alter the assets or liabilities of a resident outside India.\n* Income generated from investments (like interest and dividends) and unilateral transfers (like family remittances) are classified as current account transactions.\n* Capital account transactions (A and D) inherently alter the foreign asset and liability status of residents.\n**Related Concepts:**\n* Trade in goods (visibles) and services (invisibles) form the primary bulk of the current account.\n* Full convertibility of the Indian Rupee exists for current account transactions, but capital account transactions are subject to RBI regulations.", "id": 23}, {"question": "To prevent opportunistic takeover of domestic firms amid the Covid-19 pandemic, Foreign Direct Investment (FDI) from countries that share borders with India is allowed through:", "options": [{"id": "1", "text": "Automatic route"}, {"id": "2", "text": "Government route"}, {"id": "3", "text": "FIPB route"}, {"id": "4", "text": "DPIIT route"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* In April 2020, India revised its FDI policy to mandate prior government approval for investments from nations sharing a land border with India.\n* This defensive economic policy was introduced to curb \"opportunistic takeovers/acquisitions\" of Indian companies whose valuations plummeted due to the pandemic.\n* Consequently, such investments can no longer utilize the \"Automatic Route,\" which requires no prior approval.\n**Related Concepts:**\n* This policy amendment primarily impacted investment capital flows originating from China.\n* The automatic route allows non-residents to invest without the prior approval of the Reserve Bank of India (RBI) or the Government of India.", "id": 24}, {"question": "Counter Vailing Duties (CVD) are often imposed on imports to offset the impact of:", "options": [{"id": "1", "text": "Predatory pricing"}, {"id": "2", "text": "Export subsidies"}, {"id": "3", "text": "Dumping"}, {"id": "4", "text": "Low-cost financing"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Countervailing Duties (CVD) are trade import duties imposed under WTO rules to neutralize the negative effects of subsidies given by the exporting country's government.\n* When a foreign government heavily subsidizes its producers, those producers can export goods at artificially low prices, harming domestic industries in the importing country.\n* CVD levels the playing field by raising the import price to accurately reflect its true, unsubsidized market cost.\n**Related Concepts:**\n* Anti-dumping duties, conversely, are used to counter price discrimination by individual firms (dumping), not government subsidies.\n* Both CVD and Anti-dumping duties are considered legitimate trade defense instruments under the WTO if injury to domestic industry is proven.", "id": 25}, {"question": "Given below are two statements. One is labelled as Assertion A and the other is labelled as Reason R:\nAssertion (A): Foreign investment is playing an increasing role in economic development and contributes to a significant share of the domestic investment, employment generation, and exports.\nReason (R): Substantial increase in the magnitude of capital inflows has remarkably improved the balance of payments and foreign exchange reserve position.\nChoose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both A and R are correct and R is the correct explanation of A"}, {"id": "2", "text": "Both A and R are correct and R is NOT the correct explanation of A"}, {"id": "3", "text": "A is correct but R is not correct"}, {"id": "4", "text": "A is not correct but R is correct"}], "correctAnswer": "2", "explanation": "**Key Concept:**\n* Assertion (A) is correct as FDI brings capital, technology, and management expertise, directly boosting domestic production capacity and employment.\n* Reason (R) is also factually correct; foreign capital inflows strengthen the capital account, improving overall BoP and adding to a nation's forex reserves.\n* However, (R) explains the macroeconomic financial stability outcome, not the direct microeconomic developmental impacts (employment, production) highlighted in (A). Thus, R is not the direct causal explanation for A.\n**Related Concepts:**\n* Green-field investments directly create new infrastructure and jobs, representing the strongest form of developmental FDI.\n* A strong Forex reserve provides a buffer against external economic shocks and helps the central bank manage currency volatility.", "id": 26}, {"question": "The collapse of Eastern Europe in ________ and USSR in ________ led to the emergence of transitory economies.", "options": [{"id": "1", "text": "1980, 1987"}, {"id": "2", "text": "1988, 1995"}, {"id": "3", "text": "1989, 1991"}, {"id": "4", "text": "1997, 1991"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Transitory economies refer to nations shifting from centrally planned communist systems to free-market, capitalist economic systems.\n* This transition period was triggered by the fall of communist regimes in Eastern Europe beginning in 1989 (symbolized by the fall of the Berlin Wall).\n* It culminated in the formal dissolution of the Soviet Union (USSR) in December 1991.\n**Related Concepts:**\n* Key transition policies include privatization of state-owned enterprises, price liberalization, and the creation of financial markets.\n* \"Shock Therapy\" was an aggressive economic transition method used by countries like Poland, involving sudden releases of price and currency controls.", "id": 27}, {"question": "Which of the following statements is/are correct regarding the application of data mining techniques?\n(A) Predicting future trends based on information available\n(B) Electronic data interchange\n(C) Analysing demographic information about customers\n(D) Credit risk analysis", "options": [{"id": "1", "text": "A, B, and C only"}, {"id": "2", "text": "B, C, and D only"}, {"id": "3", "text": "A, C, and D only"}, {"id": "4", "text": "A, B, and D only"}], "correctAnswer": "3", "explanation": "**Key Concept:**\n* Data mining involves analyzing large datasets to discover patterns, correlations, and anomalies that predict outcomes.\n* It is extensively used in predictive analytics (forecasting trends), customer segmentation (analyzing demographics), and financial evaluation (credit risk profiling).\n* Electronic Data Interchange (EDI) is merely a standard electronic communication format for exchanging business documents; it is not an analytical or data mining technique.\n**Related Concepts:**\n* Artificial Intelligence and Machine Learning are modern engines that power advanced, real-time data mining applications.\n* Association rule learning (e.g., \"Market Basket Analysis\") is a common data mining technique used by retailers to understand purchase behavior.", "id": 28}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
