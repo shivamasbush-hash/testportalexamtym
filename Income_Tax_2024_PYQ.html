@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Income Tax 2024 PYQ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Income Tax 2024 PYQ", "organization": "ExamTym", "durationMinutes": 35, "totalMarks": 52.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Which of the following methods have been prescribed by the Central Board of Direct Taxes (CBDT) for computation of Arm's Length Price required to compute income arising from an International transaction under Chapter X of the Income-tax Act, 1961?\nA. Transactional Net Margin Method\nB. Uncomparable Controlled Price Method\nC. Profit Split Method\nD. Resale Price Method\nE. Cost Minus Method", "options": [{"id": "1", "text": "B, D & E Only"}, {"id": "2", "text": "A, B & D Only"}, {"id": "3", "text": "C, D & E Only"}, {"id": "4", "text": "A, C & D Only"}], "correctAnswer": "4", "explanation": "* **Key Concept:**\n  * Section 92C prescribes highly specific transfer pricing methods to determine the Arm's Length Price (ALP) for international transactions between associated enterprises.\n  * The legally sanctioned methods include the Comparable Uncontrolled Price (CUP) method, Resale Price Method (RPM), Cost Plus Method (CPM), Profit Split Method (PSM), and Transactional Net Margin Method (TNMM).\n  * \"Uncomparable Controlled Price\" and \"Cost Minus Method\" are conceptual traps; they are entirely fabricated and do not exist under CBDT guidelines.\n* **Related Concepts:**\n  * If the application of these methods results in more than one price, the arithmetic mean of such prices is considered the ALP.\n  * The Central Board of Direct Taxes has the authority to prescribe \"any other method\" if the standard five prove inapplicable to a unique transaction.", "id": 1}, {"question": "Under the Income-Tax-Act, 1961, the value of perquisite in respect of movable assets (other than the assets already specified in Rule 3 of the Income tax Rules, 1962) owned by the employer is calculated at the rate of:", "options": [{"id": "1", "text": "10% per annum of the actual cost"}, {"id": "2", "text": "20% per annum of the actual cost"}, {"id": "3", "text": "10% per month of the actual cost"}, {"id": "4", "text": "20% per month of the actual cost"}], "correctAnswer": "1", "explanation": "* **Key Concept:**\n  * Under Rule 3(7)(viii) of the Income Tax Rules, when an employer provides a movable asset (like furniture or household appliances) for the personal use of the employee, it constitutes a taxable perquisite.\n  * If the asset is owned by the employer, the perquisite value is strictly calculated at 10% per annum of the actual original cost of the asset.\n  * If the asset is hired by the employer from a third party, the actual hire charges paid by the employer are taken as the perquisite value.\n* **Related Concepts:**\n  * Laptops and computers provided for use by the employee are entirely exempt from being treated as a perquisite.\n  * Any nominal amount recovered from the employee for the use of the asset is deducted from the calculated perquisite value.", "id": 2}, {"question": "What is the correct sequence to be followed for the following while computing income under the head Capital Gains?\nA. Deduction of indexed cost of acquisition\nB. Determination of full value of consideration\nC. Determination whether the asset is a capital asset or not\nD. Determination whether the transaction is regarded as transfer or not\nE. Exemption under section 54EC in respect of investment in the long-term specified asset", "options": [{"id": "1", "text": "B, A, C, E, D"}, {"id": "2", "text": "E, A, D, C, B"}, {"id": "3", "text": "D, B, C, A, E"}, {"id": "4", "text": "C, D, B, A, E"}], "correctAnswer": "4", "explanation": "* **Key Concept:**\n  * The statutory computation begins with the threshold identification: confirming the asset involved is indeed a \"Capital Asset\" under Section 2(14) (C).\n  * Next, it must be verified that the transaction qualifies legally as a \"Transfer\" under Section 2(47) (D), triggering the chargeability.\n  * The calculation then strictly follows: establishing the Full Value of Consideration (B), deducting the Indexed Cost of Acquisition/Improvement (A), and finally applying specific exemptions like Section 54EC (E) to arrive at the taxable gain.\n* **Related Concepts:**\n  * Without qualifying as a Capital Asset or a valid Transfer, the transaction falls outside the scope of Capital Gains entirely, halting the sequence.\n  * Exemptions (Sections 54 to 54F) are always the absolute final step in the computation format before finalizing the taxable long-term or short-term gain.", "id": 3}, {"question": "X Ltd. incurred a capital expenditure of Rs. 5,00,000 for the purpose of promoting family planning amongst its employees during the assessment year 2024-25. How much deduction in respect of such expenditure can be claimed by X Ltd. during the assessment year 2024-25, while computing income under the head Profits and Gains of Business or Profession?", "options": [{"id": "1", "text": "Rs. 5,00,000"}, {"id": "2", "text": "Rs. 2,50,000"}, {"id": "3", "text": "Rs. 1,00,000"}, {"id": "4", "text": "Rs. 50,000"}], "correctAnswer": "3", "explanation": "* **Key Concept:**\n  * Section 36(1)(ix) uniquely provides a deduction for expenditure incurred genuinely for promoting family planning amongst employees.\n  * This deduction is exclusively available to *Corporate* assessees (Companies) and denied to individuals or firms.\n  * If the expenditure is of a capital nature, it is amortized; exactly 1/5th (20%) of the expenditure is allowed as a deduction in the current year, and the remainder over the next four succeeding years (Rs. 5,00,000 \u00f7 5 = Rs. 1,00,000).\n* **Related Concepts:**\n  * Revenue expenditure incurred on family planning is fully allowed as a 100% deduction in the very year it is incurred.\n  * Any unabsorbed capital expenditure on family planning is treated similarly to unabsorbed depreciation and can be carried forward indefinitely.", "id": 4}, {"question": "Under section 206C of the Income-tax Act, 1961, a seller is supposed to collect income tax from the buyer in respect of sale of the following goods:\nA. Motor Vehicle of the value between Rs. 7,00,000 - Rs. 9,00,000\nB. Alcoholic liquor for human consumption\nC. Electronic items of the value between Rs. 10,00,000 - Rs. 15,00,000\nD. Timber obtained under a forest lease\nE. Minerals, being coal or lignite or iron ore", "options": [{"id": "1", "text": "A, C & E Only"}, {"id": "2", "text": "B, D & E Only"}, {"id": "3", "text": "A & C Only"}, {"id": "4", "text": "B & E Only"}], "correctAnswer": "2", "explanation": "* **Key Concept:**\n  * Section 206C mandates Tax Collected at Source (TCS) on the sale of highly specific, high-profit-margin or regulated goods to monitor transactions and prevent tax evasion.\n  * The scheduled goods explicitly include Alcoholic liquor for human consumption (B), Timber obtained under a forest lease (D), and specific Minerals like coal, lignite, or iron ore (E).\n  * Motor vehicles attract TCS strictly when the sale consideration *exceeds* Rs. 10,00,000, making option A (Rs. 7L-9L) a conceptual trap. Electronic items (C) do not fall under the standard specified goods for TCS.\n* **Related Concepts:**\n  * Toll plazas, parking lots, and mining/quarrying leases also attract TCS provisions under Section 206C(1C).\n  * The seller collects this tax at the time of debiting the amount to the account of the buyer or at the time of receipt of the amount, whichever is earlier.", "id": 5}, {"question": "Which of the following condition is NOT required to be satisfied by an individual for the purpose of claiming unilateral relief under section 91(1) of the Income-tax Act, 1961, in a previous year?", "options": [{"id": "1", "text": "He must be resident in India in that previous year"}, {"id": "2", "text": "His total income exceeds Rs. 10,00,000 during that previous year"}, {"id": "3", "text": "He has earned an income during that previous year from another country and that income has accrued or arose outside India"}, {"id": "4", "text": "He has paid income-tax in that country on the income earned in that country and no Double Taxation Avoidance Agreement (DTAA) exists between India and that country"}], "correctAnswer": "2", "explanation": "* **Key Concept:**\n  * Section 91 provides \"Unilateral Relief\" from double taxation as a fallback mechanism for taxpayers earning foreign income from countries with which India does not hold a DTAA.\n  * The statutory requirements strictly dictate that the taxpayer must be a Resident of India (1), the income must accrue outside India (3), and foreign tax must have been genuinely paid without a governing DTAA framework (4).\n  * There is absolutely no monetary threshold requirement (such as total income exceeding Rs. 10,00,000) for claiming Section 91 relief.\n* **Related Concepts:**\n  * Relief is mathematically calculated at the Indian rate of tax or the foreign rate of tax, whichever is lower.\n  * If a formal DTAA exists, Section 90 supersedes Section 91 entirely (Bilateral Relief).", "id": 6}, {"question": "Match the List-I with List-II\n| List I (ITR Forms) | List II (Applicability) |\n| :--- | :--- |\n| A. ITR-1 | I. Presumptive Business Income |\n| B. ITR-2 | II. Individuals having Salary and One House Property |\n| C. ITR-3 | III. Individuals having income from Business or Profession |\n| D. ITR-4 | IV. Individuals not having income from Business or Profession |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-III, B-IV, C-I, D-II"}, {"id": "2", "text": "A-II, B-IV, C-III, D-I"}, {"id": "3", "text": "A-IV, B-III, C-I, D-II"}, {"id": "4", "text": "A-I, B-II C-IV, D-III"}], "correctAnswer": "2", "explanation": "* **Key Concept:**\n  * ITR-1 (Sahaj) is exclusively for resident individuals whose total income does not exceed Rs. 50 Lakhs, primarily sourced from Salary and One House Property (A-II).\n  * ITR-2 is utilized by Individuals and HUFs possessing more complex incomes (like capital gains or foreign assets) but strictly not having income from Business or Profession (B-IV).\n  * ITR-3 is for individuals/HUFs who earn regular income under the head Profits and Gains of Business or Profession (C-III).\n  * ITR-4 (Sugam) is tailored specifically for entities opting into Presumptive Taxation schemes (Section 44AD, 44ADA, 44AE) (D-I).\n* **Related Concepts:**\n  * Corporate entities are generally required to file ITR-6 (unless claiming charitable exemptions under Section 11, which requires ITR-7).\n  * Directors of a company or individuals holding unlisted equity shares are explicitly disqualified from filing ITR-1 or ITR-4.", "id": 7}, {"question": "How much per cent of income by way of interest received on compensation or on enhanced compensation is allowed as deduction while computing income under the head Income from Other Sources under the Income-tax Act, 1961?", "options": [{"id": "1", "text": "25%"}, {"id": "2", "text": "50%"}, {"id": "3", "text": "75%"}, {"id": "4", "text": "100%"}], "correctAnswer": "2", "explanation": "* **Key Concept:**\n  * Interest received on compensation or enhanced compensation (typically associated with the compulsory acquisition of land/property) is explicitly taxable under the head \"Income from Other Sources\".\n  * Section 57(iv) provides a flat standard deduction of exactly 50% of such interest income to cover presumed expenses and offer relief from tax bunching.\n  * No further deductions for actual legal fees, tribunal expenses, or professional expenditures incurred to obtain this interest are legally permissible.\n* **Related Concepts:**\n  * The interest itself is taxable in the specific year it is actually *received*, rather than the year to which it mathematically accrues.\n  * The original or enhanced compensation (the principal amount) is taxed under the head Capital Gains, governed by different rules regarding the year of receipt.", "id": 8}, {"question": "What is the correct sequence to be followed for the following transactions undertaken by an individual while computing his gross total income as per the Income-tax Act, 1961?\nA. Investment in own public provident fund\nB. Investment in one residential house in India for exemption from capital gains\nC. Interest on capital borrowed for purchasing a self-occupied house property\nD. Tax on employment\nE. Payment of Medical insurance premium on his own life", "options": [{"id": "1", "text": "C, B, D, E, A"}, {"id": "2", "text": "D, C, B, A, E"}, {"id": "3", "text": "E, A, D, B, C"}, {"id": "4", "text": "B, C, E, A, D"}], "correctAnswer": "2", "explanation": "* **Key Concept:**\n  * The sequence follows the statutory flow of compiling Total Income. First, head-wise incomes are calculated in order. Tax on employment (D) is deducted under Section 16 to arrive at Income from Salaries.\n  * Next, Interest on borrowed capital (C) is deducted under Section 24(b) to finalize Income from House Property.\n  * Then, investments qualifying for Capital Gains exemptions like Section 54 (B) are applied to arrive at taxable Capital Gains. This yields the Gross Total Income (GTI).\n  * Finally, Chapter VI-A deductions are subtracted from GTI, generally applied as Section 80C (A - PPF) and then Section 80D (E - Medical Insurance), arriving at Total Taxable Income.\n* **Related Concepts:**\n  * Note that UGC NET options often combine the computation of Gross Total Income and Total Taxable Income into one chronological timeline.\n  * Set-off of losses structurally occurs between arriving at head-wise income and summarizing the final Gross Total Income.", "id": 9}, {"question": "Which of the following sections of the Income-Tax ACT- 1961, provide for double taxation relief in India?\nA. Section- 89\nB. Section- 90\nC. Section- 91\nD. Section- 92\nE. Section- 93", "options": [{"id": "1", "text": "A & B Only"}, {"id": "2", "text": "B & C Only"}, {"id": "3", "text": "C & D Only"}, {"id": "4", "text": "A, B & E Only"}], "correctAnswer": "2", "explanation": "* **Key Concept:**\n  * The Income Tax Act provides dedicated provisions to eliminate or mitigate the burden of the same income being taxed in two different jurisdictions.\n  * Section 90 is the primary engine for \"Bilateral Relief,\" granting the Central Government the power to enter into a Double Taxation Avoidance Agreement (DTAA) with foreign countries.\n  * Section 91 provides \"Unilateral Relief\" for Indian residents earning income in a country with which India does not have a formal DTAA.\n* **Related Concepts:**\n  * Section 89 provides relief concerning the bunching of Salary arrears, not international double taxation.\n  * Sections 92, 92A, and 92C deal with Transfer Pricing regulations intended to prevent tax evasion, not to provide relief.", "id": 10}, {"question": "Tax treaties are generally based on which of the following convention?\nA. OECD Model Tax Convention\nB. UN Model Tax Convention\nC. WTO Model Tax Convention\nD. IMF Model Tax Convention", "options": [{"id": "1", "text": "A & B only"}, {"id": "2", "text": "A & C only"}, {"id": "3", "text": "B & D only"}, {"id": "4", "text": "A, B & C only"}], "correctAnswer": "1", "explanation": "* **Key Concept:**\n  * International tax treaties (DTAAs) are generally drafted using globally recognized structural templates to ensure consistency and prevent treaty shopping.\n  * The OECD Model Tax Convention is heavily favored by developed nations, fundamentally prioritizing \"residence-based\" taxation rights.\n  * The UN Model Tax Convention is preferred by developing nations (including India), as it preserves a broader scope for \"source-based\" taxation rights, allowing the country where the income is generated to retain more tax revenue.\n* **Related Concepts:**\n  * The WTO and IMF handle global trade rules and macroeconomic stability/currency structures, respectively; they do not draft direct tax treaties.\n  * The US Model is a third, lesser-tested academic template used specifically by the United States for its bilateral negotiations.", "id": 11}, {"question": "Compute the tax liability under default tax regime of Mr. X (35 year), having total income of 51,75,000 for the assessment year 2024-25. Assume that his total income comprises salary, income from house property and interest on fixed deposit:", "options": [{"id": "1", "text": "13,75,000"}, {"id": "2", "text": "13,77,750"}, {"id": "3", "text": "14,30,000"}, {"id": "4", "text": "14,75,000"}], "correctAnswer": "3", "explanation": "* **Key Concept:**\n  * Under the Section 115BAC default tax regime for AY 2024-25, the base tax on \u20b951,75,000 is strictly calculated using concessional slab rates (amounting to \u20b912,52,500).\n  * Since total income exceeds \u20b950 Lakhs, a 10% Surcharge is triggered, bringing the tax to \u20b913,77,750. However, this triggers the \"Marginal Relief\" provision to prevent the tax bump from exceeding the income bump.\n  * Marginal Relief Calculation: Tax on \u20b950 Lakhs = \u20b912,00,000 (No Surcharge). Increase in Income = \u20b91,75,000. Increase in Tax = \u20b91,77,750. Relief = \u20b92,750. Adjusted Tax = \u20b913,75,000. Adding 4% Health & Education Cess (\u20b955,000) yields a final liability of \u20b914,30,000.\n* **Related Concepts:**\n  * Marginal relief ensures that an assessee's take-home income does not decrease simply by crossing a surcharge threshold.\n  * The new tax regime under Section 115BAC is the default regime from AY 2024-25; standard deductions are permitted, but chapter VI-A investment deductions are restricted.", "id": 12}, {"question": "Which of the following is/are included in salary as per section- 17 of Income Tax Act 1961?\nA. Wages\nB. Perquisite\nC. Profits in lieu of salary\nD. Compensation on termination of employment", "options": [{"id": "1", "text": "A & B Only"}, {"id": "2", "text": "B & C Only"}, {"id": "3", "text": "A, B & C Only"}, {"id": "4", "text": "A, B, C & D"}], "correctAnswer": "4", "explanation": "* **Key Concept:**\n  * Section 17 of the Income Tax Act provides a highly inclusive and exhaustive definition of the term \"Salary\" encompassing far more than just basic wages.\n  * Section 17(1) explicitly includes Wages (A), alongside pensions, gratuities, and advance salaries.\n  * Section 17(2) rigorously defines Perquisites (B) (fringe benefits), while Section 17(3) defines \"Profits in lieu of salary\" (C), which explicitly lists Compensation on termination of employment (D) as a primary constituent.\n* **Related Concepts:**\n  * While \"Compensation on termination\" is technically a sub-component of \"Profits in lieu of salary,\" UGC NET questions routinely present sub-components separately to test depth of statutory knowledge.\n  * Voluntary payments given by an employer outside the contractual framework may also be roped in as taxable under this broad definition.", "id": 13}, {"question": "Arrange the following forums in correct sequence of first appeal to final appeal by an assessee under Income Tax Act-1961:\nA. Supreme Court\nB. High Court\nC. Appellate Tribunal\nD. Joint Commissioner", "options": [{"id": "1", "text": "A, B, C, D"}, {"id": "2", "text": "D, C, B, A"}, {"id": "3", "text": "B, D, A, C"}, {"id": "4", "text": "C, A, D, B"}], "correctAnswer": "2", "explanation": "* **Key Concept:**\n  * The Income Tax Act lays out a strict chronological hierarchy for dispute resolution when an assessee is aggrieved by an Assessing Officer's order.\n  * The first statutory appeal is filed with the Commissioner of Income Tax (Appeals) or Joint Commissioner (Appeals) (D).\n  * The second appeal lies with the Income Tax Appellate Tribunal (ITAT) (C), which is the final fact-finding authority.\n  * Subsequent appeals escalate to the High Court (B) exclusively on \"substantial questions of law,\" and finally to the Supreme Court (A) as the ultimate judicial arbiter.\n* **Related Concepts:**\n  * The ITAT has the authority to entertain appeals from both the assessee and the tax department.\n  * Questions of fact terminate at the ITAT; High Courts will dismiss appeals that do not present a genuine legal misinterpretation.", "id": 14}, {"question": "The tax planning strategies used by multinational enterprises that exploit gaps and mismatches in tax rules to avoid paying tax is known as:", "options": [{"id": "1", "text": "AEPS"}, {"id": "2", "text": "BEPS"}, {"id": "3", "text": "EBPS"}, {"id": "4", "text": "CEPS"}], "correctAnswer": "2", "explanation": "* **Key Concept:**\n  * BEPS stands for Base Erosion and Profit Shifting.\n  * It represents sophisticated tax avoidance strategies where multinational corporations exploit loopholes, artificial entity structuring, and transfer pricing mismatches.\n  * The goal is to mathematically \"shift\" profits from high-tax jurisdictions (where the actual economic activity takes place) to low-tax or no-tax havens, thereby \"eroding\" the tax base of the host country.\n* **Related Concepts:**\n  * The OECD/G20 Inclusive Framework established the 15-point BEPS Action Plan to equip governments with domestic and international instruments to combat this practice.\n  * Equalisation Levy and Thin Capitalization rules (Section 94B) in India are direct legislative implementations originating from BEPS action plans.", "id": 15}, {"question": "The general consideration applicable to tax planning in the field of business deduction revolve around which of the following?\nA. Allowability\nB. Year of allowability\nC. Extent of allowability\nD. Carry forward to future years", "options": [{"id": "1", "text": "A & B Only"}, {"id": "2", "text": "A & C Only"}, {"id": "3", "text": "A, B & C Only"}, {"id": "4", "text": "A, B, C & D"}], "correctAnswer": "4", "explanation": "* **Key Concept:**\n  * Effective corporate tax planning regarding business deductions requires a holistic analysis of statutory limitations to legally minimize PGBP tax.\n  * \"Allowability\" (A) determines if an expense is revenue (allowed) or capital (disallowed). \"Year of allowability\" (B) manages timing (e.g., Section 43B allows certain expenses only on an actual payment basis).\n  * \"Extent of allowability\" (C) deals with limits (e.g., cash payments exceeding Rs. 10,000 are 100% disallowed). \"Carry forward\" (D) manages unabsorbed depreciation or deferred expenses for future tax offset.\n* **Related Concepts:**\n  * Ignoring the \"Year of allowability\" can lead to temporary disallowances that heavily skew cash flow and advance tax liabilities in a given financial year.\n  * Specific statutory disallowances (like Section 40(a) for non-deduction of TDS) are critical elements evaluated during deduction planning.", "id": 16}, {"question": "Match the List-I with List-II\n| List I (Section) | List II (Deduction Respect) |\n| :--- | :--- |\n| A. Section 80C | I. Donations to certain funds |\n| B. Section 80D | II. Interest on loan for higher education |\n| C. Section 80E | III. Medical insurance premium |\n| D. Section 80G | IV. Life insurance premium & specific investments |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-I, B-II, C-III, D-IV"}, {"id": "2", "text": "A-IV, B-II, C-I, D-III"}, {"id": "3", "text": "A-IV, B-III, C-II, D-I"}, {"id": "4", "text": "A-III, B-IV, C-I, D-II"}], "correctAnswer": "3", "explanation": "* **Key Concept:**\n  * Section 80C acts as the cornerstone deduction (up to Rs. 1.5 Lakhs) for essential long-term savings, including Life Insurance Premiums, PPF, and ELSS (A-IV).\n  * Section 80D explicitly provides deductions for Medical Insurance Premiums paid to protect the health of the individual, spouse, children, and parents (B-III).\n  * Section 80E is heavily targeted at promoting education, granting deductions for the interest component of loans taken strictly for Higher Education (C-II).\n  * Section 80G incentivizes philanthropy, offering varying levels of deduction for Donations made to recognized charitable funds and institutions (D-I).\n* **Related Concepts:**\n  * Section 80E has no upper monetary cap on the interest deduction, but the timeframe is strictly limited to 8 assessment years.\n  * Cash donations exceeding Rs. 2,000 are entirely disqualified from claiming deduction under Section 80G.", "id": 17}, {"question": "Which section of the Income Tax Act 1961 mentions unilateral relief?", "options": [{"id": "1", "text": "90"}, {"id": "2", "text": "89"}, {"id": "3", "text": "91"}, {"id": "4", "text": "92"}], "correctAnswer": "3", "explanation": "* **Key Concept:**\n  * Section 91 explicitly outlines the provisions for \"Unilateral Relief\" from double taxation.\n  * It empowers the Indian government to provide internal tax credit relief to resident taxpayers who have paid taxes on foreign income in a country with which India does NOT share a formal tax treaty (DTAA).\n  * The relief ensures that global income taxation does not result in the punitive double taxation of Indian residents operating in non-treaty nations.\n* **Related Concepts:**\n  * Bilateral relief, where two nations agree on tax offset rules mutually via a signed DTAA, is governed by Section 90.\n  * Section 92 deals strictly with the computation of income from international transactions having regard to the arm's length price (Transfer Pricing).", "id": 18}, {"question": "Arrange the following points step by step regarding computation of Gross Total Income:\nA. Computation of Gross Total Income\nB. Set off and carry forward of Losses\nC. Clubbing of Income of spouse, minor child etc.\nD. Computation of Income under each head of Income\nE. Determination of Residential Status", "options": [{"id": "1", "text": "E, D, C, B, A"}, {"id": "2", "text": "A, B, C, D, E"}, {"id": "3", "text": "C, D, E, A, B"}, {"id": "4", "text": "B, C, D, E, A"}], "correctAnswer": "1", "explanation": "* **Key Concept:**\n  * The architecture of computing tax begins strictly with determining the \"Residential Status\" (E), as it mathematically defines the scope of taxable global/domestic income.\n  * Next, the taxpayer computes the preliminary income classified appropriately under the five distinct statutory heads (D).\n  * Following head-wise computation, provisions for the \"Clubbing of Income\" (C) are applied to include income legally diverted to spouses or minors.\n  * Afterward, intra-head and inter-head \"Set off and carry forward of Losses\" (B) are executed to arrive at the final aggregated figure.\n  * The resultant aggregated figure mathematically constitutes the \"Gross Total Income\" (A).\n* **Related Concepts:**\n  * Deductions under Chapter VI-A are only subtracted *after* Gross Total Income is determined.\n  * A taxpayer cannot claim Chapter VI-A deductions against special rate incomes like Long Term Capital Gains embedded within the Gross Total Income.", "id": 19}, {"question": "Arrange the following points in their section-wise order (Section 23 to 27) as per the Income Tax Act, 1961\nA. Deemed ownership\nB. Provision for arrears of rent and unrealized rent received subsequently\nC. Determination of annual value\nD. Treatment of income from co-owned property\nE. Deduction from (Annual Value) Income from house property", "options": [{"id": "1", "text": "A, C, B, D, E"}, {"id": "2", "text": "C, E, B, D, A"}, {"id": "3", "text": "A, B, C, D, E"}, {"id": "4", "text": "B, C, D, E, A"}], "correctAnswer": "2", "explanation": "* **Key Concept:**\n  * The legislative flow of the \"Income from House Property\" head follows a strict section-wise numerical progression.\n  * Section 23 governs the \"Determination of annual value\" (C), setting the gross tax base.\n  * Section 24 outlines the statutory \"Deductions from Annual Value\" (E), namely standard deduction and interest on borrowed capital.\n  * Section 25A dictates the specific taxability of \"Arrears of rent and unrealized rent received subsequently\" (B).\n  * Section 26 details the \"Treatment of income from co-owned property\" (D).\n  * Section 27 explicitly defines scenarios of \"Deemed ownership\" (A) where the legal owner is bypassed for tax purposes.\n* **Related Concepts:**\n  * Section 22 serves as the charging section for this head, preceding this entire sequence.\n  * Deemed ownership under Section 27 includes scenarios like transferring property to a spouse without adequate consideration.", "id": 20}, {"question": "Bret Lee, an Australian cricket player visits India for 100 days in every financial year. This has been his practice for the past 10 financial Years. Find out his residential status for the assessment Year 2023-24.", "options": [{"id": "1", "text": "Resident in India"}, {"id": "2", "text": "Resident and ordinarily resident in India"}, {"id": "3", "text": "Resident but not ordinarily resident in India"}, {"id": "4", "text": "Non-resident in India"}], "correctAnswer": "3", "explanation": "* **Key Concept:**\n  * To be a \"Resident,\" an individual must be in India for \u226560 days in the current Previous Year (PY) AND \u2265365 days in the 4 preceding PYs. Bret Lee satisfies this (100 days in current PY, and 400 days in the past 4 years).\n  * To be an \"Ordinarily Resident,\" two additional conditions must be met: 1) Resident in 2 out of 10 preceding PYs, AND 2) physical presence in India for \u2265730 days in the 7 preceding PYs.\n  * While he is a resident in 2 out of 10 years, his 7-year physical presence is only 700 days (100 days/year \u00d7 7 years). Since he fails the 730-day requirement, he defaults to the secondary status.\n* **Related Concepts:**\n  * A \"Resident but Not Ordinarily Resident\" (RNOR) is generally only taxed on Indian-sourced income, entirely protecting their foreign income.\n  * The 60-day rule is extended to 182 days for an Indian citizen leaving India for employment.", "id": 21}, {"question": "Which of the following refers to an attempt to avoid payment of taxes by using illegal means?", "options": [{"id": "1", "text": "Tax Management"}, {"id": "2", "text": "Tax Planning"}, {"id": "3", "text": "Tax Avoidance"}, {"id": "4", "text": "Tax Evasion"}], "correctAnswer": "4", "explanation": "* **Key Concept:**\n  * Tax Evasion is the deliberate, deceitful, and entirely illegal practice of escaping tax liabilities by suppressing financial reality.\n  * Common methods include claiming fictitious expenses, concealing true income streams, maintaining fraudulent ledgers, or conducting unrecorded cash sales.\n  * It acts in direct defiance of the law and is universally recognized as a criminal offense.\n* **Related Concepts:**\n  * Tax Planning is the ethical and legislature-encouraged use of deductions to minimize tax.\n  * Tax Avoidance operates in a grey area, exploiting technical loopholes without openly breaking the text of the law, though it defeats legislative intent.", "id": 22}, {"question": "Identify, which of the following statements are True.\nA. Commuted pension received by a government employee is fully exempted from Income Tax\nB. Section 30 of the Income Tax Act 1961 discusses deduction in respect of rent, rates, taxes, repairs and insurance of building used by the assessee for the purpose of business\nC. Section 33 of the Income Tax Act 1961, defines provision regarding depreciation of tangible assets\nD. Capital gain arises from transfer of any assets\nE. Short term Capital assets is defined under section 2(42 A) of the Income Tax Act 1961", "options": [{"id": "1", "text": "A, B, and E Only"}, {"id": "2", "text": "C, D and E only"}, {"id": "3", "text": "A and B only"}, {"id": "4", "text": "C and D only"}], "correctAnswer": "1", "explanation": "* **Key Concept:**\n  * Statement A is fundamentally true; under Section 10(10A), commuted (lump-sum) pension received by Central/State government employees is 100% exempt from tax.\n  * Statement B accurately summarizes Section 30, which allows deductions for structural expenses (rent/repairs) of premises used purely for PGBP.\n  * Statement E is true; Section 2(42A) provides the exact legal definition and holding period thresholds for a Short-Term Capital Asset.\n* **Related Concepts:**\n  * Conceptual Trap in D: Capital gain arises strictly from the transfer of a *Capital* Asset, not *any* asset (stock-in-trade transfers yield business income).\n  * Conceptual Trap in C: Depreciation is governed heavily by Section 32, whereas Section 33 relates primarily to Development Rebates (a largely obsolete provision) or specific Tea/Coffee accounts (33AB).", "id": 23}, {"question": "Which one of the following sections of the Income Tax Act, 1961 defines method for computing Arm Length Price?", "options": [{"id": "1", "text": "90 C"}, {"id": "2", "text": "91 C"}, {"id": "3", "text": "92 C"}, {"id": "4", "text": "93 C"}], "correctAnswer": "3", "explanation": "* **Key Concept:**\n  * Section 92C serves as the critical functional backbone of India's Transfer Pricing regulations.\n  * It explicitly grants the statutory mandate to compute the Arm's Length Price (ALP) using defined methods (CUP, RPM, CPM, PSM, TNMM) for cross-border transactions.\n  * It prevents related multinational enterprises from shifting profits out of India by artificially manipulating transaction prices.\n* **Related Concepts:**\n  * Section 92 serves as the overarching charging section requiring transactions to be at arm's length.\n  * Section 92CA empowers the Assessing Officer to refer the computation of the arm's length price to a specialized Transfer Pricing Officer (TPO).", "id": 24}, {"question": "Match the LIST-I with LIST-II\n| LIST-I (Sections) | LIST-II (TDS Application) |\n| :--- | :--- |\n| A. Section 194 | I. Payment on account of repurchase of units by mutual fund |\n| B. Section 194C | II. Payment to the non-resident sportsman |\n| C. Section 194E | III. Payment to contractor and sub-contractor |\n| D. Section 194F | IV. Dividend |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-IV, B-III, C-II, D-I"}, {"id": "2", "text": "A-I, B-III, C-III, D-IV"}, {"id": "3", "text": "A-I, B-III, C-II, D-IV"}, {"id": "4", "text": "A-III, B-IV, C-I, D-II"}], "correctAnswer": "1", "explanation": "* **Key Concept:**\n  * Section 194 is the primary provision mandating a 10% TDS deduction by Indian companies on the declaration and payment of Dividends (A-IV).\n  * Section 194C is a highly utilized section enforcing TDS strictly on payments made to resident Contractors and sub-contractors for carrying out any work (B-III).\n  * Section 194E targets foreign athletic talent, mandating a flat 20% TDS on payments made to Non-Resident Sportsmen or sports associations (C-II).\n  * Section 194F governs TDS deducted on payments made on account of repurchase of units by a mutual fund or UTI (D-I).\n* **Related Concepts:**\n  * Section 194C distinguishes rates based on the payee: 1% for individual/HUF contractors, and 2% for corporate/firm contractors.\n  * Failure to deduct TDS under these sections invokes a 30% disallowance of the corresponding expense under Section 40(a)(ia).", "id": 25}, {"question": "Which of the following statements are true?\nA. Assessment Year means the period of 12 months commencing on the first day of April every year.\nB. Rounding off of total income is defined under section 288B of the Income Tax Act, 1961.\nC. Rounding off of tax is defined under section 288A of the Income Tax Act, 1961.\nD. Assessee is always a person but a person may or may not be an assessed.\nE. A person may not have assessable income but may still be an assessed.", "options": [{"id": "1", "text": "B and C only"}, {"id": "2", "text": "A, D, E only"}, {"id": "3", "text": "A, B, C only"}, {"id": "4", "text": "B, C, D only"}], "correctAnswer": "2", "explanation": "* **Key Concept:**\n  * Statement A is fundamentally true; Section 2(9) defines the Assessment Year as the strict 12-month period beginning April 1st.\n  * Statement D is an axiomatic tax principle. While an assessee must legally be a \"person,\" a normal person does not become an \"assessee\" until tax proceedings or liabilities are initiated against them.\n  * Statement E is true; a person filing a \"Loss Return\" has no assessable/taxable income, but they are still legally recognized as an assessee executing compliance.\n* **Related Concepts:**\n  * Conceptual Traps in B & C: The sections are deliberately inverted. Section 288A strictly mandates the rounding off of *Total Income* to the nearest multiple of ten. Section 288B governs the rounding off of the final *Tax liability* to the nearest ten rupees.", "id": 26}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
