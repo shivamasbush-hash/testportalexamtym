@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Business Management and HRM 2021 PYQ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Business Management and HRM 2021 PYQ", "organization": "Examtym", "durationMinutes": 40, "totalMarks": 52.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "The principles of management have the following distinct features:\n(A) Flexibility\n(B) Universal application\n(C) Principles are relative, not absolute\n(D) Based on situation.", "options": [{"id": "1", "text": "A, B only"}, {"id": "2", "text": "B, C only"}, {"id": "3", "text": "A, C, D only"}, {"id": "4", "text": "A, B, C, D"}], "correctAnswer": "4", "explanation": "All four \u2014 flexibility, universal application, relative nature, and situational basis \u2014 are recognized features of management principles as given by Fayol and other theorists.\n**Key Concepts:**\n- Management principles are universal yet flexible, applicable across organizations with modification.\n- Principles are relative (not absolute) because their application depends on the situation.\n- Being \"based on situation\" means they serve as guides, not rigid rules \u2014 this is not a contradiction of universality.\n**Related Concepts:**\n- Fayol's 14 Principles of Management emphasize adaptability alongside universal relevance.\n- Distinction between principles of management and laws of science: management principles carry less rigidity.", "id": 1}, {"question": "Arrange the following characteristics of stages of group development in the increasing order:\n(A) Members begin to resolve differences and clarify the purpose of the group and the roles of group members.\n(B) It includes recognition for participation and achievement.\n(C) Members are highly task-oriented and there is unity in the group.\n(D) Conflicts start arising due to the differences of opinion among members.\n(E) Members are moderately eager, have positive expectations, anxious about why they are there, and who other members are.", "options": [{"id": "1", "text": "(E), (D), (A), (B), (C)"}, {"id": "2", "text": "(D), (E), (C), (A), (B)"}, {"id": "3", "text": "(E), (D), (A), (C), (B)"}, {"id": "4", "text": "(D), (B), (A), (E), (C)"}], "correctAnswer": "1", "explanation": "Tuckman's model \u2014 Forming (E) \u2192 Storming (D) \u2192 Norming (A) \u2192 Performing (C); Performing includes recognition (B) is mapped here to Norming/transition, but the sequence E\u2192D\u2192A\u2192B\u2192C best fits NTA's answer key for 2021.\n**Key Concepts:**\n- Tuckman's 5-stage model: Forming, Storming, Norming, Performing, Adjourning.\n- Forming (E): anxiety and uncertainty; Storming (D): interpersonal conflict phase.\n- Norming (A): roles clarified; Performing (C): high task orientation and group unity.\n**Related Concepts:**\n- Recognition and achievement in stage B aligns with the transition from Norming to Performing.\n- Adjourning (dissolution) stage was added later by Tuckman & Jensen (1977).", "id": 2}, {"question": "An act in a way that results in the greatest good for the greatest number is:", "options": [{"id": "1", "text": "The golden rule"}, {"id": "2", "text": "The utilitarian principle"}, {"id": "3", "text": "The four-way test"}, {"id": "4", "text": "Kant's categorical imperative"}], "correctAnswer": "2", "explanation": "The utilitarian principle, associated with Bentham and Mill, holds that actions are right if they maximize overall happiness or benefit for the greatest number.\n**Key Concepts:**\n- Utilitarianism judges the morality of an action by its consequences \u2014 specifically, total welfare maximized.\n- Jeremy Bentham's \"felicific calculus\" quantifies pleasure and pain to determine the ethical course.\n- The golden rule (\"treat others as you wish to be treated\") is a different deontological principle.\n**Related Concepts:**\n- Kant's categorical imperative demands universal lawgiving \u2014 act only according to maxims you'd universalize.\n- The four-way test (Rotary International) asks: Is it truthful? Fair? Beneficial? Builds goodwill?", "id": 3}, {"question": "Match List I with List II:\n| List I (Personality Dimensions) | List II (Individual Traits) |\n|---|---|\n| (A) Extroversion | (I) Calm, happy and secure |\n| (B) Conscientiousness | (II) Talkative, assertive, sociable and outgoing |\n| (C) Emotional stability | (III) Creative, curious, intellectual, imaginative and artistically sensitive |\n| (D) Openness to experience | (IV) Self-disciplined, hardworking, organised, dependable and persistent |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A)-(II), (B)-(IV), (C)-(III), (D)-(I)"}, {"id": "2", "text": "(A)-(II), (B)-(IV), (C)-(I), (D)-(III)"}, {"id": "3", "text": "(A)-(III), (B)-(II), (C)-(I), (D)-(IV)"}, {"id": "4", "text": "(A)-(IV), (B)-(I), (C)-(II), (D)-(III)"}], "correctAnswer": "2", "explanation": "The Big Five (OCEAN) model: Extroversion = sociable/talkative (II); Conscientiousness = disciplined/organized (IV); Emotional Stability = calm/secure (I); Openness = creative/imaginative (III).\n**Key Concepts:**\n- OCEAN: Openness, Conscientiousness, Extroversion, Agreeableness, Neuroticism (emotional instability).\n- Emotional stability is the positive pole of Neuroticism \u2014 characterized by calmness and security.\n- Conscientiousness is a strong predictor of job performance across occupations.\n**Related Concepts:**\n- Myers-Briggs Type Indicator (MBTI) overlaps with Big Five but uses different dimensions.\n- Openness to experience correlates positively with creative performance and innovation in organizations.", "id": 4}, {"question": "People repeat behaviors that bring them satisfaction and pleasure and stop those that bring them dissatisfaction or pain is known as:", "options": [{"id": "1", "text": "Law of exercise"}, {"id": "2", "text": "Law of redo"}, {"id": "3", "text": "Law of effect"}, {"id": "4", "text": "Law of readiness"}], "correctAnswer": "3", "explanation": "Thorndike's Law of Effect states that behaviors followed by satisfying consequences are strengthened and those followed by unpleasant consequences are weakened.\n**Key Concepts:**\n- Thorndike's Law of Effect is foundational to operant conditioning and reinforcement theory.\n- Law of Exercise: connections strengthen with practice/repetition; Law of Readiness: relates to preparedness of the organism.\n- \"Law of redo\" is not a recognized psychological principle \u2014 it is a distractor.\n**Related Concepts:**\n- Skinner's operant conditioning extends Thorndike's work via positive/negative reinforcement and punishment.\n- Behavior modification in organizations (OB Mod) is based on Law of Effect and reinforcement schedules.", "id": 5}, {"question": "The advantages of incentive payments are:\n(A) Ease in the introduction of new machines\n(B) Better utilization of equipment\n(C) Reduced absenteeism and turnover\n(D) Increased scrap", "options": [{"id": "1", "text": "A, B only"}, {"id": "2", "text": "B, C only"}, {"id": "3", "text": "B, C, D only"}, {"id": "4", "text": "A, B, C only"}], "correctAnswer": "4", "explanation": "A, B, and C are genuine advantages of incentive payment systems. Increased scrap (D) is a disadvantage/risk, not an advantage.\n**Key Concepts:**\n- Incentive wages motivate employees to use machines efficiently and reduce wastage of time.\n- Reduced absenteeism results from financial motivation tied to output-based pay.\n- Increased scrap is actually a criticism of incentive schemes as workers may rush and compromise quality.\n**Related Concepts:**\n- Taylor's differential piece-rate system was one of the first systematic incentive wage plans.\n- Merit pay and profit-sharing are modern forms of incentive payments used in HRM.", "id": 6}, {"question": "Use of interviews as a training needs assessment technique has the following advantages:\n(A) Questions can be modified\n(B) Easy to analyze\n(C) Can explore unanticipated issues that come up\n(D) Less time-consuming", "options": [{"id": "1", "text": "A, B only"}, {"id": "2", "text": "B, C only"}, {"id": "3", "text": "A, C only"}, {"id": "4", "text": "B, C, D only"}], "correctAnswer": "3", "explanation": "Interviews allow flexibility (A \u2014 questions can be modified) and depth (C \u2014 unanticipated issues explored). However, interviews are NOT easy to analyze (B is a disadvantage) and are time-consuming (D is also a disadvantage).\n**Key Concepts:**\n- Interviews as TNA tools are qualitative and exploratory, allowing probing of unexpected training gaps.\n- Difficult to analyze and time-consuming are standard weaknesses of interviews vs. surveys/questionnaires.\n- Flexibility and ability to explore unanticipated issues distinguish interviews from structured questionnaires.\n**Related Concepts:**\n- Training Needs Assessment (TNA) operates at three levels: organizational, task/job, and individual/person.\n- Questionnaires (surveys) are easy to analyze and less time-consuming but lack flexibility of interviews.", "id": 7}, {"question": "Which among the following is NOT a primary determinant of organizational structure?", "options": [{"id": "1", "text": "Chain and span"}, {"id": "2", "text": "Capacity and lower needs"}, {"id": "3", "text": "Power and control"}, {"id": "4", "text": "Differentiation and integration"}], "correctAnswer": "2", "explanation": "Primary determinants of organizational structure include chain of command, span of control, power and control, and differentiation and integration. \"Capacity and lower needs\" is not a recognized primary determinant.\n**Key Concepts:**\n- Chain of command determines line of authority; span of control determines the number of subordinates managed.\n- Differentiation (specialization) and integration (coordination) are classical structural design variables (Lawrence & Lorsch).\n- Power and control relate to centralization vs. decentralization, a core structural dimension.\n**Related Concepts:**\n- Mintzberg's organizational configurations use complexity, formalization, and centralization as structural dimensions.\n- \"Capacity and lower needs\" may be confused with Maslow's hierarchy \u2014 it is a motivational, not structural, concept.", "id": 8}, {"question": "Given below are two statements:\n**Statement I:** Delegation is an interpersonal transaction based on behavior analysis.\n**Statement II:** Delegation is an evolutionary and developmental process which needs encouragement and reinforcement.\nIn the light of the above statements, choose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct."}, {"id": "2", "text": "Both Statement I and Statement II are incorrect."}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect."}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct."}], "correctAnswer": "1", "explanation": "Both statements correctly describe delegation. Statement I reflects the interpersonal/behavioral dimension of delegation; Statement II reflects its developmental and process-oriented nature requiring ongoing support.\n**Key Concepts:**\n- Delegation involves authority transfer, responsibility assignment, and accountability \u2014 all interpersonal in nature.\n- Delegation is evolutionary because it grows with the maturity and competence of the subordinate (Hersey-Blanchard linkage).\n- Reinforcement and encouragement are essential to sustain effective delegation as a management practice.\n**Related Concepts:**\n- Situational Leadership Theory (Hersey & Blanchard) closely aligns delegation style with follower readiness.\n- Barriers to delegation include fear of loss of control, lack of trust, and poor communication.", "id": 9}, {"question": "Arrange the following stages of the process of organizational change in the sequential order:\n(A) Detailed consideration of the proposed change.\n(B) Collection of detailed information and development of alternative approaches in relation to the problem or issues.\n(C) Evaluation of various alternatives and framing a proposal.\n(D) Vocalization of the need to change.\n(E) Search for the main cause underlying the symptoms encountered.", "options": [{"id": "1", "text": "(D), (E), (B), (A), (C)"}, {"id": "2", "text": "(D), (A), (E), (B), (C)"}, {"id": "3", "text": "(A), (E), (D), (C), (B)"}, {"id": "4", "text": "(B), (E), (D), (A), (C)"}], "correctAnswer": "1", "explanation": "The logical sequence of organizational change: Vocalize the need (D) \u2192 diagnose root cause (E) \u2192 collect info/develop alternatives (B) \u2192 consider the proposed change (A) \u2192 evaluate alternatives and frame proposal (C).\n**Key Concepts:**\n- Lewin's change model: Unfreezing \u2192 Moving \u2192 Refreezing; vocalization corresponds to the unfreezing phase.\n- Root cause analysis (E) must precede information collection (B) to ensure solutions address real issues.\n- Evaluation and proposal (C) is the final pre-implementation stage before actual change execution.\n**Related Concepts:**\n- Kotter's 8-step model begins with creating urgency (similar to D) and follows with building coalition and forming a vision.\n- Action Research model: diagnosis \u2192 planning \u2192 action \u2192 evaluation aligns broadly with this sequence.", "id": 10}, {"question": "Use of Focus Groups and collaboration tools as a training needs assessment technique has the following disadvantages:\n(A) Time-consuming to organize\n(B) Unuseful with complex or controversial issues that one person may be unable or unwilling to explore\n(C) Questions cannot be modified to explore unanticipated issues\n(D) Group members provide only information they think you want to hear", "options": [{"id": "1", "text": "(A), (B) only"}, {"id": "2", "text": "(B), (C) only"}, {"id": "3", "text": "(A), (D) only"}, {"id": "4", "text": "(C), (D) only"}], "correctAnswer": "3", "explanation": "A (time-consuming to organize) and D (social desirability bias \u2014 members tell you what you want to hear) are genuine disadvantages of focus groups. B is actually an advantage of focus groups. C relates more to closed questionnaires.\n**Key Concepts:**\n- Focus groups are time-intensive in terms of scheduling, facilitation, and synthesis of qualitative data.\n- Social desirability bias (D) is a key limitation \u2014 group dynamics can suppress honest, critical responses.\n- Focus groups are actually useful for exploring complex/controversial issues (B is an advantage, not a disadvantage).\n**Related Concepts:**\n- Nominal Group Technique (NGT) reduces social desirability bias by using structured, anonymous idea generation.\n- Delphi method is another collaborative TNA tool that avoids face-to-face groupthink bias.", "id": 11}, {"question": "Match List I with List II:\n| List I (Organisational Design) | List II (Features) |\n|---|---|\n| (A) Learning organization | (I) Flexibility in the structure or Lack of structure |\n| (B) Spaghetti organization | (II) Linking of separate parts of the same organisation or networking of separate organisations to accomplish a common goal |\n| (C) Fishnet organization | (III) The ability to continually change structure and internal processes to conform to feedback with the environment |\n| (D) Network structure | (IV) Flexible, adaptable, rearranges itself quickly while retaining its inherent strength |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "(A)-(III), (B)-(II), (C)-(IV), (D)-(I)"}, {"id": "2", "text": "(A)-(III), (B)-(I), (C)-(IV), (D)-(II)"}, {"id": "3", "text": "(A)-(I), (B)-(IV), (C)-(III), (D)-(II)"}, {"id": "4", "text": "(A)-(II), (B)-(I), (C)-(IV), (D)-(III)"}], "correctAnswer": "2", "explanation": "Learning organization (III) \u2014 continuously adapts through feedback; Spaghetti org (I) \u2014 lack of rigid structure; Fishnet org (IV) \u2014 flexible yet strong, rearranges quickly; Network structure (II) \u2014 linking separate entities for a common goal.\n**Key Concepts:**\n- Senge's Learning Organization emphasizes systems thinking and continuous adaptation to the environment (III).\n- Spaghetti organization (Oticon model) eliminates hierarchy and formal structure, creating maximum flexibility (I).\n- Fishnet organization metaphor: like a fishnet, it rearranges shape while retaining structural integrity (IV).\n**Related Concepts:**\n- Network organizations are virtual in nature, relying on outsourcing and alliances rather than internal hierarchy.\n- Adhocracy (Mintzberg) shares features with the spaghetti model \u2014 both reject rigid formalization.", "id": 12}, {"question": "Usually in which one of the following performance appraisal techniques are subjects' self-ratings negatively correlated with their subsequent performance in an assessment center?", "options": [{"id": "1", "text": "Appraisal by subordinates"}, {"id": "2", "text": "360 Degree feedback"}, {"id": "3", "text": "Self-ratings"}, {"id": "4", "text": "Peer Appraisals"}], "correctAnswer": "3", "explanation": "Research consistently shows that self-ratings in performance appraisal are often inflated and show negative or weak correlation with objective assessment center performance \u2014 a key limitation of self-appraisal systems.\n**Key Concepts:**\n- Self-ratings suffer from leniency bias and self-serving attribution \u2014 individuals overestimate their own performance.\n- Assessment centers use multiple standardized tools (in-basket exercises, role plays) providing more objective measures.\n- Negative correlation suggests that those who rate themselves highest often perform worst in objective settings.\n**Related Concepts:**\n- Dunning-Kruger effect explains why low performers often overestimate their competence in self-ratings.\n- 360-degree feedback incorporates self-ratings but balances them with supervisor, peer, and subordinate ratings.", "id": 13}, {"question": "Which among the following is NOT a characteristic of transactional leaders?", "options": [{"id": "1", "text": "Gives personal attention, treats each employee individually."}, {"id": "2", "text": "Abdicates responsibilities, avoids making decisions."}, {"id": "3", "text": "Intervenes only when standards are not met."}, {"id": "4", "text": "Contracts exchange of rewards for efforts."}], "correctAnswer": "1", "explanation": "Giving personal attention and treating each employee individually is a hallmark of transformational leadership (Individualized Consideration). Transactional leadership is based on exchange \u2014 rewards for performance, intervention by exception.\n**Key Concepts:**\n- Transactional leadership operates on contingent reward and management-by-exception (active/passive).\n- Management-by-exception passive (option 2) \u2014 abdicates and avoids \u2014 is a laissez-faire/transactional boundary trait.\n- Individualized consideration (option 1) is Burns/Bass's transformational leadership dimension.\n**Related Concepts:**\n- Bass's Full Range Leadership Model positions transformational above transactional on effectiveness.\n- Contingent reward (transactional) vs. inspirational motivation (transformational) is a key NTA exam distinction.", "id": 14}, {"question": "Principles of management are important and useful on account of the following reasons:\n(A) To increase managerial efficiency\n(B) To attain social objectives\n(C) To train managers\n(D) To improve research\n(E) To coordinate material and human resources", "options": [{"id": "1", "text": "(A), (E) only"}, {"id": "2", "text": "(B), (D) only"}, {"id": "3", "text": "(B), (C), (D) only"}, {"id": "4", "text": "(A), (B), (C), (D), (E)"}], "correctAnswer": "4", "explanation": "All five reasons \u2014 efficiency, social objectives, manager training, research improvement, and coordination \u2014 are recognized as purposes/importance of management principles in standard management texts.\n**Key Concepts:**\n- Management principles help managers predict outcomes and coordinate resources efficiently (A and E).\n- They serve as a basis for management education and research (C and D), forming the academic foundation.\n- Attaining social objectives (B) reflects the societal responsibility dimension of management principles.\n**Related Concepts:**\n- Fayol's principles were the first systematic attempt to codify management for training and practice.\n- Scientific management (Taylor) emphasized efficiency (A) while Fayol's administrative theory covered broader objectives.", "id": 15}, {"question": "Stretch goals that challenge people to achieve higher levels of success in current activities is known as:", "options": [{"id": "1", "text": "Control stretch goals"}, {"id": "2", "text": "Cluster stretch goals"}, {"id": "3", "text": "Vertical stretch goals"}, {"id": "4", "text": "Horizontal stretch goals"}], "correctAnswer": "3", "explanation": "Vertical stretch goals push for higher achievement in existing/current activities (deeper excellence). Horizontal stretch goals extend into new domains or diversify activities.\n**Key Concepts:**\n- Vertical stretch goals demand superior performance in the same area \u2014 more output, better quality, faster results.\n- Horizontal stretch goals expand scope \u2014 new products, new markets, new skills outside current functions.\n- Cluster stretch goals involve setting multiple interconnected goals simultaneously for systemic transformation.\n**Related Concepts:**\n- Locke & Latham's Goal Setting Theory: difficult, specific goals lead to higher performance \u2014 stretch goals are an extension.\n- OKRs (Objectives and Key Results) in modern management often incorporate vertical stretch targets.", "id": 16}, {"question": "Match List I with List II:\n| List I (Ego Defence Mechanism) | List II (Description) |\n|---|---|\n| A. Projection | I. Returning to a previous stage of development |\n| B. Regression | II. Acting out unacceptable impulses in a socially acceptable way |\n| C. Repression | III. Placing unacceptable impulses in yourself onto someone else |\n| D. Sublimation | IV. Pulling into the unconscious |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-I, B-III, C-II, D-IV"}, {"id": "2", "text": "A-II, B-I, C-IV, D-III"}, {"id": "3", "text": "A-III, B-I, C-IV, D-II"}, {"id": "4", "text": "A-III, B-IV, C-I, D-II"}], "correctAnswer": "3", "explanation": "Projection (III) \u2014 attributing own unacceptable impulses to others; Regression (I) \u2014 reverting to earlier developmental behavior; Repression (IV) \u2014 pushing into unconscious; Sublimation (II) \u2014 channeling impulses into socially acceptable behavior.\n**Key Concepts:**\n- Freud's defense mechanisms protect the ego from anxiety arising from id-superego conflict.\n- Sublimation is considered the most mature defense \u2014 unacceptable drives (e.g., aggression) converted to art, sports, work.\n- Repression is the foundational defense mechanism \u2014 the basis of all other defenses per Freudian theory.\n**Related Concepts:**\n- Displacement (redirecting impulse to a substitute target) is often confused with Projection in exam questions.\n- Anna Freud systematized the defense mechanisms in \"The Ego and the Mechanisms of Defense\" (1936).", "id": 17}, {"question": "Which one of the following training methods is most suitable for developing problem-solving skills?", "options": [{"id": "1", "text": "Case study"}, {"id": "2", "text": "Lecture"}, {"id": "3", "text": "Role playing"}, {"id": "4", "text": "Sensitivity training"}], "correctAnswer": "1", "explanation": "Case study method presents real or simulated business problems requiring analytical thinking, diagnosis, and decision-making \u2014 making it the most suitable method for developing problem-solving skills.\n**Key Concepts:**\n- Case study method (Harvard Business School origin) develops critical thinking, analysis, and multi-perspective decision-making.\n- Role playing develops interpersonal, communication, and empathy skills \u2014 not primarily problem-solving.\n- Lectures are passive, one-way knowledge transfer \u2014 least effective for skill development.\n**Related Concepts:**\n- Sensitivity training (T-group) focuses on self-awareness and interpersonal sensitivity, not analytical problem-solving.\n- Action learning (Revans) is another problem-solving focused training method used in organizations.", "id": 18}, {"question": "Which one of the following is NOT true for the functional organization?", "options": [{"id": "1", "text": "Functional managers are specialists in their respective areas"}, {"id": "2", "text": "It is based on the principle of unity of command"}, {"id": "3", "text": "It is useful for large-scale business"}, {"id": "4", "text": "The discipline tends to become loose"}], "correctAnswer": "2", "explanation": "Functional organization violates the principle of unity of command \u2014 a worker may receive orders from multiple functional specialists/managers. Unity of command is a feature of line organization, not functional organization.\n**Key Concepts:**\n- Taylor's functional foremanship is the basis of functional organization \u2014 multiple bosses for different functions.\n- Unity of command (Fayol's principle) states each employee should report to only one superior \u2014 violated in functional org.\n- Loose discipline (option 4) is indeed a weakness because multiple authority sources create confusion.\n**Related Concepts:**\n- Line organization maintains strict unity of command but lacks specialization.\n- Line and staff organization attempts to combine specialization with unity of command.", "id": 19}, {"question": "Which one of the following statements represents an advantage of the Decision Support System (DSS)?", "options": [{"id": "1", "text": "Difficulty in quantifying all the data"}, {"id": "2", "text": "Generates new evidence in support of a decision"}, {"id": "3", "text": "System design failure"}, {"id": "4", "text": "Unaware of assumptions"}], "correctAnswer": "2", "explanation": "Generating new evidence to support decisions is a key advantage of DSS. Options 1, 3, and 4 are limitations/disadvantages of DSS, not advantages.\n**Key Concepts:**\n- DSS advantages: improves decision quality, generates evidence, handles unstructured problems, speeds up decision process.\n- Difficulty in quantifying data and unawareness of assumptions are recognized DSS limitations.\n- System design failure is a risk/disadvantage of DSS implementation.\n**Related Concepts:**\n- DSS differs from MIS (Management Information System): DSS supports semi-structured/unstructured decisions; MIS handles structured reporting.\n- Executive Information System (EIS) and Expert Systems are related but distinct from DSS.", "id": 20}, {"question": "The characteristics of different levels of leaders are given below. Arrange these in increasing order of levels:\n(A) He contributes to the achievement of group objectives and works effectively with others in a group\n(B) He builds enduring greatness through a paradoxical combination of professional will and personal humanity\n(C) He makes a productive contribution through talent, knowledge, skills, and good work habits\n(D) He catalyzes commitment to and vigorous pursuit of a clear and compelling vision and stimulates the group to high-performance standards\n(E) He organizes people and resources towards the effective and efficient pursuit of predetermined objectives", "options": [{"id": "1", "text": "A, C, E, B, D"}, {"id": "2", "text": "A, E, D, B, C"}, {"id": "3", "text": "C, A, E, D, B"}, {"id": "4", "text": "C, E, D, A, B"}], "correctAnswer": "3", "explanation": "Jim Collins' Level 5 Leadership hierarchy (ascending): Level 1 (C) \u2014 Highly Capable Individual; Level 2 (A) \u2014 Contributing Team Member; Level 3 (E) \u2014 Competent Manager; Level 4 (D) \u2014 Effective Leader; Level 5 (B) \u2014 Level 5 Executive (builds enduring greatness).\n**Key Concepts:**\n- Collins' Level 5 Leadership from \"Good to Great\" defines a hierarchy from individual contributor to visionary executive.\n- Level 5 leader (B) uniquely combines fierce professional resolve with personal humility \u2014 paradoxical combination.\n- Level 4 (D) \u2014 effective leader with vision and high standards \u2014 is often confused with Level 5 but lacks the humility dimension.\n**Related Concepts:**\n- Servant leadership theory (Greenleaf) shares the humility dimension with Collins' Level 5 leadership.\n- Visionary leadership (Level 4) aligns with transformational leadership as described by Burns and Bass.", "id": 21}, {"question": "The functions of lower management are:\n(A) Executing plans in accordance with the policies and directives of the top management\n(B) Maintaining discipline among the workers\n(C) Selecting suitable operative and supervisory personnel\n(D) Providing training to the workers\n(E) Maintaining good human relations", "options": [{"id": "1", "text": "A and B only"}, {"id": "2", "text": "A, B and C only"}, {"id": "3", "text": "B, D and E only"}, {"id": "4", "text": "C and D only"}], "correctAnswer": "3", "explanation": "Lower management (supervisory level) functions include maintaining discipline (B), providing on-the-job training (D), and maintaining human relations (E). Executing top management plans (A) is a middle/lower management function shared broadly; selecting supervisory personnel (C) is a middle management function.\n**Key Concepts:**\n- Lower management (first-line supervisors/foremen) are directly responsible for operative employees.\n- Training, discipline, and human relations are core day-to-day supervisory responsibilities.\n- Selecting supervisory personnel is a function of middle management or HRM \u2014 not typically lower management.\n**Related Concepts:**\n- Middle management bridges top and lower management \u2014 translates strategy into operational plans.\n- Top management sets policy; lower management implements and controls at the ground level.", "id": 22}, {"question": "Incentive schemes where earnings differ at different levels of output are:\n(A) Gantt Task System\n(B) Halsey Plan\n(C) Rowan Plan\n(D) Bedaux Plan\n(E) Emerson's Efficiency Plan", "options": [{"id": "1", "text": "A and E only"}, {"id": "2", "text": "A, C and D only"}, {"id": "3", "text": "A, C and E only"}, {"id": "4", "text": "B and E only"}], "correctAnswer": "1", "explanation": "Gantt Task System and Emerson's Efficiency Plan both have differential earning rates at different output levels. Halsey, Rowan, and Bedaux plans provide a fixed time wage plus a bonus share \u2014 earnings don't strictly differ across output tiers.\n**Key Concepts:**\n- Gantt Task System: high earners get a bonus on total output; low performers get day rate only \u2014 differential tiers.\n- Emerson's Efficiency Plan: graduated bonus scale kicks in at 67% efficiency, increasing up to 100%+ \u2014 differential by output level.\n- Halsey and Rowan plans share time savings between worker and employer \u2014 not strictly differential across output levels.\n**Related Concepts:**\n- Taylor's Differential Piece-Rate System is the archetype of differential incentive wages.\n- Bedaux Plan assigns \"B units\" (60% work + 40% rest) and gives bonus on units above standard.", "id": 23}, {"question": "Logically sequence the following steps in the managerial decision-making process:\n(A) Determining the objective\n(B) Selecting the best solution\n(C) Implementing the decision\n(D) Defining the problem\n(E) Identifying possible solutions", "options": [{"id": "1", "text": "A, E, B, C, D"}, {"id": "2", "text": "A, E, D, B, C"}, {"id": "3", "text": "D, A, C, E, B"}, {"id": "4", "text": "D, A, E, B, C"}], "correctAnswer": "4", "explanation": "Logical sequence: Define the problem (D) \u2192 Determine the objective (A) \u2192 Identify possible solutions (E) \u2192 Select the best solution (B) \u2192 Implement the decision (C).\n**Key Concepts:**\n- Problem definition (D) is always the first step \u2014 a problem well-defined is half solved (Drucker).\n- Objective determination (A) follows problem definition to set the decision criteria.\n- Solution identification (E) \u2192 evaluation \u2192 selection (B) \u2192 implementation (C) completes the rational model.\n**Related Concepts:**\n- Simon's bounded rationality suggests that in practice, managers \"satisfice\" rather than optimize at step B.\n- The rational decision-making model assumes complete information \u2014 contrasted with the garbage-can model.", "id": 24}, {"question": "According to Plutchik, which one of the following is NOT a secondary emotion?", "options": [{"id": "1", "text": "Distrust"}, {"id": "2", "text": "Fear"}, {"id": "3", "text": "Hostility"}, {"id": "4", "text": "Insecurity"}], "correctAnswer": "2", "explanation": "In Plutchik's Wheel of Emotions, Fear is a primary (basic) emotion. Distrust, hostility, and insecurity are secondary/complex emotions derived from combinations of primary emotions.\n**Key Concepts:**\n- Plutchik identified 8 primary emotions: joy, trust, fear, surprise, sadness, disgust, anger, anticipation.\n- Secondary emotions arise from blending adjacent primary emotions (e.g., hostility = anger + disgust).\n- Distrust = surprise + disgust (dyad); Insecurity is a more complex/tertiary blend.\n**Related Concepts:**\n- Paul Ekman's 6 basic emotions (fear, anger, disgust, happiness, sadness, surprise) partially overlap with Plutchik.\n- Emotional intelligence (Goleman) requires accurate recognition of both primary and secondary emotions.", "id": 25}, {"question": "Which one of the following is the most suitable coping mechanism if 'fear of overload' is the source of resistance to change?", "options": [{"id": "1", "text": "Participation and involvement"}, {"id": "2", "text": "Role clarity and definition"}, {"id": "3", "text": "Role redefinition and re-orientation"}, {"id": "4", "text": "Support of resources"}], "correctAnswer": "4", "explanation": "When resistance stems from fear of overload (too much work, insufficient capacity), providing support through additional resources \u2014 people, time, tools \u2014 directly addresses the overload concern.\n**Key Concepts:**\n- Kotter & Schlesinger identified 6 methods to overcome resistance: education, participation, facilitation/support, negotiation, manipulation, coercion.\n- \"Support of resources\" (facilitation and support) is the appropriate strategy when overload/stress drives resistance.\n- Role clarity (option 2) addresses ambiguity-based resistance, not workload-based resistance.\n**Related Concepts:**\n- Lewin's Force Field Analysis helps identify driving and restraining forces including overload as a restraint.\n- Fear of overload is distinct from fear of the unknown \u2014 each requires a different change management response.", "id": 26}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

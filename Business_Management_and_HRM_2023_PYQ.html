@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Business Management and HRM 2023 PYQ</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            startup: { typeset: false }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
+        
+        body { font-family: 'Inter', sans-serif; user-select: none; background-color: #f8fafc; color: #0f172a; }
+        
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 99px; }
+        ::-webkit-scrollbar-thumb:hover { background: #3b82f6; }
+        
+        .status-answered { background-color: #10b981; color: white; border-color: #10b981; } 
+        .status-not_answered { background-color: #ef4444; color: white; border-color: #ef4444; } 
+        .status-marked { background-color: #8b5cf6; color: white; border-color: #8b5cf6; } 
+        .status-marked_answered { background-color: #8b5cf6; color: white; border-color: #8b5cf6; position: relative; } 
+        .status-marked_answered::after { content: '✔'; position: absolute; bottom: -4px; right: -4px; font-size: 10px; color: #10b981; background: white; border-radius: 50%; padding: 0 2px; border: 1px solid #e2e8f0;}
+        .status-not_visited { background-color: #f1f5f9; color: #64748b; border-color: #cbd5e1; } 
+        
+        .current-question { border: 2px solid #2563eb !important; transform: scale(1.15); box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); z-index: 10;}
+        
+        .markdown-body img { 
+            max-width: 100%; max-height: 400px; object-fit: contain; border-radius: 8px; 
+            margin: 15px 0; border: 1px solid #e2e8f0; background: white; padding: 5px; display: block;
+        }
+        .markdown-body table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 15px 0; border-radius: 12px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .markdown-body thead tr { background-color: #eff6ff; color: #1e3a8a; }
+        .markdown-body th, .markdown-body td { padding: 12px 15px; border-bottom: 1px solid #e2e8f0; border-right: 1px solid #e2e8f0;}
+        .markdown-body th:last-child, .markdown-body td:last-child { border-right: none; }
+        .markdown-body tbody tr:last-child td { border-bottom: none; }
+        .markdown-body p { margin-bottom: 0.75rem; }
+        .markdown-body strong { font-weight: 700; color: #0f172a; }
+        .markdown-body ul { list-style-type: disc; margin-left: 20px; margin-bottom: 10px; }
+
+        .glass-nav { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); }
+        .blur-content { filter: blur(8px); pointer-events: none; user-select: none; }
+        .custom-radio { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .option-selected .custom-radio { border-width: 6px; border-color: #2563eb; }
+
+        @keyframes dash { to { stroke-dashoffset: 0; } }
+        .circular-chart { display: block; margin: 0 auto; max-width: 80%; max-height: 250px; }
+        .circle-bg { fill: none; stroke: #e2e8f0; stroke-width: 3.8; }
+        .circle { fill: none; stroke-width: 2.8; stroke-linecap: round; animation: progress 1s ease-out forwards; }
+        @keyframes progress { 0% { stroke-dasharray: 0 100; } }
+
+        @media print {
+            @page { margin: 15mm; size: auto; }
+            html, body { height: auto !important; min-height: 100% !important; overflow: visible !important; background-color: white !important; color: black !important; position: static !important; width: 100% !important; display: block !important; }
+            #root, .h-\[100dvh\], .h-full, .overflow-hidden, .overflow-y-auto, .flex-1, .flex-col { height: auto !important; overflow: visible !important; display: block !important; position: static !important; }
+            .glass-nav, header, .fixed, .absolute, button, .print-hidden, .h-20, .h-16 { display: none !important; }
+            .max-w-5xl, .max-w-4xl { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; box-shadow: none !important; border: none !important; }
+            .print-break-avoid { break-inside: avoid !important; page-break-inside: avoid !important; display: block !important; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+            .grid-cols-3 { display: flex !important; justify-content: space-between !important; gap: 20px !important; }
+        }
+    </style>
+</head>
+<body class="h-[100dvh] flex flex-col overflow-hidden">
+    <div id="root" class="h-full flex flex-col"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        const TEST_DATA = {"title": "Business Management and HRM 2023 PYQ", "organization": "Examtym", "durationMinutes": 40, "totalMarks": 56.0, "marksForCorrect": 2.0, "marksForWrong": 0.0, "passPercentage": 40, "shuffle": false, "strictMode": false, "questions": [{"question": "Given below are two statements:\n**Statement I:** The judgmental attribution error is the tendency to overestimate the influence of external factors and underestimate the influence of internal factors when making judgements about the behavior of others.\n**Statement II:** Self-serving bias is the tendency for individuals to attribute their own success to internal factors while putting the blame for failures on external factors.\nChoose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both Statement I and Statement II are correct"}, {"id": "2", "text": "Both Statement I and Statement II are incorrect"}, {"id": "3", "text": "Statement I is correct but Statement II is incorrect"}, {"id": "4", "text": "Statement I is incorrect but Statement II is correct"}], "correctAnswer": "4", "explanation": "Statement I is incorrect \u2014 Fundamental Attribution Error (FAE) is the tendency to OVERestimate INTERNAL factors and UNDERestimate external factors when judging others' behavior. Statement II is correct \u2014 Self-serving bias means attributing successes to internal causes (ability, effort) and failures to external causes.\n**Key Concepts:**\n- Fundamental Attribution Error (Ross, 1977): observers over-attribute others' behavior to dispositional/internal factors, ignoring situational context.\n- Self-serving bias protects self-esteem \u2014 success = my ability; failure = bad luck/circumstances.\n- The two biases operate differently: FAE applies when judging others; self-serving bias applies when judging oneself.\n**Related Concepts:**\n- Actor-observer bias extends FAE: actors attribute their own behavior to situation; observers attribute it to disposition.\n- Locus of control (Rotter) \u2014 internals vs. externals \u2014 relates to self-serving bias patterns in attribution.", "id": 1}, {"question": "While using a recruiting yield pyramid, the managers are aware of which of the following while recruiting new hires?\n(A) The ratio of official needs to actual hires is 2 to 1\n(B) The ratio of places to the people called for an interview is 12 to 1\n(C) The ratio of offers made to new hires is 20 to 1\n(D) The ratio of candidates invited for interviews to candidates interviewed is about 4 to 3\n(E) The ratio of candidates interviewed to offers made is 3 to 2", "options": [{"id": "1", "text": "A, D, E only"}, {"id": "2", "text": "B, C, D only"}, {"id": "3", "text": "A, C, E only"}, {"id": "4", "text": "B, D, E only"}], "correctAnswer": "4", "explanation": "The recruiting yield pyramid (Dessler) tracks conversion ratios from leads to hires. Standard ratios: leads to interviews = 12:1 (B); interviews to candidates interviewed = 4:3 (D); candidates interviewed to offers = 3:2 (E). Options A and C contain incorrect ratios.\n**Key Concepts:**\n- Recruiting yield pyramid shows the number of candidates needed at each stage to yield one final hire.\n- Each stage has a known yield ratio \u2014 used to back-calculate how many leads/applications to generate.\n- The pyramid widens at the bottom (many leads) and narrows at the top (few hires) \u2014 efficiency measured by yield ratios.\n**Related Concepts:**\n- Applicant tracking systems (ATS) automate yield ratio tracking across recruiting pipeline stages.\n- Cost-per-hire metric complements yield pyramid analysis in evaluating recruiting effectiveness.", "id": 2}, {"question": "Maslow's Hierarchy of Needs depicts human needs in the form of a hierarchy ascending from the lowest to highest need. The correct order is:", "options": [{"id": "1", "text": "Esteem needs, Acceptance needs, Safety needs, Physiological needs, Need for Self-Actualisation"}, {"id": "2", "text": "Physiological Needs, Safety needs, Acceptance needs, Need for Self-Actualisation"}, {"id": "3", "text": "Safety needs, Esteem needs, Need for Self-Actualisation, Physiological Needs, Acceptance Needs"}, {"id": "4", "text": "Physiological needs, Acceptance needs, Safety needs, Need for Self-Actualisation, Esteem Needs"}], "correctAnswer": "2", "explanation": "Maslow's correct ascending sequence: Physiological \u2192 Safety \u2192 Acceptance (Social/Belonging) \u2192 Esteem \u2192 Self-Actualization. Option 2, while only listing four, presents them in the correct order. The other options scramble the hierarchy incorrectly. NTA accepts option 2 as the only correctly ordered sequence among the choices.\n**Key Concepts:**\n- Physiological (food, water, sleep) \u2192 Safety (security, stability) \u2192 Social/Acceptance (belonging, love) \u2192 Esteem (recognition, status) \u2192 Self-Actualization (growth, potential).\n- \"Acceptance needs\" is NTA's terminology for Social/Belongingness needs (third level).\n- The hierarchy is prepotency-based \u2014 lower needs must be substantially satisfied before higher needs become motivating.\n**Related Concepts:**\n- Alderfer's ERG theory collapses the five levels into three: Existence (physiological+safety), Relatedness (social+esteem), Growth (self-actualization).\n- Herzberg maps lower-order needs to hygiene factors and upper-order needs to motivators.", "id": 3}, {"question": "Blake and Mouton recognize four leadership styles. One of them is the autocratic task management style. The autocratic task manager is one who:", "options": [{"id": "1", "text": "Concerns themselves very little with either people or production and has minimum involvement in their jobs."}, {"id": "2", "text": "Displays in their actions, the highest possible dedication both to people and to production."}, {"id": "3", "text": "Is concerned only with developing an efficient operation who has little or no concern for people"}, {"id": "4", "text": "Has little or no concern for production but is concerned only for people"}], "correctAnswer": "3", "explanation": "Autocratic task management (9,1 on the Managerial Grid) = maximum concern for production + minimum concern for people. Option 1 = impoverished (1,1); Option 2 = team management (9,9); Option 4 = country club (1,9).\n**Key Concepts:**\n- Blake & Mouton's (9,1) style treats workers as instruments of production \u2014 efficiency maximized, human needs ignored.\n- The \"authority-obedience\" approach: manager dictates, workers comply \u2014 no participative input.\n- Impoverished (1,1) differs critically \u2014 it is low concern for BOTH, not high concern for task.\n**Related Concepts:**\n- Hersey & Blanchard's Telling/Directing style (S1) resembles autocratic task management \u2014 high task, low relationship.\n- McGregor's Theory X underpins the 9,1 management philosophy \u2014 employees must be directed and controlled.", "id": 4}, {"question": "The utilitarian view of ethics includes:\n(A) Respecting and protecting individual liberties and privileges\n(B) Imposing and enforcing rules fairly and impartially\n(C) Ethical decisions made solely on the basis of their outcomes or consequences\n(D) Encourages efficiency and productivity and is consistent with the goal of profit maximization\n(E) Ethical decisions be learned on existing ethical norms in industries and communities", "options": [{"id": "1", "text": "A, E only"}, {"id": "2", "text": "C, D only"}, {"id": "3", "text": "B, C only"}, {"id": "4", "text": "D, E only"}], "correctAnswer": "2", "explanation": "Utilitarianism judges actions solely by consequences/outcomes (C) and is aligned with efficiency, productivity, and profit maximization (D). Option A = rights theory; Option B = justice theory; Option E = integrative social contracts theory.\n**Key Concepts:**\n- Utilitarianism (Bentham, Mill): an action is ethical if it produces the greatest good for the greatest number \u2014 purely consequentialist.\n- Its business application: supports cost-benefit analysis and profit maximization as ethical frameworks.\n- Rights-based ethics (A) and justice theory (B) are deontological \u2014 they focus on rules/duties, not outcomes.\n**Related Concepts:**\n- Consequentialism vs. deontology: the central divide in normative business ethics.\n- Integrative Social Contracts Theory (E) holds that ethical norms emerge from implicit community agreements.", "id": 5}, {"question": "Matrix structure is the realization of two dimensional structure which emanates directly from two dimensions of authority. From which of the two is a matrix structure created?", "options": [{"id": "1", "text": "Functional and divisional"}, {"id": "2", "text": "Functional and project"}, {"id": "3", "text": "Functional and line"}, {"id": "4", "text": "Divisional and line"}], "correctAnswer": "2", "explanation": "Matrix structure is created by overlaying project (or product) authority over functional authority \u2014 creating dual reporting relationships. Functional managers provide expertise; project managers coordinate toward deliverables.\n**Key Concepts:**\n- Matrix structure violates Fayol's unity of command \u2014 each employee reports to both a functional and a project manager.\n- It is designed for project-intensive environments (aerospace, consulting, R&D) requiring both specialization and integration.\n- Functional dimension = vertical authority (expertise); Project dimension = horizontal authority (deliverable coordination).\n**Related Concepts:**\n- Strong matrix favors project manager authority; weak matrix favors functional manager authority; balanced matrix = equal.\n- TCS, Infosys, and other IT organizations use matrix structures for simultaneous multiple client project management.", "id": 6}, {"question": "What is Frederick W. Taylor's major contribution to management?", "options": [{"id": "1", "text": "Theory of bureaucracy"}, {"id": "2", "text": "Identified characteristics of companies he considered excellent"}, {"id": "3", "text": "Application of psychology to industry and management"}, {"id": "4", "text": "How to raise productivity through greater efficiency in production and increased pay for workers"}], "correctAnswer": "4", "explanation": "Taylor's core contribution was scientific management \u2014 systematically analyzing work to maximize productivity through time-motion studies, standardization, and differential piece-rate pay. Option 1 = Weber; Option 2 = Peters & Waterman; Option 3 = Hugo M\u00fcnsterberg.\n**Key Concepts:**\n- Taylor's four principles: science not rule of thumb; scientific selection and training; cooperation between management and workers; equal division of work.\n- Differential piece-rate system: higher pay for workers who meet/exceed scientifically set standards.\n- Time and motion study: breaking work into elements, timing each, eliminating waste \u2014 foundation of industrial engineering.\n**Related Concepts:**\n- Hugo M\u00fcnsterberg (option 3) is the father of industrial psychology \u2014 a common NTA distractor paired with Taylor.\n- Max Weber (option 1) developed bureaucracy theory \u2014 rational-legal authority, rules-based hierarchy.", "id": 7}, {"question": "Match List I with List II (Multiple purposes of performance assessment):\n| List I (General Applications) | List II (Specific Purpose) |\n|---|---|\n| A. Development uses | I. Identification for performance, recognition, individual performance, salary, promotion, termination |\n| B. Administrative uses/decisions | II. Critics of validity research, helping meet legal requirements |\n| C. Organisational maintenance objectives | III. Identification of individual needs, strengths, performance feedback |\n| D. Documentation | IV. HR planning, determining organisation training needs |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-IV, B-I, C-II, D-III"}, {"id": "2", "text": "A-III, B-I, C-IV, D-II"}, {"id": "3", "text": "A-II, B-III, C-I, D-IV"}, {"id": "4", "text": "A-I, B-II, C-III, D-IV"}], "correctAnswer": "2", "explanation": "Development uses (A-III) \u2014 individual feedback, strengths, needs; Administrative decisions (B-I) \u2014 salary, promotion, termination; Organisational maintenance (C-IV) \u2014 HR planning, training needs identification; Documentation (D-II) \u2014 validity research, legal compliance.\n**Key Concepts:**\n- Performance appraisal serves four broad purposes: developmental, administrative, organizational, and documentation.\n- Administrative decisions (B) are the most visible use \u2014 pay hikes, promotions, and terminations directly follow appraisal.\n- Documentation (D) protects the organization legally \u2014 maintaining records of performance and appraisal validity.\n**Related Concepts:**\n- 360-degree feedback primarily serves developmental purposes (A), not administrative decisions.\n- Legal defensibility of appraisal systems (D) is critical \u2014 EEOC guidelines require documented, job-related criteria.", "id": 8}, {"question": "Identify the correct sequence of the leadership development process as adopted by Anderson Consulting:\n(A) Coach executive teams on individual leadership and effective teamwork\n(B) Assess organisation's direction and current strategies and speed at which success/results are achieved\n(C) Create effective communication strategies for key influencers\n(D) Coach individual executives on preferred behavior along communications\n(E) Assess organisation's culture, define required shifts and action needed for leaders to change that culture", "options": [{"id": "1", "text": "C, D, B, A, E"}, {"id": "2", "text": "E, B, A, C, D"}, {"id": "3", "text": "D, A, B, E, C"}, {"id": "4", "text": "B, E, D, A, C"}], "correctAnswer": "4", "explanation": "Anderson Consulting's sequence: Assess direction and strategy (B) \u2192 Assess culture and define shifts (E) \u2192 Coach individual executives (D) \u2192 Coach executive teams (A) \u2192 Create communication strategies for stakeholders (C).\n**Key Concepts:**\n- Leadership development begins with organizational diagnosis (B and E) before individual coaching (D and A).\n- Individual coaching (D) precedes team coaching (A) \u2014 develop individuals before integrating into team dynamics.\n- Communication strategy for key influencers (C) is the final external-facing step after internal development is complete.\n**Related Concepts:**\n- Kotter's change model similarly begins with assessment (urgency) before leadership/coalition building.\n- Executive coaching as a leadership development intervention is distinct from training \u2014 it is personalized and context-specific.", "id": 9}, {"question": "Which one of the following normative ethical theories has \"Net benefit from the decision\" as the consideration in ethical decision making?", "options": [{"id": "1", "text": "Ethics of duty"}, {"id": "2", "text": "Theory of justice"}, {"id": "3", "text": "Stockholder ethics"}, {"id": "4", "text": "Utilitarianism"}], "correctAnswer": "4", "explanation": "Utilitarianism evaluates ethical decisions by calculating net benefit (total benefits minus total harms across all affected parties) \u2014 the action producing the greatest net benefit is ethically correct.\n**Key Concepts:**\n- Utilitarian calculus: sum total welfare gains minus welfare losses = net benefit; maximize this figure.\n- Ethics of duty (Kant) = follow rules/duties regardless of consequences \u2014 net benefit calculation is irrelevant.\n- Stockholder ethics = maximize shareholder value \u2014 narrower than utilitarian \"greatest good for all.\"\n**Related Concepts:**\n- Cost-benefit analysis in business decisions is a practical application of utilitarian net benefit calculation.\n- Stakeholder ethics (Freeman) extends net benefit consideration to all stakeholders, not just shareholders.", "id": 10}, {"question": "In the process of perception, which one of the following is NOT an external factor influencing selection of stimuli?", "options": [{"id": "1", "text": "Experience"}, {"id": "2", "text": "Familiarity"}, {"id": "3", "text": "Repetition"}, {"id": "4", "text": "Novelty"}], "correctAnswer": "1", "explanation": "Experience is an internal (personal) factor influencing perceptual selection \u2014 it reflects the perceiver's background, not properties of the stimulus. Familiarity, repetition, and novelty are properties of the external stimulus itself.\n**Key Concepts:**\n- External factors in perceptual selection: size, intensity, contrast, motion, repetition, novelty, familiarity \u2014 all are stimulus properties.\n- Internal factors: needs, motives, experience, learning, personality \u2014 all reside within the perceiver.\n- Experience shapes what we notice (internal filter) but is not a property of the external stimulus.\n**Related Concepts:**\n- Figure-ground perception (Gestalt) is influenced by external stimulus properties like contrast and novelty.\n- Selective attention explains why identical stimuli are perceived differently by different individuals due to internal factors.", "id": 11}, {"question": "Which one of the following is the hiring-related turnover cost when an employee quits an organization?", "options": [{"id": "1", "text": "Advertising"}, {"id": "2", "text": "Interviewing"}, {"id": "3", "text": "Training"}, {"id": "4", "text": "Recruiter fees"}], "correctAnswer": "3", "explanation": "Training is a turnover cost \u2014 when an employee leaves, the investment in their training is lost and new training must be provided to the replacement. Advertising, interviewing, and recruiter fees are hiring/replacement costs, not turnover costs per se.\n**Key Concepts:**\n- Turnover costs include: separation costs (exit interviews, severance), replacement costs (advertising, recruiting, hiring), and training costs (orientation, on-the-job training of replacement).\n- Training cost as turnover cost reflects the sunk investment lost when a trained employee departs.\n- The question specifically asks for \"hiring-related turnover cost\" \u2014 training is incurred as part of bringing the new hire up to speed.\n**Related Concepts:**\n- Total cost of employee turnover can range from 50% to 200% of annual salary depending on role complexity.\n- Retention strategies (career development, competitive compensation) reduce training-related turnover costs.", "id": 12}, {"question": "Which of the following are skills and capabilities related competencies?\n(A) Analysis\n(B) Intellectual curiosity\n(C) Organization\n(D) Problem solving\n(E) Ownership of assignments", "options": [{"id": "1", "text": "A, C and D only"}, {"id": "2", "text": "A, B and C only"}, {"id": "3", "text": "B, C and D only"}, {"id": "4", "text": "A, D and E only"}], "correctAnswer": "1", "explanation": "Analysis (A), Organization (C), and Problem solving (D) are skills/capabilities competencies \u2014 they are demonstrable, learnable abilities. Intellectual curiosity (B) is an attitudinal/dispositional trait; ownership of assignments (E) is a behavioral/motivational competency.\n**Key Concepts:**\n- Competency frameworks distinguish between skills (A, C, D \u2014 what you can do), knowledge, and behavioral dispositions.\n- Analysis and problem solving are cognitive skill competencies directly linked to job performance.\n- Intellectual curiosity and ownership are motivational/attitudinal competencies \u2014 different category.\n**Related Concepts:**\n- Spencer & Spencer's iceberg model: visible competencies (skills, knowledge) above the surface; deeper competencies (motives, traits) below.\n- Boyatzis' competency model identifies threshold (basic) and differentiating (superior performance) competencies.", "id": 13}, {"question": "Which one of the following values is NOT a part of the OCTAPACE framework?", "options": [{"id": "1", "text": "Openness"}, {"id": "2", "text": "Extension"}, {"id": "3", "text": "Proactivity"}, {"id": "4", "text": "Autonomy"}], "correctAnswer": "4", "explanation": "OCTAPACE (Pareek) stands for: Openness, Confrontation, Trust, Authenticity, Proactivity, Autonomy, Collaboration, Experimentation. Wait \u2014 Autonomy IS part of OCTAPACE. Extension is NOT part of OCTAPACE \u2014 it is one of Pareek's organizational climate motives, not an OCTAPACE value.\n**Key Concepts:**\n- OCTAPACE framework (Udai Pareek) defines the ideal organizational culture for HRD: Openness, Confrontation, Trust, Authenticity, Proactivity, Autonomy, Collaboration, Experimentation.\n- Extension is a motivational concept in Pareek's work (concern for others beyond self) \u2014 not an OCTAPACE value.\n- All eight OCTAPACE values are essential for a healthy learning/development climate in organizations.\n**Related Concepts:**\n- OCTAPACE is widely used in HRD climate surveys in Indian organizations.\n- Confrontation in OCTAPACE means facing issues directly rather than avoiding \u2014 not negative confrontation.", "id": 14}, {"question": "Match List I with List II (Motive of human behavior in organizations):\n| List I (Motive) | List II (Characteristic) |\n|---|---|\n| A. Achievement | I. Concern for others |\n| B. Control | II. Concern for self-development |\n| C. Extension | III. Concern for excellence |\n| D. Dependency | IV. Concern for orderliness |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-III, B-IV, C-II, D-I"}, {"id": "2", "text": "A-IV, B-III, C-II, D-I"}, {"id": "3", "text": "A-II, B-IV, C-I, D-III"}, {"id": "4", "text": "A-III, B-IV, C-I, D-II"}], "correctAnswer": "4", "explanation": "Achievement (A-III) = concern for excellence/standards; Control (B-IV) = concern for orderliness and structure; Extension (C-I) = concern for others/community; Dependency (D-II) = concern for self-development through reliance on others.\n**Key Concepts:**\n- Pareek's motivational typology \u2014 six motives: Achievement, Affiliation, Influence/Control, Extension, Dependency, Expert power.\n- Extension motive is uniquely characterized by concern for others beyond personal benefit \u2014 prosocial orientation.\n- Control/Power motive seeks orderliness, predictability, and dominance over environment and people.\n**Related Concepts:**\n- McClelland's nAch directly parallels Pareek's Achievement motive \u2014 both focus on excellence and standards.\n- Dependency motive (seeking guidance from authority) differs from affiliation (seeking belonging) \u2014 important NTA distinction.", "id": 15}, {"question": "For customers, which are the areas of ethical and social responsibility concerns?\n(A) Product safety\n(B) Fair Price\n(C) Fair Wages\n(D) TQM\n(E) Proper disclosures and information", "options": [{"id": "1", "text": "C and D only"}, {"id": "2", "text": "C, D and E only"}, {"id": "3", "text": "A and E only"}, {"id": "4", "text": "A, B and E only"}], "correctAnswer": "4", "explanation": "Customer-focused ethical concerns are: product safety (A \u2014 freedom from harm), fair pricing (B \u2014 no exploitation), and proper disclosure/information (E \u2014 transparency). Fair wages (C) is an employee concern; TQM (D) is a management process, not a direct customer ethics issue.\n**Key Concepts:**\n- Customer ethical concerns center on: safety, honest pricing, transparent information, and product quality claims.\n- Fair wages (C) falls under employee/labor ethics, not customer ethics \u2014 different stakeholder group.\n- Proper disclosure (E) includes truth in advertising, labeling, and preventing information asymmetry exploitation.\n**Related Concepts:**\n- Consumer Protection Act (India) codifies many of these ethical obligations as legal rights.\n- Carroll's CSR pyramid: economic \u2192 legal \u2192 ethical \u2192 philanthropic responsibilities toward all stakeholders.", "id": 16}, {"question": "Who was of the opinion that labor was \"the father of wealth\" and it must be included in any estimate of national wealth?", "options": [{"id": "1", "text": "William Farr"}, {"id": "2", "text": "William Petty"}, {"id": "3", "text": "William C. Pyle"}, {"id": "4", "text": "Flamholtz"}], "correctAnswer": "2", "explanation": "William Petty (17th century economist) stated \"Labor is the father of wealth, and land is its mother\" \u2014 emphasizing labor as the primary source of value creation and thus essential in national wealth estimates.\n**Key Concepts:**\n- William Petty is considered a pioneer of Human Resource Accounting (HRA) thought \u2014 recognizing human labor as an economic asset.\n- His labor theory of value preceded Adam Smith and influenced classical economics.\n- William C. Pyle (option 3) developed the first practical HRA model at R.G. Barry Corporation in the 1960s.\n**Related Concepts:**\n- Flamholtz (option 4) developed the stochastic rewards valuation model for HRA \u2014 measuring expected value of employee services.\n- Human Resource Accounting aims to quantify the value of human capital on organizational balance sheets.", "id": 17}, {"question": "As suggested by Collins, arrange the following leadership levels in the sequentially higher order:\n(A) The leader is a competent manager\n(B) The leader is an executive\n(C) The leader is a highly capable individual\n(D) The leader is an effective leader\n(E) The leader is a contributing team member", "options": [{"id": "1", "text": "B, C, D, A, E"}, {"id": "2", "text": "C, E, A, D, B"}, {"id": "3", "text": "C, A, E, D, B"}, {"id": "4", "text": "C, E, A, B, D"}], "correctAnswer": "2", "explanation": "Collins' Level 5 hierarchy ascending: Level 1 = Highly capable individual (C) \u2192 Level 2 = Contributing team member (E) \u2192 Level 3 = Competent manager (A) \u2192 Level 4 = Effective leader (D) \u2192 Level 5 = Executive (B).\n**Key Concepts:**\n- Collins' Level 5 Leadership (\"Good to Great\") describes a hierarchy from individual excellence to institutional building.\n- Level 5 Executive (B) builds enduring greatness through paradoxical humility + professional will \u2014 the pinnacle.\n- Level 4 (D) is an effective leader with compelling vision; Level 5 (B) goes beyond by channeling ambition into the institution, not self.\n**Related Concepts:**\n- This is a repeat from 2021 paper (Q21 in our set) \u2014 NTA frequently repeats Collins' hierarchy; memorize C-E-A-D-B sequence.\n- Servant leadership complements Level 5 \u2014 both emphasize humility and institutional focus over personal glory.", "id": 18}, {"question": "Arrange the following group member's behavior outcomes in a sequence as per the successive stages of group building process:\n(A) Eager, Anxious, Gather data about similarities and differences among members and keep things simple\n(B) Upset and Depressed\n(C) Less dissatisfied and a feeling of belonging to the group\n(D) Confront the differences, feel angry or frustrated, a lot of competition and hostilities\n(E) Interdependence in personal relations, tendency to get involved in and problem solving", "options": [{"id": "1", "text": "A, D, C, E, B"}, {"id": "2", "text": "A, B, C, D, E"}, {"id": "3", "text": "E, C, D, B, A"}, {"id": "4", "text": "B, C, E, A, D"}], "correctAnswer": "1", "explanation": "Tuckman's stages mapped to behaviors: Forming (A \u2014 eager, anxious) \u2192 Storming (D \u2014 anger, competition) \u2192 Norming (C \u2014 belonging, less dissatisfied) \u2192 Performing (E \u2014 interdependence, problem-solving) \u2192 Adjourning (B \u2014 upset, depressed at group ending).\n**Key Concepts:**\n- Adjourning stage (B \u2014 upset and depressed) is often omitted in questions \u2014 its emotional signature is sadness at group dissolution.\n- Storming (D) precedes Norming (C) \u2014 conflict is resolved before cohesion emerges; this sequence is a frequent exam trap.\n- Performing (E) is characterized by interdependence and collaborative problem-solving \u2014 maximum group effectiveness.\n**Related Concepts:**\n- Tuckman added the Adjourning stage in 1977 with Jensen \u2014 original 1965 model had only four stages.\n- Group cohesiveness peaks at Performing and begins to decline at Adjourning as members disengage.", "id": 19}, {"question": "Given below are two statements:\n**Assertion (A):** Persons with high self-esteem are less susceptible to influence, more confident of achieving goals, and more effective in social networking.\n**Reason (R):** Self-esteem manifests in several behaviours. Persons with high self-esteem tend to report fewer negative emotions than persons with low self-esteem.\nChoose the most appropriate answer from the options given below:", "options": [{"id": "1", "text": "Both A and R are true and R is the correct explanation of A."}, {"id": "2", "text": "Both A and R are true but R is NOT the correct explanation of A."}, {"id": "3", "text": "A is true but R is false."}, {"id": "4", "text": "A is false but R is true."}], "correctAnswer": "2", "explanation": "Both statements are factually correct. However, R (fewer negative emotions) does not explain WHY high self-esteem individuals are less susceptible to influence or more confident \u2014 these behavioral outcomes have different mechanisms (internal locus, positive self-concept) rather than simply emotional tone.\n**Key Concepts:**\n- High self-esteem correlates with confidence, assertiveness, social effectiveness, and resistance to peer pressure \u2014 all empirically supported (A).\n- Fewer negative emotions (R) is a valid behavioral manifestation of high self-esteem but explains emotional experience, not social resistance or confidence.\n- The explanation for A lies in positive self-concept and internal attribution, not just emotional experience.\n**Related Concepts:**\n- Rosenberg Self-Esteem Scale is the most widely used measure of global self-esteem in organizational research.\n- Self-efficacy (Bandura) \u2014 task-specific confidence \u2014 is related to but distinct from global self-esteem.", "id": 20}, {"question": "Match List I with List II:\n| List I (Management Thinkers) | List II (Approach Dimensions) |\n|---|---|\n| A. Kurt Lewin | I. Position power, Task structure, Leader-member relations |\n| B. Fred E. Fiedler | II. Authority and Responsibility, Unity of command, Scalar chain |\n| C. Henri Fayol | III. Power, Affiliation, Achievement |\n| D. David C. McClelland | IV. Unfreezing, Moving, Refreezing |\nChoose the correct answer from the options given below:", "options": [{"id": "1", "text": "A-I, B-II, C-III, D-IV"}, {"id": "2", "text": "A-IV, B-I, C-II, D-III"}, {"id": "3", "text": "A-IV, B-III, C-I, D-II"}, {"id": "4", "text": "A-II, B-IV, C-III, D-I"}], "correctAnswer": "2", "explanation": "Kurt Lewin (A-IV) = Change model: Unfreeze-Move-Refreeze; Fiedler (B-I) = Contingency model: position power, task structure, leader-member relations; Fayol (C-II) = Administrative principles: authority, unity of command, scalar chain; McClelland (D-III) = Three needs: power, affiliation, achievement.\n**Key Concepts:**\n- Fiedler's situational favorableness is determined by three variables: leader-member relations (most important), task structure, position power.\n- Lewin's three-step change model remains foundational \u2014 unfreezing disrupts the status quo before change can occur.\n- McClelland's learned needs theory: nPow, nAff, nAch \u2014 all three are acquired through experience and culture.\n**Related Concepts:**\n- Fiedler's LPC (Least Preferred Co-worker) scale measures whether a leader is task-oriented or relationship-oriented.\n- Fayol's 14 principles encompass authority/responsibility, unity of command, and scalar chain as core administrative concepts.", "id": 21}, {"question": "Effective mentoring requires trust and the level of trust reflects the mentor's:", "options": [{"id": "1", "text": "Competence, consistency, communication abilities, and control sharing readiness"}, {"id": "2", "text": "Concerned, cooperativeness, communication abilities, and coordination skills"}, {"id": "3", "text": "Competence, consistency, complexity, and communication abilities"}, {"id": "4", "text": "Communication abilities, competence, concerned behavior, and control sharing readiness"}], "correctAnswer": "1", "explanation": "Trust in mentoring is built on: mentor's Competence (knowledge/skills), Consistency (reliable behavior), Communication abilities (clear, honest dialogue), and Control sharing readiness (willingness to empower the mentee).\n**Key Concepts:**\n- Mentoring trust requires demonstrated competence \u2014 a mentor without expertise cannot inspire confidence.\n- Consistency builds trust over time \u2014 predictable, reliable mentor behavior creates psychological safety.\n- Control sharing readiness distinguishes mentoring from supervision \u2014 mentor must be willing to transfer ownership to mentee.\n**Related Concepts:**\n- Kram's mentoring functions: career (sponsorship, coaching, protection) and psychosocial (role modeling, friendship, counseling).\n- Formal vs. informal mentoring differs in trust formation \u2014 informal mentoring builds trust organically while formal requires deliberate trust-building.", "id": 22}, {"question": "Which one of the following consists of physical working conditions, work schedule, incentives, and the number of people with whom the employee would normally interact?", "options": [{"id": "1", "text": "Job profile"}, {"id": "2", "text": "Job content"}, {"id": "3", "text": "Job context"}, {"id": "4", "text": "Job specification"}], "correctAnswer": "3", "explanation": "Job context refers to the physical and social environment in which work is performed \u2014 including working conditions, schedule, compensation/incentives, and social interaction patterns. Job content = tasks performed; Job specification = human requirements; Job profile = broader summary.\n**Key Concepts:**\n- Job analysis yields two primary outputs: Job Description (content + context) and Job Specification (person requirements).\n- Job context covers environmental conditions (noise, temperature, hazards), work schedule, pay structure, and social environment.\n- Job content describes the actual tasks, duties, and responsibilities \u2014 what the worker does, not the environment.\n**Related Concepts:**\n- McCormick's Position Analysis Questionnaire (PAQ) systematically captures both job content and job context elements.\n- Working conditions as job context directly relate to Herzberg's hygiene factors \u2014 they prevent dissatisfaction but don't motivate.", "id": 23}, {"question": "Which of the following managerial actions are followed to reduce resistance to change?\n(A) Education and communication are strong tools for resistance to change\n(B) Allows participation to those who oppose a change to participate in decision making\n(C) Negotiation may become vital when resistance comes from a powerful source\n(D) Employee counseling does not serve the purpose\n(E) Coercion can be used to get support easily", "options": [{"id": "1", "text": "A, B, and C Only"}, {"id": "2", "text": "B, C, and E Only"}, {"id": "3", "text": "B, C, and D Only"}, {"id": "4", "text": "A, C, and D Only"}], "correctAnswer": "1", "explanation": "Education/communication (A), participation/involvement (B), and negotiation (C) are all valid Kotter-Schlesinger methods to overcome resistance. Employee counseling DOES serve a purpose (D is false). Coercion (E) creates resentment \u2014 it suppresses resistance temporarily but does not truly reduce it.\n**Key Concepts:**\n- Kotter & Schlesinger's six methods: education/communication, participation, facilitation/support, negotiation, manipulation/co-optation, coercion.\n- Participation (B) is especially effective when resisters have important information or power to block change.\n- Coercion is listed as a last resort \u2014 it creates compliance, not commitment; resentment often follows.\n**Related Concepts:**\n- Employee counseling (D) is a facilitation/support tool \u2014 addressing emotional resistance and anxiety about change.\n- Lewin's force field analysis helps identify which resistance-reduction strategy matches each restraining force.", "id": 24}, {"question": "Honeywell Inc.'s move from a hierarchical management structure to a much flatter and team-based structure is a good description of which one of the following?", "options": [{"id": "1", "text": "Centralisation"}, {"id": "2", "text": "Decentralisation"}, {"id": "3", "text": "Span of control"}, {"id": "4", "text": "Work specialization"}], "correctAnswer": "2", "explanation": "Moving from a hierarchical to a flatter, team-based structure is the hallmark of decentralization \u2014 authority is pushed down to lower levels and teams, reducing the number of hierarchical layers.\n**Key Concepts:**\n- Decentralization reduces hierarchical layers, increases team autonomy, and speeds up decision-making.\n- Flat structures = wider spans of control + fewer levels = decentralized decision authority.\n- Centralization (option 1) would be the opposite \u2014 consolidating authority upward into fewer hands/levels.\n**Related Concepts:**\n- Team-based structures are an organizational form enabled by decentralization \u2014 self-managed teams require delegated authority.\n- Span of control (option 3) is related but describes the number of subordinates, not the distribution of authority.", "id": 25}, {"question": "Which one of the following beliefs and behaviors does NOT characterize 'collectivism'?", "options": [{"id": "1", "text": "Relations are moral, not contractual"}, {"id": "2", "text": "Relations take precedence over tasks"}, {"id": "3", "text": "Individual opinions are independent of collective opinions"}, {"id": "4", "text": "Maintaining harmony is highly valued"}], "correctAnswer": "3", "explanation": "In collectivist cultures, individual opinions are shaped by and subordinated to group/collective opinions \u2014 NOT independent. Options 1, 2, and 4 are all genuine characteristics of collectivism.\n**Key Concepts:**\n- Collectivism: group goals over individual goals, harmony maintenance, relationship primacy, moral (not transactional) bonds.\n- Individual opinions being independent of the collective is a characteristic of INDIVIDUALISM \u2014 the opposite of collectivism.\n- Moral relations (option 1) means obligations are based on loyalty and belonging, not legal contracts.\n**Related Concepts:**\n- Hofstede's Individualism-Collectivism dimension is one of six cultural dimensions explaining cross-national OB differences.\n- India scores moderately collectivist; Japan and China score strongly collectivist; USA scores most individualist.", "id": 26}, {"question": "Which of the following are considered while avoiding conflict?\n(A) Conflict based on interpersonal relationships\n(B) All conflicts are not bad and can be taken positively\n(C) Conflict over content and goals of the work\n(D) Conflicts do not support a group's goal and improve its performance\n(E) Conflict over how work gets done", "options": [{"id": "1", "text": "A, B, and C Only"}, {"id": "2", "text": "A, B, and E Only"}, {"id": "3", "text": "A, C, and E Only"}, {"id": "4", "text": "B, C, and D Only"}], "correctAnswer": "3", "explanation": "Conflicts to AVOID are those over: interpersonal relationships (A \u2014 affective/emotional conflict), content/goals of work (C \u2014 task conflict at ideological level), and process/how work is done (E \u2014 process conflict). Option B acknowledges positive conflict \u2014 reason TO ENGAGE, not avoid. Option D is false \u2014 conflicts CAN support group goals.\n**Key Concepts:**\n- Relationship/affective conflict (A) consistently harms performance \u2014 personal animosity has no functional value.\n- Task conflict (C) and process conflict (E) can be dysfunctional when unresolved or highly personal.\n- Functional conflict (B) \u2014 moderate task-related disagreement \u2014 actually improves decision quality and should not be avoided.\n**Related Concepts:**\n- Jehn's conflict typology: task conflict (goals/content), process conflict (methods), relationship conflict (interpersonal).\n- Interactionist view of conflict: some conflict is necessary and healthy; zero conflict indicates apathy/groupthink.", "id": 27}, {"question": "The sequential stages of moral development in business organisations are characterised by:", "options": [{"id": "1", "text": "Conceptualised disposition, consistency and harmony, principled oriented"}, {"id": "2", "text": "Consistency and harmony, conceptualised disposition, principled oriented"}, {"id": "3", "text": "Principled oriented, conventional and preconventional"}, {"id": "4", "text": "Preconventional, conventional, principled oriented"}], "correctAnswer": "4", "explanation": "Kohlberg's stages of moral development applied to business: Preconventional (self-interest, rule-following to avoid punishment) \u2192 Conventional (social norms, group expectations) \u2192 Principled/Post-conventional (universal ethical principles, social contract).\n**Key Concepts:**\n- Preconventional: decisions based on self-interest and fear of punishment \u2014 earliest/lowest moral stage.\n- Conventional: decisions based on social approval, legal compliance, maintaining social order \u2014 middle stage.\n- Principled (post-conventional): decisions guided by universal ethical principles transcending rules \u2014 highest stage.\n**Related Concepts:**\n- Kohlberg's model (1969) is widely applied to Corporate Social Responsibility \u2014 organizations evolve through similar moral stages.\n- Gilligan critiqued Kohlberg for male-centric bias \u2014 her \"ethics of care\" offers an alternative developmental framework.", "id": 28}]};
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        const mathExtension = {
+            name: 'math',
+            level: 'inline',
+            start(src) { return src.indexOf('$'); },
+            tokenizer(src, tokens) {
+                const blockRule = /^\$\$(.*?)\$\$/s;
+                const inlineRule = /^\$([^$\n]+)\$/;
+                let match;
+                if ((match = blockRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: true };
+                } else if ((match = inlineRule.exec(src))) {
+                    return { type: 'math', raw: match[0], text: match[1], displayMode: false };
+                }
+            },
+            renderer(token) {
+                const safeText = token.text.replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                return token.displayMode ? `$$${safeText}$$` : `$${safeText}$`;
+            }
+        };
+        marked.use({ extensions: [mathExtension] });
+
+        const Icons = {
+            Menu: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/></svg>,
+            User: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>,
+            Alert: () => <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>,
+            Printer: () => <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>,
+            Info: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>,
+            Pause: () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>,
+            Play: () => <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        };
+
+        const DonutChart = ({ percentage, color, label }) => (
+            <div className="flex flex-col items-center print-break-avoid">
+                <svg viewBox="0 0 36 36" className="circular-chart w-28 h-28 mb-3">
+                    <path className="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <path className="circle" stroke={color} strokeDasharray={`${percentage}, 100`} d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+                    <text x="18" y="20.5" textAnchor="middle" className="text-3xl font-black fill-slate-800" style={{fontSize: "9px"}}>{percentage}%</text>
+                </svg>
+                <span className="font-bold text-slate-500 uppercase tracking-widest text-xs">{label}</span>
+            </div>
+        );
+
+        const App = () => {
+            const [currentQIndex, setCurrentQIndex] = useState(0);
+            const [answers, setAnswers] = useState({}); 
+            const [status, setStatus] = useState({});   
+            const [timeLeft, setTimeLeft] = useState(TEST_DATA.durationMinutes * 60);
+            const [isSubmitted, setIsSubmitted] = useState(false);
+            const [isPaletteOpen, setIsPaletteOpen] = useState(false);
+            const [isPaused, setIsPaused] = useState(false); 
+            const [warnings, setWarnings] = useState(0);
+            const [showWarning, setShowWarning] = useState(false);
+
+            useEffect(() => {
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise().catch((err) => console.log('MathJax error: ', err));
+                }
+            });
+
+            useEffect(() => {
+                if (!TEST_DATA.strictMode || isSubmitted) return;
+                const handleVisibility = () => {
+                    if (document.hidden) {
+                        setWarnings(w => w + 1);
+                        setShowWarning(true);
+                    }
+                };
+                document.addEventListener("visibilitychange", handleVisibility);
+                return () => document.removeEventListener("visibilitychange", handleVisibility);
+            }, [isSubmitted]);
+
+            useEffect(() => {
+                if (isSubmitted || isPaused) return; 
+                const timer = setInterval(() => {
+                    setTimeLeft(prev => {
+                        if (prev <= 0) { handleSubmit(true); return 0; }
+                        return prev - 1;
+                    });
+                }, 1000);
+                return () => clearInterval(timer);
+            }, [isSubmitted, isPaused]); 
+
+            const formatTime = (seconds) => {
+                const h = Math.floor(seconds / 3600);
+                const m = Math.floor((seconds % 3600) / 60);
+                const s = seconds % 60;
+                return `${h > 0 ? h + ':' : ''}${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            };
+
+            const advanceQuestion = () => {
+                if (currentQIndex < TEST_DATA.questions.length - 1) {
+                    const nextQ = TEST_DATA.questions[currentQIndex + 1];
+                    if (status[nextQ.id] === 'not_visited') setStatus(prev => ({ ...prev, [nextQ.id]: 'not_answered' }));
+                    setCurrentQIndex(prev => prev + 1);
+                }
+            };
+
+            const handleOptionSelect = (optId) => {
+                if(isPaused) return;
+                setAnswers(prev => ({ ...prev, [TEST_DATA.questions[currentQIndex].id]: optId }));
+            };
+
+            const handleSaveAndNext = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'answered' : 'not_answered' }));
+                advanceQuestion();
+            };
+
+            const handleMarkForReview = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setStatus(prev => ({ ...prev, [cid]: answers[cid] ? 'marked_answered' : 'marked' }));
+                advanceQuestion();
+            };
+
+            const handleClearResponse = () => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                setAnswers(prev => { const newAns = { ...prev }; delete newAns[cid]; return newAns; });
+                setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+            };
+
+            const handlePaletteClick = (index) => {
+                if(isPaused) return;
+                const cid = TEST_DATA.questions[currentQIndex].id;
+                if (status[cid] === 'not_visited' || (status[cid] === 'not_answered' && !answers[cid])) {
+                    setStatus(prev => ({ ...prev, [cid]: 'not_answered' }));
+                }
+                const tid = TEST_DATA.questions[index].id;
+                if (status[tid] === 'not_visited') setStatus(prev => ({ ...prev, [tid]: 'not_answered' }));
+                setCurrentQIndex(index);
+                setIsPaletteOpen(false); 
+            };
+
+            const handleSubmit = (auto = false) => {
+                if (auto || confirm("Are you sure you want to submit the test? No changes can be made after submission.")) {
+                    setIsSubmitted(true);
+                    setIsPaused(false);
+                }
+            };
+
+            const counts = useMemo(() => {
+                const c = { answered: 0, not_answered: 0, marked: 0, marked_answered: 0, not_visited: 0 };
+                Object.values(status).forEach(s => { if (c[s] !== undefined) c[s]++; });
+                return c;
+            }, [status]);
+
+            if (isSubmitted) {
+                let score = 0, correct = 0, wrong = 0;
+                TEST_DATA.questions.forEach(q => {
+                    if (answers[q.id] === q.correctAnswer) { score += TEST_DATA.marksForCorrect; correct++; } 
+                    else if (answers[q.id]) { score -= TEST_DATA.marksForWrong; wrong++; }
+                });
+
+                const attempted = correct + wrong;
+                const accuracy = attempted > 0 ? Math.round((correct / attempted) * 100) : 0;
+                const percentage = Math.max(0, Math.round((score / TEST_DATA.totalMarks) * 100));
+                const isPass = percentage >= TEST_DATA.passPercentage;
+
+                return (
+                    <div className="h-full overflow-y-auto p-4 md:p-8 print:p-0 bg-slate-50 print:bg-white print:h-auto print:overflow-visible">
+                        <div className="max-w-5xl mx-auto bg-white rounded-3xl shadow-xl overflow-hidden border border-slate-100 print-border-none print:shadow-none">
+                            <div className="bg-blue-600 text-white p-10 relative print:text-slate-900 print:bg-white print:border-b-2 print:border-slate-300 print:p-0 print:mb-8">
+                                <div className="absolute top-0 right-0 w-64 h-64 bg-white opacity-5 rounded-full -mt-20 -mr-20 blur-2xl print-hidden"></div>
+                                <div className="flex flex-col md:flex-row justify-between items-center gap-6 relative z-10 print:flex-row print:items-start">
+                                    <div className="text-center md:text-left">
+                                        <h1 className="text-4xl font-extrabold mb-2 tracking-tight">Performance Report</h1>
+                                        <p className="opacity-90 font-semibold text-lg">{TEST_DATA.title}</p>
+                                        <p className="opacity-70 text-sm mt-1">{TEST_DATA.organization}</p>
+                                    </div>
+                                    <div className="flex gap-6 items-center">
+                                        <div className={`px-6 py-4 rounded-2xl border-2 backdrop-blur-md print:border-2 print:bg-transparent flex items-center justify-between gap-6 min-w-[200px] ${isPass ? 'bg-green-500/20 border-green-400 print:border-green-600 print:text-green-700' : 'bg-red-500/20 border-red-400 print:border-red-600 print:text-red-700'}`}>
+                                            <div className="text-left">
+                                                <div className="text-[10px] uppercase tracking-widest font-bold opacity-80 mb-0.5">Final Status</div>
+                                                <div className="text-2xl font-black leading-none">{isPass ? 'PASSED' : 'FAILED'}</div>
+                                            </div>
+                                            <div className="text-4xl leading-none">{isPass ? '🎉' : '❌'}</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button onClick={() => window.print()} className="print-hidden absolute right-6 top-6 bg-white/20 hover:bg-white/30 text-white px-5 py-2.5 rounded-full font-bold transition shadow-lg backdrop-blur-sm flex items-center gap-2">
+                                    <Icons.Printer/> Save PDF
+                                </button>
+                            </div>
+
+                            <div className="p-10 grid grid-cols-1 md:grid-cols-3 gap-8 border-b border-slate-100 bg-slate-50/50 print:bg-white print:border-b-0 print-break-avoid">
+                                <DonutChart percentage={percentage} color="#2563eb" label="Score Percentage" />
+                                <DonutChart percentage={accuracy} color="#10b981" label="Accuracy" />
+                                <div className="flex flex-col justify-center space-y-4">
+                                    <div className="bg-white p-5 rounded-2xl shadow-sm border border-slate-100 flex justify-between items-center print:border-slate-300">
+                                        <span className="text-slate-500 font-bold">Total Marks</span>
+                                        <span className="text-3xl font-black text-blue-600">{score} <span className="text-lg text-slate-400 font-bold">/ {TEST_DATA.totalMarks}</span></span>
+                                    </div>
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div className="bg-green-50 p-4 rounded-2xl border border-green-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-green-600 text-3xl font-black">{correct}</div>
+                                            <div className="text-xs font-bold text-green-700 uppercase mt-1">Correct</div>
+                                        </div>
+                                        <div className="bg-red-50 p-4 rounded-2xl border border-red-100 text-center print:border-slate-300 print:bg-white">
+                                            <div className="text-red-600 text-3xl font-black">{wrong}</div>
+                                            <div className="text-xs font-bold text-red-700 uppercase mt-1">Wrong</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="p-6 md:p-10">
+                                <h2 className="text-2xl font-extrabold text-slate-800 mb-8 flex items-center gap-3 border-b border-slate-200 pb-4">
+                                    Detailed Solutions
+                                </h2>
+                                <div className="space-y-8">
+                                    {TEST_DATA.questions.map((q, i) => {
+                                        const userAns = answers[q.id];
+                                        const isCorrect = userAns === q.correctAnswer;
+                                        const isSkipped = !userAns;
+                                        let borderColor = isCorrect ? 'border-green-500' : (isSkipped ? 'border-slate-300' : 'border-red-500');
+                                        let bgClass = isCorrect ? 'bg-green-50/50' : (isSkipped ? 'bg-white' : 'bg-red-50/50');
+
+                                        return (
+                                            <div key={q.id} className={`border-l-8 ${borderColor} ${bgClass} p-6 rounded-2xl shadow-sm border border-slate-100 print-break-avoid print:border print:border-l-8 print:shadow-none`}>
+                                                <div className="flex gap-4 mb-6">
+                                                    <span className="font-black text-slate-400 text-xl">Q{i+1}.</span>
+                                                    <div className="flex-1 text-slate-800 markdown-body text-[16px]" dangerouslySetInnerHTML={{ __html: marked.parse(q.question) }}></div>
+                                                </div>
+                                                <div className="ml-10 space-y-3 mb-6">
+                                                    {q.options.map(opt => {
+                                                        const isUserOpt = opt.id === userAns;
+                                                        const isCorrectOpt = opt.id === q.correctAnswer;
+                                                        
+                                                        let optClass = "text-slate-600 bg-white border-slate-200";
+                                                        let icon = "○";
+                                                        if (isCorrectOpt) { optClass = "text-green-800 bg-green-100 border-green-300 font-bold"; icon = "✓"; }
+                                                        else if (isUserOpt) { optClass = "text-red-700 bg-red-100 border-red-300 line-through"; icon = "✗"; }
+
+                                                        return (
+                                                            <div key={opt.id} className={`flex items-start gap-3 p-3 rounded-xl border ${optClass} print:bg-transparent print:border-slate-300`}>
+                                                                <span className="mt-0.5 font-bold">{icon}</span>
+                                                                <div className="markdown-body" style={{marginBottom: 0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                                {q.explanation && (
+                                                    <div className="ml-10 p-5 bg-blue-50/50 rounded-xl border border-blue-100 print:bg-slate-50 print:border-slate-200">
+                                                        <strong className="block mb-2 flex items-center gap-2 text-blue-700"><Icons.Info/> Expert Explanation:</strong>
+                                                        <div className="markdown-body text-sm text-slate-700" dangerouslySetInnerHTML={{ __html: marked.parse(q.explanation) }}></div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            const currentQuestion = TEST_DATA.questions[currentQIndex];
+
+            return (
+                <div className="flex flex-col h-full bg-slate-50 relative">
+                    {showWarning && (
+                        <div className="fixed inset-0 z-[100] bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4">
+                            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-md text-center border-2 border-red-500">
+                                <div className="w-20 h-20 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-4 animate-bounce"><Icons.Alert /></div>
+                                <h2 className="text-2xl font-black text-slate-800 mb-2">Warning Recorded!</h2>
+                                <p className="text-slate-600 mb-6 font-medium">You switched tabs or minimized the window. (Warning {warnings})</p>
+                                <button onClick={() => setShowWarning(false)} className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-4 rounded-full shadow-lg transition transform active:scale-95 text-lg">I Understand</button>
+                            </div>
+                        </div>
+                    )}
+
+                    {isPaused && (
+                        <div className="fixed inset-0 z-[90] bg-white/80 backdrop-blur-md flex flex-col items-center justify-center p-4">
+                            <div className="bg-white p-10 rounded-3xl shadow-2xl border border-slate-200 text-center max-w-sm w-full">
+                                <div className="w-20 h-20 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto mb-6"><Icons.Pause /></div>
+                                <h2 className="text-3xl font-black text-slate-800 mb-3">Test Paused</h2>
+                                <button onClick={() => setIsPaused(false)} className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black py-4 rounded-full shadow-lg transition transform active:scale-95 flex items-center justify-center gap-3 text-lg">
+                                    <Icons.Play /> Resume Test
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <header className="glass-nav border-b border-slate-200 h-20 flex items-center justify-between px-6 z-20 sticky top-0 shadow-sm">
+                        <div className="flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-600/30 text-white font-black text-xl">E</div>
+                            <div className="hidden sm:block">
+                                <h1 className="font-extrabold text-lg text-slate-800 leading-tight">{TEST_DATA.organization}</h1>
+                                <p className="text-xs text-slate-500 font-medium truncate max-w-[200px]">{TEST_DATA.title}</p>
+                            </div>
+                        </div>
+                        <div className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 flex items-center">
+                            <div className="flex items-center bg-white rounded-full border border-slate-200 p-1 shadow-sm overflow-hidden">
+                                <div className="px-4 py-1.5 bg-slate-100 rounded-full text-xs font-bold text-slate-500 flex items-center gap-2">
+                                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span> LIVE
+                                </div>
+                                <div className="px-6 font-mono font-black text-xl text-blue-600 tracking-widest">{formatTime(timeLeft)}</div>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isPaused && !isSubmitted && (
+                                <button onClick={() => setIsPaused(true)} className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 hover:bg-slate-200 hover:text-blue-600 transition" title="Pause Test"><Icons.Pause /></button>
+                            )}
+                            <div className="hidden md:flex items-center gap-3 pl-3 border-l border-slate-200">
+                                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 p-0.5 shadow-md">
+                                    <div className="w-full h-full bg-white rounded-full flex items-center justify-center text-slate-800"><Icons.User /></div>
+                                </div>
+                            </div>
+                            <button className="md:hidden w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600" onClick={() => setIsPaletteOpen(!isPaletteOpen)}><Icons.Menu /></button>
+                        </div>
+                    </header>
+
+                    <div className="flex-1 flex overflow-hidden relative">
+                        <div className={`flex-1 flex flex-col w-full transition-all duration-300 ${isPaused ? 'blur-content' : ''}`}>
+                            <div className="flex-1 overflow-y-auto p-4 md:p-8 lg:p-12">
+                                <div className="max-w-4xl mx-auto bg-white rounded-3xl p-8 shadow-sm border border-slate-100">
+                                    <div className="flex justify-between items-center mb-8 pb-4 border-b border-slate-100">
+                                        <div className="flex items-center gap-3">
+                                            <span className="bg-blue-600 text-white px-5 py-2 rounded-full text-sm font-black shadow-md shadow-blue-600/20">Question {currentQIndex + 1}</span>
+                                        </div>
+                                        <div className="flex gap-2">
+                                            <span className="bg-green-50 text-green-600 px-4 py-1.5 rounded-full text-xs font-bold border border-green-200">+{TEST_DATA.marksForCorrect}</span>
+                                            <span className="bg-red-50 text-red-600 px-4 py-1.5 rounded-full text-xs font-bold border border-red-200">-{TEST_DATA.marksForWrong}</span>
+                                        </div>
+                                    </div>
+                                    <div className="text-[17px] text-slate-800 markdown-body mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: marked.parse(currentQuestion.question) }}></div>
+                                    <div className="space-y-4">
+                                        {currentQuestion.options.map(opt => {
+                                            const isSelected = answers[currentQuestion.id] === opt.id;
+                                            return (
+                                                <div key={opt.id} onClick={() => handleOptionSelect(opt.id)} className={`group relative p-5 rounded-2xl cursor-pointer flex items-center gap-5 transition-all duration-200 border-2 ${isSelected ? 'border-blue-600 bg-blue-50/50 shadow-sm option-selected' : 'border-slate-200 hover:border-blue-300 hover:bg-slate-50'}`}>
+                                                    <div className={`w-6 h-6 rounded-full border-2 flex items-center justify-center flex-shrink-0 custom-radio ${isSelected ? 'border-blue-600 bg-white' : 'border-slate-300 group-hover:border-blue-400'}`}></div>
+                                                    <div className="text-slate-700 font-medium markdown-body flex-1 text-[16px]" style={{marginBottom:0}} dangerouslySetInnerHTML={{ __html: marked.parseInline(opt.text) }}></div>
+                                                </div>
+                                            )
+                                        })}
+                                    </div>
+                                </div>
+                            </div>
+                            <div className="glass-nav border-t border-slate-200 p-5 md:px-12 flex items-center justify-between z-10">
+                                <div className="flex gap-3">
+                                    <button onClick={handleMarkForReview} className="px-6 py-3.5 bg-purple-50 text-purple-700 hover:bg-purple-100 rounded-full font-bold text-sm transition border border-purple-200"><span className="hidden md:inline">Mark for Review</span><span className="md:hidden">Review</span></button>
+                                    <button onClick={handleClearResponse} className="px-6 py-3.5 bg-slate-100 text-slate-600 hover:bg-slate-200 rounded-full font-bold text-sm transition">Clear</button>
+                                </div>
+                                <button onClick={handleSaveAndNext} className="px-8 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-full font-black text-sm shadow-lg shadow-blue-600/30 transition transform active:scale-95 flex items-center gap-2">Save & Next <span className="text-xl leading-none">→</span></button>
+                            </div>
+                        </div>
+
+                        <div className={`absolute inset-y-0 right-0 w-[320px] bg-white shadow-2xl transform transition-transform duration-300 z-30 flex flex-col border-l border-slate-200 ${isPaletteOpen ? 'translate-x-0' : 'translate-x-full'} md:translate-x-0 md:relative`}>
+                            <div className="p-5 border-b border-slate-100 flex items-center gap-4 bg-slate-50">
+                                <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-blue-600"><Icons.User /></div>
+                                <div><div className="font-bold text-slate-800">Candidate</div><div className="text-xs text-slate-500">{TEST_DATA.organization} Student</div></div>
+                                <button className="ml-auto md:hidden text-slate-400" onClick={() => setIsPaletteOpen(false)}>✕</button>
+                            </div>
+                            <div className="p-5 grid grid-cols-2 gap-4 text-xs font-semibold border-b border-slate-100">
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#10b981]"></div> Answered ({counts.answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#ef4444]"></div> Not Ans ({counts.not_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full bg-[#8b5cf6]"></div> Marked ({counts.marked + counts.marked_answered})</div>
+                                <div className="flex items-center gap-2 text-slate-600"><div className="w-3 h-3 rounded-full border-2 border-slate-300 bg-slate-50"></div> Unvisited ({counts.not_visited})</div>
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-5">
+                                <div className="font-bold text-slate-700 mb-4 text-sm">Question Navigation:</div>
+                                <div className="grid grid-cols-5 gap-2.5">
+                                    {TEST_DATA.questions.map((q, idx) => (
+                                        <button key={q.id} onClick={() => handlePaletteClick(idx)} className={`h-11 w-full flex items-center justify-center font-bold text-sm rounded-xl transition shadow-sm border ${currentQIndex === idx ? 'current-question' : 'border-transparent'} status-${status[q.id]}`}>{idx + 1}</button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="p-5 border-t border-slate-100 bg-white">
+                                <button onClick={() => handleSubmit(false)} className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-black py-4 rounded-2xl shadow-lg shadow-emerald-500/20 transition transform active:scale-95 text-lg">Submit Final Test</button>
+                            </div>
+                        </div>
+                    </div>
+                    {isPaletteOpen && <div className="fixed inset-0 bg-slate-900/40 backdrop-blur-sm z-20 md:hidden" onClick={() => setIsPaletteOpen(false)}></div>}
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>
